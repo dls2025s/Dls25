@@ -32,14 +32,14 @@
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
     }
 
-    /* Sidebar Styles */
+    /* Sidebar Styles (Now Top Navbar Style) */
     #sidebar {
       transition: transform 0.3s ease-in-out;
-      transform: translateX(-100%);
+      transform: translateY(-100%);
     }
 
     #sidebar.active {
-      transform: translateX(0);
+      transform: translateY(0);
     }
 
     #overlay {
@@ -59,7 +59,7 @@
 
   <!-- Header -->
   <header
-    class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between header-glow rounded-b-xl">
+    class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between header-glow rounded-b-xl relative z-40">
     <div class="flex items-center space-x-2">
       <img src="dls25.jpeg" alt="Logo" class="w-8 h-8 rounded-full border border-yellow-400" />
       <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-blue-200 to-yellow-300 bg-clip-text text-transparent"
@@ -75,9 +75,10 @@
     </div>
   </header>
 
-  <!-- Sidebar -->
-  <div id="overlay" class="fixed inset-0 bg-black z-40"></div>
-  <aside id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-gray-900 z-50 shadow-xl border-r border-gray-700">
+  <!-- Sidebar (Now Drops Down from Top) -->
+  <div id="overlay" class="fixed inset-0 bg-black z-30"></div>
+  <aside id="sidebar"
+    class="fixed top-0 left-0 w-full bg-gray-900 z-50 shadow-xl border-b border-gray-700 rounded-b-2xl">
     <div class="flex items-center justify-between p-4 border-b border-gray-700">
       <h2 class="text-lg font-bold text-yellow-300">Menu</h2>
       <button id="closeSidebar" class="text-gray-300 text-xl hover:text-yellow-400">
@@ -85,7 +86,7 @@
       </button>
     </div>
 
-    <nav class="p-4 space-y-4">
+    <nav class="p-4 grid grid-cols-2 gap-3">
       <a href="dashboard.html" class="flex items-center space-x-3 text-gray-300 hover:text-yellow-300">
         <i class="fa-solid fa-house"></i> <span>Home</span>
       </a>
@@ -252,63 +253,56 @@
   </nav>
 
   <!-- Firebase Script -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-  authDomain: "dlstournament-31ac1.firebaseapp.com",
-  databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
-  projectId: "dlstournament-31ac1",
-  storageBucket: "dlstournament-31ac1.firebasestorage.app",
-  messagingSenderId: "874377019055",
-  appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
-  measurementId: "G-0DGFJEV6GL"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+      authDomain: "dlstournament-31ac1.firebaseapp.com",
+      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+      projectId: "dlstournament-31ac1",
+      storageBucket: "dlstournament-31ac1.firebasestorage.app",
+      messagingSenderId: "874377019055",
+      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+      measurementId: "G-0DGFJEV6GL"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  let currentUser = null;
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "index.html";
+    });
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) return window.location.href = "index.html";
-    currentUser = user;
-  });
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const menuButton = document.getElementById("menuButton");
+    const closeSidebar = document.getElementById("closeSidebar");
 
-  // Sidebar Functionality
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const menuButton = document.getElementById("menuButton");
-  const closeSidebar = document.getElementById("closeSidebar");
+    menuButton.addEventListener("click", () => {
+      sidebar.classList.add("active");
+      overlay.classList.add("active");
+    });
 
-  menuButton.addEventListener("click", () => {
-    sidebar.classList.add("active");
-    overlay.classList.add("active");
-  });
+    closeSidebar.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    });
 
-  closeSidebar.addEventListener("click", () => {
-    sidebar.classList.remove("active");
-    overlay.classList.remove("active");
-  });
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    });
 
-  overlay.addEventListener("click", () => {
-    sidebar.classList.remove("active");
-    overlay.classList.remove("active");
-  });
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
 
-  // Logout Button
-  const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "index.html";
-  });
-
-  // Swiper
-  var swiper = new Swiper(".mySwiper", {
+    var swiper = new Swiper(".mySwiper", {
       loop: true,
       autoplay: {
         delay: 3000,
@@ -319,7 +313,7 @@
         clickable: true,
       },
     });
-</script>
+  </script>
 
 </body>
 </html>
