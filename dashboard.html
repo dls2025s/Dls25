@@ -52,6 +52,38 @@
       opacity: 0.5;
       pointer-events: all;
     }
+
+    /* Sidebar item background and hover effect */
+    #sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background-color: rgba(30, 30, 30, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    #sidebar nav a:hover {
+      background-color: rgba(255, 215, 0, 0.15);
+      color: #ffd700;
+      transform: scale(1.02);
+    }
+
+    #sidebar nav a i {
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+
+    #sidebar nav a:hover i {
+      color: #ffd700;
+    }
+
+    #sidebar nav a.active {
+      background-color: rgba(255, 215, 0, 0.2);
+      color: #ffd700;
+      border-left: 3px solid #ffd700;
+    }
   </style>
 </head>
 
@@ -85,26 +117,26 @@
       </button>
     </div>
 
-    <nav class="p-4 space-y-4">
-      <a href="dashboard.html" class="flex items-center space-x-3 text-gray-300 hover:text-yellow-300">
+    <nav class="p-4 space-y-3">
+      <a href="dashboard.html" class="active">
         <i class="fa-solid fa-house"></i> <span>Home</span>
       </a>
-      <a href="match.html" class="flex items-center space-x-3 text-gray-300 hover:text-yellow-300">
+      <a href="match.html">
         <i class="fa-solid fa-gamepad"></i> <span>Matches</span>
       </a>
-      <a href="league.html" class="flex items-center space-x-3 text-gray-300 hover:text-yellow-300">
+      <a href="league.html">
         <i class="fa-solid fa-trophy"></i> <span>League</span>
       </a>
-      <a href="team-rank.html" class="flex items-center space-x-3 text-gray-300 hover:text-yellow-300">
+      <a href="team-rank.html">
         <i class="fa-solid fa-ranking-star"></i> <span>Ranking</span>
       </a>
-      <a href="league-form.html" class="flex items-center space-x-3 text-gray-300 hover:text-yellow-300">
+      <a href="league-form.html">
         <i class="fa-solid fa-user-plus"></i> <span>Registration</span>
       </a>
-      <a href="profile.html" class="flex items-center space-x-3 text-gray-300 hover:text-yellow-300">
+      <a href="profile.html">
         <i class="fa-solid fa-user"></i> <span>Profile</span>
       </a>
-      <a href="#" id="logoutBtn" class="flex items-center space-x-3 text-red-400 hover:text-red-500">
+      <a href="#" id="logoutBtn" class="text-red-400 hover:text-red-500 bg-red-900/30 hover:bg-red-700/30">
         <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
       </a>
     </nav>
@@ -129,7 +161,7 @@
     <div class="flex justify-center items-center space-x-5 mb-4 uppercase">
       <div>
         <a href="match.html">
-          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1  overflow-hidden"
+          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
             style="background-image: url('dlsbanner.webp');">
             <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
             <img src="dlsbanner.webp" alt="DLS Banner"
@@ -161,7 +193,7 @@
     <div class="flex justify-center items-center space-x-5 uppercase">
       <div>
         <a href="team-rank.html">
-          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1  overflow-hidden"
+          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
             style="background-image: url('playercard1.jpeg');">
             <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
             <img src="betlogo12.jpeg" alt="DLS Banner"
@@ -255,31 +287,27 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-  authDomain: "dlstournament-31ac1.firebaseapp.com",
-  databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
-  projectId: "dlstournament-31ac1",
-  storageBucket: "dlstournament-31ac1.firebasestorage.app",
-  messagingSenderId: "874377019055",
-  appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
-  measurementId: "G-0DGFJEV6GL"
-};
+    apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+    authDomain: "dlstournament-31ac1.firebaseapp.com",
+    databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+    projectId: "dlstournament-31ac1",
+    storageBucket: "dlstournament-31ac1.firebasestorage.app",
+    messagingSenderId: "874377019055",
+    appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+    measurementId: "G-0DGFJEV6GL"
+  };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  let currentUser = null;
-
   onAuthStateChanged(auth, async (user) => {
     if (!user) return window.location.href = "index.html";
-    currentUser = user;
   });
 
-  // Sidebar Functionality
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
   const menuButton = document.getElementById("menuButton");
@@ -300,26 +328,17 @@
     overlay.classList.remove("active");
   });
 
-  // Logout Button
-  const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn.addEventListener("click", async () => {
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
     await signOut(auth);
     window.location.href = "index.html";
   });
 
-  // Swiper
-  var swiper = new Swiper(".mySwiper", {
-      loop: true,
-      autoplay: {
-        delay: 3000,
-        disableOnInteraction: false,
-      },
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-      },
-    });
+  new Swiper(".mySwiper", {
+    loop: true,
+    autoplay: { delay: 3000, disableOnInteraction: false },
+    pagination: { el: ".swiper-pagination", clickable: true },
+  });
 </script>
 
 </body>
-</html>
+          </html>
