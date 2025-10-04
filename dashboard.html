@@ -1,390 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Match Dashboard</title>
+  <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
   <style>
-    .swal2-timer-progress-bar { background: #facc15 !important; }
-    .glow-yellow { box-shadow: 0 0 5px rgba(234, 179, 8, 0.5); }
-    .user-icon-glow { box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8); }
-
-    .countdown-segment {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: rgba(251, 191, 36, 0.15);
-      padding: 0.2rem 0.17rem;
-      border-radius: 0.2rem;
-      box-shadow: 0 0 3px rgba(251, 191, 36, 0.25), inset 0 0 4px rgba(251, 191, 36, 0.3);
-      min-width: 20px;
-      height: 22px;
+    .swiper {
+      width: 100%;
+      height: 140px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
     }
 
-    .countdown-number {
-      margin-top: 6px;
-      font-size: 0.65rem;
-      font-weight: 900;
-      line-height: 0.6;
-      color: #facc15;
-      font-family: 'Audiowide', cursive;
+    .swiper-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
-    .countdown-label {
-      font-size: 0.35rem;
-      font-weight: 700;
-      color: #fbbf24;
-      text-transform: uppercase;
-      letter-spacing: 0.20em;
-      font-family: 'Audiowide', cursive;
+    .title {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
     }
   </style>
 </head>
-<body class="bg-black text-white flex flex-col min-h-screen pb-16 relative">
+
+<body class="bg-black text-white">
 
   <!-- Header -->
-  <header class="bg-black w-full max-w-md shadow-md py-2 px-3 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">KD</div>
-      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Khelo Dls</h2>
+  <header
+    class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between header-glow rounded-b-xl">
+    <div class="flex items-center space-x-2">
+      <img src="dcl1.jpeg" alt="Logo" class="w-8 h-8 rounded-full border border-yellow-400" />
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-blue-200 to-yellow-300 bg-clip-text text-transparent"
+        style="font-family: 'Audiowide', cursive;">DCL TOUR</h2>
     </div>
-    <div class="flex items-center gap-6 text-2xl text-gray-100">
-      <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div onclick="logout()" class="bg-gray-900 w-10 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
-        <i class="fa-solid fa-right-from-bracket"></i>
-      </div>
+    <div class="flex space-x-4">
+      <a href="#">
+        <i class="fa-solid fa-bell text-yellow-300 text-shadow text-xl"></i>
+      </a>
+      
+      <a href="https://facebook.com" target="_blank">
+        <i class="fa-brands fa-facebook text-white text-shadow text-xl"></i>
+      </a>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="px-3 max-w-md mx-auto w-full">
-    <p id="userName" class="text-lg font-semibold"></p>
-    <a href="match-history.html" class="text-yellow-400 underline hover:text-yellow-300">View Match History</a>
-
-    <!-- Balance -->
-    <div class="bg-black rounded-md p-4 flex items-center justify-between border border-gray-700 glow-yellow">
-      <div class="text-white">
-        <h2 class="text-sm font-semibold">Balance</h2>
-        <p id="mainBalance" class="text-xl text-yellow-400 font-bold mt-1 flex items-center">
-          <i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>0.00
-        </p>
+  <!-- Swiper Slider -->
+  <div class="max-w-md mx-auto px-4">
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="slider1.jpeg" alt="Slide 1"></div>
+        <div class="swiper-slide"><img src="slider2.png" alt="Slide 2"></div>
+        <div class="swiper-slide"><img src="slider3.jpg" alt="Slide 3"></div>
       </div>
-      <a href="#">
-        <button class="bg-yellow-300 text-black text-sm font-semibold px-5 py-1.5 rounded-full shadow-6xl">Finance</button>
-      </a>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-md mx-auto px-4 mb-6">
+    <h2 class="text-center text-xl font-bold mb-4 text-blue-200">DLS GAMES & MODES</h2>
+
+    <div class="flex justify-center items-center space-x-5 mb-4 uppercase">
+      <div>
+        <a href="match.html">
+          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1  overflow-hidden"
+            style="background-image: url('dlsbanner.webp');">
+            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
+            <img src="dlsbanner.webp" alt="DLS Banner"
+              class="w-8 h-8 rounded-full object-cover border border-white z-10" />
+            <div class="flex flex-col justify-center z-10">
+              <p class="title text-white font-semibold text-xs">Friendly Match</p>
+              <p style="font-size: 8px;" class="title text-gray-300 font-semibold">view all matches</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div>
+        <a href="league.html">
+          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
+            style="background-image: url('47633.jpeg');">
+            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
+            <img src="1122.jpeg" alt="League Icon"
+              class="w-8 h-8 rounded-full object-cover border border-white z-10" />
+            <div class="flex flex-col justify-center z-10">
+              <p class="title text-white font-semibold text-sm">Tour Match</p>
+              <p style="font-size: 8px;" class="title text-gray-300 font-semibold">All Matches Fixers</p>
+            </div>
+          </div>
+        </a>
+      </div>
     </div>
 
-    <!-- Match List -->
-    <section>
-      <h3 class="text-xl font-bold mb-3 border-b border-yellow-400 pb-1">Upcoming Matches</h3>
-      <div id="matchList"></div>
-    </section>
+    <div class="flex justify-center items-center space-x-5 uppercase">
+      <div>
+        <a href="team-rank.html">
+          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1  overflow-hidden"
+            style="background-image: url('playercard1.jpeg');">
+            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
+            <img src="betlogo12.jpeg" alt="DLS Banner"
+              class="w-8 h-8 rounded-full object-cover border border-white z-10" />
+            <div class="flex flex-col justify-center z-10">
+              <p class="title text-white font-semibold text-xs">Team Ranking</p>
+              <p style="font-size: 8px;" class="title text-gray-300 f">See all Teams</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div>
+        <a href="league-form.html">
+          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-1 space-x-1 overflow-hidden"
+            style="background-image: url('dlsleague.jpeg');">
+            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
+            <img src="join.jpeg" alt="League Icon"
+              class="w-8 h-8 rounded-full object-cover border border-white z-10" />
+            <div class="flex flex-col justify-center z-10">
+              <p class="title text-white font-semibold text-xs">player Reg Form</p>
+              <p style="font-size: 8px;" class="title text-gray-300">Open Registration </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
   </main>
 
-   <script type="module">
+  <!-- Social Media Section -->
+  <div class="max-w-md mx-auto px-4 mb-6">
+    <h2 class="text-center text-xl font-bold mb-4 text-blue-200 uppercase tracking-widest">Join Our Community</h2>
+    <div class="flex justify-center items-center space-x-5">
+      <a href="https://m.me/j/AbZqRCaMkr9yVSQw/" target="_blank"
+        class="w-40 h-20 bg-gradient-to-br from-blue-700 via-blue-500 to-blue-700 hover:shadow-xl hover:scale-105 transform transition duration-300 ease-in-out flex flex-col items-center justify-center rounded-xl border border-blue-300 space-y-2 relative overflow-hidden">
+        <div class="absolute inset-0 bg-blue-500 opacity-20 blur-xl rounded-xl"></div>
+        <i class="fa-brands fa-facebook-messenger text-white text-4xl drop-shadow-lg z-10"></i>
+        <span class="text-white font-semibold text-sm z-10 tracking-wide">Messenger Group</span>
+      </a>
+
+      <a href="https://chat.whatsapp.com/Izxbzg6ZZIQEk5gyxkZoZE?mode=ac_t" target="_blank"
+        class="w-40 h-20 bg-gradient-to-br from-green-700 via-green-500 to-green-700 hover:shadow-xl hover:scale-105 transform transition duration-300 ease-in-out flex flex-col items-center justify-center rounded-xl border border-green-300 space-y-2 relative overflow-hidden">
+        <div class="absolute inset-0 bg-green-500 opacity-20 blur-xl rounded-xl"></div>
+        <i class="fa-brands fa-whatsapp text-white text-4xl drop-shadow-lg z-10"></i>
+        <span class="text-white font-semibold text-sm z-10 tracking-wide">WhatsApp Group</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav
+    class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-50">
+    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Home
+    </a>
+    <a href="match.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-gamepad text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Matches
+    </a>
+    <a href="league.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-trophy text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      League
+    </a>
+    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Ranking
+    </a>
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      Profile
+    </a>
+  </nav>
+
+  <!-- Firebase Script -->
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, collection, getDocs, updateDoc, increment, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-    authDomain: "dlstournament-31ac1.firebaseapp.com",
-    projectId: "dlstournament-31ac1",
-    storageBucket: "dlstournament-31ac1.appspot.com",
-    messagingSenderId: "874377019055",
-    appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a"
-  };
+  apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+  authDomain: "dlstournament-31ac1.firebaseapp.com",
+  databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+  projectId: "dlstournament-31ac1",
+  storageBucket: "dlstournament-31ac1.firebasestorage.app",
+  messagingSenderId: "874377019055",
+  appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+  measurementId: "G-0DGFJEV6GL"
+};
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+
   let currentUser = null;
   let userBalance = 0;
 
+  function formatBalance(amount) {
+    return (+amount.toFixed(2)).toString();
+  }
+
   onAuthStateChanged(auth, async (user) => {
-    if (!user) return window.location.href = "login.html";
+    if (!user) return window.location.href = "index.html";
     currentUser = user;
 
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (userDoc.exists()) {
-      const data = userDoc.data();
-      userBalance = data.balance || 0;
-      document.getElementById("userName").innerText = data.username || "No username";
-      document.getElementById("mainBalance").innerText = `৳${userBalance.toFixed(2)}`;
-    }
-
-    fetchMatches();
-  });
-
-  async function fetchMatches() {
-    const matchListEl = document.getElementById("matchList");
-    matchListEl.innerHTML = "Loading matches...";
-
     try {
-      const querySnapshot = await getDocs(collection(db, "matches"));
-      if (querySnapshot.empty) {
-        matchListEl.innerHTML = "<p class='text-gray-400'>No matches available.</p>";
-        return;
-      }
+      const userRef = doc(db, "users", user.uid);
 
-      let html = "";
-      let timers = [];
-
-      for (const docSnap of querySnapshot.docs) {
-        const match = docSnap.data();
-        const matchId = docSnap.id;
-        if (match.finished !== false) continue;
-
-        const matchDate = match.dateTime?.toDate?.() || new Date(match.dateTime);
-        const dateStr = matchDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        const timeStr = matchDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        const slot = match.slot || 0;
-        const slotLimit = match.slotLimit || 0;
-        const isFull = slot >= slotLimit;
-        const fillRatio = slotLimit === 0 ? 0 : slot / slotLimit;
-        let progressColor = "bg-green-500";
-        if (fillRatio >= 0.5) progressColor = "bg-yellow-400";
-
-        const participantsCol = collection(db, "matches", matchId, "participants");
-        const participantsSnapshot = await getDocs(participantsCol);
-        const participants = participantsSnapshot.docs.map(p => p.data());
-
-        const team1 = participants[0] || { teamName: "Team 1", imageUrl: "images (1).jpeg" };
-        const team2 = participants[1] || { teamName: "Team 2", imageUrl: "images (2).jpeg" };
-
-        const team1Image = team1.imageUrl || "images (1).jpeg";
-        const team2Image = team2.imageUrl || "images (2).jpeg";
-
-        timers.push({ id: `countdown-${matchId}`, time: matchDate });
-
-        html += `
-          <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-black px-3 py-2.5 rounded-lg card-glow border border-gray-500 space-y-3 relative overflow-hidden">
-            <div class="flex justify-between items-center border-b border-yellow-500 pb-1">
-              <div class="flex items-center gap-1">
-                <img src="dls.png" alt="DLS Logo" class="w-6 h-6 rounded-full border border-white shadow" />
-                <h4 style="font-size: 8x;" class="font-extrabold text-gray-100 tracking-wide uppercase">${match.title || "Untitled"}</h4>
-              </div>
-              <div id="countdown-${matchId}" class="flex justify-center text-yellow-300 text-xs font-mono font-bold gap-2" aria-label="Match countdown timer" role="timer">
-                
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 items-center text-center">
-              <div class="flex flex-col items-center gap-1">
-                <img src="${team1Image}" class="w-8 h-8 rounded-full border border-white shadow-md" alt="${team1.teamName}" />
-                <span class="text-xs font-bold">${team1.teamName}</span>
-              </div>
-              <span class="text-yellow-400 font-black text-lg">VS</span>
-              <div class="flex flex-col items-center gap-1">
-                <img src="${team2Image}" class="w-8 h-8 rounded-full border border-white shadow-md" alt="${team2.teamName}" />
-                <span class="text-xs font-bold">${team2.teamName}</span>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 text-sm text-gray-300 pt-2">
-              <div class="flex justify-between items-center">
-                <p>Date:</p><span class="text-yellow-300 font-medium">${dateStr}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <p>Time:</p><span class="text-yellow-300 font-medium">${timeStr}</span>
-              </div>
-            </div>
-
-            <div class="flex justify-between text-sm text-gray-200 uppercase font-semibold">
-              <div class="text-left flex flex-col items-center">
-                <p>Total Prize</p>
-                <p class="text-yellow-300 font-extrabold text-center text-xl">৳${match.totalPrice || 0}</p>
-              </div>
-              <div class="text-center flex flex-col items-center">
-                <p>Per Goal</p>
-                <p class="text-yellow-300 font-extrabold text-center text-xl">৳${match.perGoal || 0}</p>
-              </div>
-              <div class="text-right flex flex-col items-center">
-                <p>Entry Fee</p>
-                <p class="text-yellow-300 font-extrabold text-center text-xl">৳${match.entryFee || 0}</p>
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between">
-              <div class="flex flex-col flex-grow mr-3">
-                <div class="bg-green-100 rounded-full h-2 overflow-hidden">
-                  <div class="${progressColor} h-full transition-all duration-300" style="width: ${(fillRatio * 100).toFixed(1)}%"></div>
-                </div>
-                <p class="text-yellow-400 font-semibold mt-1">Slot: ${slot} / ${slotLimit}</p>
-              </div>
-              ${
-                isFull
-                  ? `<button disabled class="w-24 h-10 bg-gray-700 text-white font-extrabold rounded-lg cursor-not-allowed">Full</button>`
-                  : `<button onclick="showTeamInput('${matchId}', ${slot}, ${slotLimit}, ${match.entryFee || 0})" class="w-24 h-10 bg-yellow-400 text-black font-extrabold rounded-lg shadow-lg hover:scale-105 transition transform duration-200">Join</button>`
-              }
-            </div>
-
-            <div class="flex justify-center gap-4 mt-4">
-              <button class="bg-black border border-yellow-400 text-yellow-300 px-5 py-1.5 rounded-full hover:bg-yellow-400 hover:text-black font-semibold transition duration-200">Match Rules</button>
-              <button onclick="showMatchCode('${matchId}')" class="bg-black border border-yellow-400 text-yellow-300 px-5 py-1.5 rounded-full hover:bg-yellow-400 hover:text-black font-semibold transition duration-200">Match Code</button>
-            </div>
-          </div>
-        `;
-      }
-
-      matchListEl.innerHTML = html || "<p class='text-gray-400'>No upcoming matches found.</p>";
-      startCountdowns(timers);
-    } catch (error) {
-      console.error("Error fetching matches:", error);
-      matchListEl.innerHTML = "<p class='text-red-500'>Failed to load matches.</p>";
-    }
-  }
-
-  function startCountdowns(timers) {
-    function update() {
-      const now = new Date().getTime();
-      timers.forEach(timer => {
-        const el = document.getElementById(timer.id);
-        if (!el) return;
-        const distance = new Date(timer.time).getTime() - now;
-
-        if (distance <= 0) {
-          el.innerHTML = `<span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-ping-slow border border-white shadow-md">
-            LIVE
-          </span>`;
-          return;
+      // Real-time listener for balance
+      onSnapshot(userRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          userBalance = data.balance || 0;
+          document.getElementById("mainBalance").innerText = formatBalance(userBalance);
         }
-
-        const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((distance / (1000 * 60)) % 60);
-        const seconds = Math.floor((distance / 1000) % 60);
-
-        el.innerHTML = `
-  <div class="countdown-segment">
-    <span class="countdown-number">${String(hours).padStart(2, "0")}</span>
-    <span class="countdown-label">Hrs</span>
-  </div>
-  <div class="countdown-segment">
-    <span class="countdown-number">${String(minutes).padStart(2, "0")}</span>
-    <span class="countdown-label">Min</span>
-  </div>
-  <div class="countdown-segment">
-    <span class="countdown-number">${String(seconds).padStart(2, "0")}</span>
-    <span class="countdown-label">Sec</span>
-  </div>
-`;
-
       });
-    }
-    update();
-    setInterval(update, 1000);
-  }
 
-  window.showTeamInput = async (matchId, currentSlot, slotLimit, entryFee) => {
-    if (!currentUser) return;
-    const userId = currentUser.uid;
-    const participantRef = doc(db, "matches", matchId, "participants", userId);
-    const participantSnap = await getDoc(participantRef);
-
-    if (participantSnap.exists()) {
-      Swal.fire("Already Joined", "You have already joined this match.", "info");
-      return;
-    }
-
-    const { value: teamName } = await Swal.fire({
-      title: "Enter Team Name",
-      input: "text",
-      inputLabel: "Team Name",
-      inputPlaceholder: "Type your team name here",
-      confirmButtonText: "Join Match",
-      showCancelButton: true,
-      inputValidator: (value) => !value && "Team name is required!"
-    });
-
-    if (teamName) {
-      joinMatch(matchId, currentSlot, slotLimit, entryFee, teamName);
-    }
-  };
-
-  async function joinMatch(matchId, currentSlot, slotLimit, entryFee, teamName) {
-    if (!currentUser) return;
-
-    const userId = currentUser.uid;
-    const participantRef = doc(db, "matches", matchId, "participants", userId);
-    const participantSnap = await getDoc(participantRef);
-
-    if (participantSnap.exists()) {
-      Swal.fire("Already Joined", "You have already joined this match.", "info");
-      return;
-    }
-
-    if (currentSlot >= slotLimit) {
-      Swal.fire("Slot Full", "Sorry, this match is already full.", "warning");
-      return;
-    }
-
-    if (userBalance < entryFee) {
-      Swal.fire("Insufficient Balance", "You don't have enough balance to join this match.", "error");
-      return;
-    }
-
-    try {
-      await updateDoc(doc(db, "users", userId), { balance: userBalance - entryFee });
-      await setDoc(participantRef, {
-        joinedAt: new Date(),
-        uid: userId,
-        teamName: teamName
-      });
-      await updateDoc(doc(db, "matches", matchId), { slot: increment(1) });
-
-      userBalance -= entryFee;
-      document.getElementById("mainBalance").innerText = `৳${userBalance.toFixed(2)}`;
-
-      Swal.fire("Joined!", "You have successfully joined the match.", "success");
-      fetchMatches();
     } catch (error) {
-      console.error("Join match error:", error);
-      Swal.fire("Error", "Failed to join the match.", "error");
+      console.error("Error fetching user data: ", error);
     }
-  }
-
-  window.showMatchCode = async (matchId) => {
-    if (!currentUser) return;
-
-    const userId = currentUser.uid;
-    const matchRef = doc(db, "matches", matchId);
-    const matchSnap = await getDoc(matchRef);
-    if (!matchSnap.exists()) return;
-
-    const matchData = matchSnap.data();
-    const matchDate = matchData.dateTime?.toDate?.() || new Date(matchData.dateTime);
-    const timeDiff = matchDate.getTime() - Date.now();
-
-    const participantRef = doc(db, "matches", matchId, "participants", userId);
-    const participantSnap = await getDoc(participantRef);
-
-    if (!participantSnap.exists()) {
-      Swal.fire("Access Denied", "You need to join the match to see the match code.", "warning");
-      return;
-    }
-
-    if (timeDiff > 2 * 60 * 1000) {
-      Swal.fire("Not Available Yet", "Match code will be available 2 minutes before start.", "info");
-      return;
-    }
-
-    Swal.fire({
-      title: `Match Code`,
-      html: `<p class="text-yellow-400 font-bold text-lg">${matchData.matchCode || "N/A"}</p>`,
-      icon: "info",
-      confirmButtonText: "Close"
+  });
+  
+  var swiper = new Swiper(".mySwiper", {
+      loop: true,
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+      },
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
     });
-  };
+</script>
 
-  window.logout = async function () {
-    await signOut(auth);
-    window.location.href = "login.html";
-  };
-    </script>
- </body>
+</body>
 </html>
