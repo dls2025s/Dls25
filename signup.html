@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+
+    body {
+      background-image: url('1971.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      z-index: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: -1;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+  <main class="w-full max-w-sm px-3">
+    <div class="text-center mb-6 -mt-20">
+      <h1 class="text-xl font-bold text-white mb-1" style="font-family: 'Audiowide', cursive;">WELCOME TO</h1>
+      <h2 class="text-4xl font-extrabold bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">DCL TOUR</h2>
+      <p class="text-md text-white font-semibold mt-1">গেইম খেলুন এবং টাকা জিতুন</p>
+    </div>
+    <div class="px-4">
+      <div class="bg-gray-900 p-4 rounded-md shadow-lg border border-gray-600 shadow-2xl bg-opacity-50">
+        <h2 class="text-sm text-center font-semibold text-white mb-2">Please Create Your New Account</h2>
+        <form id="signupForm" onsubmit="signup(event)">
+          <!-- Username -->
+          <div class="mb-4">
+            <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+            <div class="relative">
+              <i class="fas fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="text" id="username" required placeholder="Enter your username"
+                class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black pl-10 text-sm bg-opacity-30"/>
+            </div>
+          </div>
+          <!-- Email -->
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+            <div class="relative">
+              <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="email" id="email" required placeholder="Enter your email"
+                class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black pl-10 text-sm bg-opacity-30"/>
+            </div>
+          </div>
+          <!-- Password -->
+          <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+            <div class="relative">
+              <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="password" id="password" required placeholder="Create a password"
+                class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black pl-10 text-sm bg-opacity-30"/>
+            </div>
+          </div>
+          <!-- Referral -->
+          <div class="mb-6 hidden">
+            <label for="referCodeInput" class="block text-sm font-medium text-gray-300 mb-1">Sponsor Code</label>
+            <div class="relative">
+              <i class="fas fa-gift absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="text" id="referCodeInput" placeholder="Enter sponsor code"
+                class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-black pl-10 text-sm bg-opacity-30"/>
+            </div>
+          </div>
+          <button id="createAccountBtn" type="submit"
+            class="w-full text-white bg-blue-600 font-extrabold py-2 rounded-md flex justify-center items-center space-x-2 bg-opacity-60">
+            <span id="btnText">Create Account</span>
+            <svg id="loadingSpinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+          </button>
+        </form>
+        <div class="mt-2 text-center">
+          <p class="text-base text-gray-300">Already have an account? 
+            <a href="index.html" class="text-blue-300 hover:underline text-lg font-medium">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDocs, collection, query, where, updateDoc, getDoc, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+  authDomain: "dlstournament-31ac1.firebaseapp.com",
+  databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+  projectId: "dlstournament-31ac1",
+  storageBucket: "dlstournament-31ac1.firebasestorage.app",
+  messagingSenderId: "874377019055",
+  appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+  measurementId: "G-0DGFJEV6GL"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const showError = (msg) => {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: msg,
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        background: '#1a202c',
+        color: '#fff'
+      });
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get("ref");
+    if (refCode) {
+      document.getElementById("referCodeInput").value = refCode;
+    }
+
+    async function generateCustomUserId() {
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, orderBy("userId", "desc"), limit(1));
+      const snapshot = await getDocs(q);
+      let nextId = 101;
+      if (!snapshot.empty) {
+        const lastUser = snapshot.docs[0].data().userId;
+        const lastNumber = parseInt(lastUser.replace("DCL", ""));
+        nextId = lastNumber + 1;
+      }
+      return `DCL${nextId}`;
+    }
+
+    window.signup = async function (event) {
+      event.preventDefault();
+
+      const btn = document.getElementById("createAccountBtn");
+      const spinner = document.getElementById("loadingSpinner");
+      const btnText = document.getElementById("btnText");
+
+      btn.disabled = true;
+      btnText.classList.add("hidden");
+      spinner.classList.remove("hidden");
+
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const inputReferCode = document.getElementById("referCodeInput").value.trim();
+
+      if (!username || !email || !password) {
+        spinner.classList.add("hidden");
+        btnText.classList.remove("hidden");
+        btn.disabled = false;
+        showError("Please fill in all required fields.");
+        return;
+      }
+
+      if (password.length < 6) {
+        spinner.classList.add("hidden");
+        btnText.classList.remove("hidden");
+        btn.disabled = false;
+        showError("Password must be at least 6 characters long.");
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+
+        const userId = await generateCustomUserId();
+
+        let referBonus = 0;
+        try {
+          const rewardsDoc = await getDoc(doc(db, "referSettings", "rewards"));
+          if (rewardsDoc.exists()) {
+            referBonus = rewardsDoc.data().referBonus || 0;
+          }
+        } catch (e) {
+          console.error("Failed to fetch refer bonus config:", e);
+        }
+
+        await setDoc(doc(db, "users", uid), {
+          uid,
+          userId,
+          username,
+          email,
+          password,
+          photoUrl: "",
+          balance: 0,
+          role: "user",
+          referCode: uid,
+          referredBy: inputReferCode || null,
+          createdAt: serverTimestamp()
+        });
+
+        if (inputReferCode && inputReferCode !== uid && referBonus > 0) {
+          const q = query(collection(db, "users"), where("uid", "==", inputReferCode));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const referrerDoc = querySnapshot.docs[0];
+            const referrerRef = doc(db, "users", referrerDoc.id);
+            const currentBalance = referrerDoc.data().balance || 0;
+            await updateDoc(referrerRef, { balance: currentBalance + referBonus });
+          }
+        }
+
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Sign-up Successful!',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 2000);
+
+      } catch (error) {
+        showError("Signup failed: " + error.message);
+      } finally {
+        spinner.classList.add("hidden");
+        btnText.classList.remove("hidden");
+        btn.disabled = false;
+      }
+    };
+  </script>
+</body>
+</html>
