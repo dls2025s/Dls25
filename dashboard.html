@@ -32,7 +32,7 @@
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
     }
 
-    /* Sidebar transition */
+    /* Sidebar Styles */
     #sidebar {
       transition: transform 0.3s ease-in-out;
       transform: translateX(-100%);
@@ -53,48 +53,25 @@
       pointer-events: all;
     }
 
-    /* ===== Enhanced Sidebar Styling ===== */
-    #sidebar {
-      background: linear-gradient(180deg, #000, #0a0a0a, #141414);
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
-    }
-
+    /* Sidebar item background and hover effect */
     #sidebar nav a {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(25, 25, 25, 0.7);
-      color: #ddd;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background-color: rgba(30, 30, 30, 0.7);
       transition: all 0.3s ease;
-      font-weight: 500;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #sidebar nav a::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    #sidebar nav a:hover::before {
-      opacity: 1;
     }
 
     #sidebar nav a:hover {
+      background-color: rgba(255, 215, 0, 0.15);
       color: #ffd700;
-      background: rgba(255, 215, 0, 0.12);
-      transform: translateX(4px);
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
+      transform: scale(1.02);
     }
 
     #sidebar nav a i {
-      color: #bbb;
+      color: #ccc;
       transition: color 0.3s ease;
     }
 
@@ -103,26 +80,9 @@
     }
 
     #sidebar nav a.active {
-      background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+      background-color: rgba(255, 215, 0, 0.2);
       color: #ffd700;
-      border-left: 4px solid #ffd700;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-    }
-
-    #sidebar nav a.active i {
-      color: #ffd700;
-    }
-
-    #logoutBtn {
-      background: rgba(255, 0, 0, 0.15) !important;
-      color: #ff6b6b !important;
-    }
-
-    #logoutBtn:hover {
-      background: rgba(255, 0, 0, 0.3) !important;
-      color: #fff !important;
-      transform: translateX(4px);
-      box-shadow: 0 0 12px rgba(255, 0, 0, 0.25);
+      border-left: 3px solid #ffd700;
     }
   </style>
 </head>
@@ -131,7 +91,7 @@
 
   <!-- Header -->
   <header
-    class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between rounded-b-xl">
+    class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between header-glow rounded-b-xl">
     <div class="flex items-center space-x-2">
       <img src="dls25.jpeg" alt="Logo" class="w-8 h-8 rounded-full border border-yellow-400" />
       <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-blue-200 to-yellow-300 bg-clip-text text-transparent"
@@ -149,7 +109,7 @@
 
   <!-- Sidebar -->
   <div id="overlay" class="fixed inset-0 bg-black z-40"></div>
-  <aside id="sidebar" class="fixed top-0 left-0 w-52 h-full z-50 border-r border-gray-700">
+  <aside id="sidebar" class="fixed top-0 left-0 w-52 h-full bg-black z-50 shadow-xl border-r border-gray-700">
     <div class="flex items-center justify-between p-2.5 border-b border-gray-700">
       <h2 class="text-lg font-bold text-yellow-300">Menu</h2>
       <button id="closeSidebar" class="text-gray-300 text-xl hover:text-yellow-400">
@@ -176,7 +136,7 @@
       <a href="profile.html">
         <i class="fa-solid fa-user"></i> <span>Profile</span>
       </a>
-      <a href="#" id="logoutBtn">
+      <a href="#" id="logoutBtn" class="text-red-400 hover:text-red-500 bg-red-900/30 hover:bg-red-700/30">
         <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
       </a>
     </nav>
@@ -263,7 +223,7 @@
     </div>
   </main>
 
-  <!-- Social Media -->
+  <!-- Social Media Section -->
   <div class="max-w-md mx-auto px-4 mb-6">
     <h2 class="text-center text-xl font-bold mb-4 text-blue-200 uppercase tracking-widest">Join Our Community</h2>
     <div class="flex justify-center items-center space-x-5">
@@ -285,33 +245,38 @@
 
   <!-- Bottom Navigation -->
   <nav
-    class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
-    <a href="dashboard.html" class="flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-house text-lg text-yellow-400"></i>
+    class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-50">
+    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Home
     </a>
-    <a href="match.html" class="flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+    <a href="match.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-gamepad text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Matches
     </a>
-    <a href="league.html" class="flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+    <a href="league.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-trophy text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       League
     </a>
-    <a href="rank.html" class="flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Ranking
     </a>
-    <a href="profile.html" class="flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
       </div>
       Profile
@@ -319,61 +284,61 @@
   </nav>
 
   <!-- Firebase Script -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-      authDomain: "dlstournament-31ac1.firebaseapp.com",
-      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
-      projectId: "dlstournament-31ac1",
-      storageBucket: "dlstournament-31ac1.firebasestorage.app",
-      messagingSenderId: "874377019055",
-      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
-      measurementId: "G-0DGFJEV6GL"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+    authDomain: "dlstournament-31ac1.firebaseapp.com",
+    databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+    projectId: "dlstournament-31ac1",
+    storageBucket: "dlstournament-31ac1.firebasestorage.app",
+    messagingSenderId: "874377019055",
+    appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+    measurementId: "G-0DGFJEV6GL"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = "index.html";
-    });
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "index.html";
+  });
 
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const menuButton = document.getElementById("menuButton");
-    const closeSidebar = document.getElementById("closeSidebar");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const menuButton = document.getElementById("menuButton");
+  const closeSidebar = document.getElementById("closeSidebar");
 
-    menuButton.addEventListener("click", () => {
-      sidebar.classList.add("active");
-      overlay.classList.add("active");
-    });
+  menuButton.addEventListener("click", () => {
+    sidebar.classList.add("active");
+    overlay.classList.add("active");
+  });
 
-    closeSidebar.addEventListener("click", () => {
-      sidebar.classList.remove("active");
-      overlay.classList.remove("active");
-    });
+  closeSidebar.addEventListener("click", () => {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+  });
 
-    overlay.addEventListener("click", () => {
-      sidebar.classList.remove("active");
-      overlay.classList.remove("active");
-    });
+  overlay.addEventListener("click", () => {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+  });
 
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "index.html";
-    });
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
 
-    new Swiper(".mySwiper", {
-      loop: true,
-      autoplay: { delay: 3000, disableOnInteraction: false },
-      pagination: { el: ".swiper-pagination", clickable: true },
-    });
-  </script>
+  new Swiper(".mySwiper", {
+    loop: true,
+    autoplay: { delay: 3000, disableOnInteraction: false },
+    pagination: { el: ".swiper-pagination", clickable: true },
+  });
+</script>
 
 </body>
 </html>
