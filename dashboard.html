@@ -109,14 +109,8 @@
 
   <!-- Sidebar -->
   <div id="overlay" class="fixed inset-0 bg-black z-40"></div>
-  <aside id="sidebar" class="fixed top-0 left-0 w-52 h-full bg-black z-50 shadow-xl border-r border-gray-700 overflow-y-auto">
-
-    <!-- User Info -->
-    <div class="flex flex-col items-center py-4 border-b border-gray-700">
-      <img id="userPhoto" src="default-profile.png" alt="User Photo"
-        class="w-16 h-16 rounded-full border-2 border-yellow-400 object-cover mb-2" />
-      <h3 id="username" class="text-sm font-semibold text-yellow-300">Loading...</h3>
-    </div>
+  <aside id="sidebar"
+    class="fixed top-0 left-0 w-52 h-full bg-black z-50 shadow-xl border-r border-gray-700 overflow-y-auto">
 
     <div class="flex items-center justify-between p-2.5 border-b border-gray-700">
       <h2 class="text-lg font-bold text-yellow-300">Menu</h2>
@@ -148,6 +142,13 @@
         <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
       </a>
     </nav>
+
+    <!-- User Info (moved below Menu) -->
+    <div class="flex flex-col items-center py-4 border-t border-gray-700">
+      <img id="userPhoto" src="default-profile.png" alt="User Photo"
+        class="w-16 h-16 rounded-full border-2 border-yellow-400 object-cover mb-2" />
+      <h3 id="username" class="text-sm font-semibold text-yellow-300">Loading...</h3>
+    </div>
   </aside>
 
   <!-- Swiper Slider -->
@@ -169,9 +170,10 @@
     <div class="flex justify-center items-center space-x-5 mb-4 uppercase">
       <div>
         <a href="match.html">
-          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
+          <div
+            class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
             style="background-image: url('dlsbanner.webp');">
-            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
+            <div class="absolute inset-0 bg-black bg-opacity-60 z-0 rounded-lg"></div>
             <img src="dlsbanner.webp" alt="DLS Banner"
               class="w-8 h-8 rounded-full object-cover border border-white z-10" />
             <div class="flex flex-col justify-center z-10">
@@ -184,9 +186,10 @@
 
       <div>
         <a href="league.html">
-          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
+          <div
+            class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
             style="background-image: url('47633.jpeg');">
-            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
+            <div class="absolute inset-0 bg-black bg-opacity-60 z-0 rounded-lg"></div>
             <img src="1122.jpeg" alt="League Icon"
               class="w-8 h-8 rounded-full object-cover border border-white z-10" />
             <div class="flex flex-col justify-center z-10">
@@ -201,14 +204,15 @@
     <div class="flex justify-center items-center space-x-5 uppercase">
       <div>
         <a href="team-rank.html">
-          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
+          <div
+            class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-2 space-x-1 overflow-hidden"
             style="background-image: url('playercard1.jpeg');">
-            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
+            <div class="absolute inset-0 bg-black bg-opacity-60 z-0 rounded-lg"></div>
             <img src="betlogo12.jpeg" alt="DLS Banner"
               class="w-8 h-8 rounded-full object-cover border border-white z-10" />
             <div class="flex flex-col justify-center z-10">
               <p class="title text-white font-semibold text-xs">Team Ranking</p>
-              <p style="font-size: 8px;" class="title text-gray-300 f">See all Teams</p>
+              <p style="font-size: 8px;" class="title text-gray-300">See all Teams</p>
             </div>
           </div>
         </a>
@@ -216,13 +220,14 @@
 
       <div>
         <a href="league-form.html">
-          <div class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-1 space-x-1 overflow-hidden"
+          <div
+            class="relative w-40 h-16 bg-cover bg-center border border-gray-700 rounded-lg flex items-center shadow-md px-1 space-x-1 overflow-hidden"
             style="background-image: url('dlsleague.jpeg');">
-            <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-xs z-0 rounded-lg"></div>
+            <div class="absolute inset-0 bg-black bg-opacity-60 z-0 rounded-lg"></div>
             <img src="join.jpeg" alt="League Icon"
               class="w-8 h-8 rounded-full object-cover border border-white z-10" />
             <div class="flex flex-col justify-center z-10">
-              <p class="title text-white font-semibold text-xs">player Reg Form</p>
+              <p class="title text-white font-semibold text-xs">Player Reg Form</p>
               <p style="font-size: 8px;" class="title text-gray-300">Open Registration </p>
             </div>
           </div>
