@@ -84,33 +84,6 @@
       color: #ffd700;
       border-left: 3px solid #ffd700;
     }
-
-    /* Sidebar profile image */
-    .sidebar-profile {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-    .sidebar-profile img {
-      width: 72px;
-      height: 72px;
-      object-fit: cover;
-      border-radius: 9999px;
-      border: 3px solid rgba(255,255,255,0.08);
-    }
-    .sidebar-username {
-      font-weight: 600;
-      color: #f3f4f6;
-      font-size: 0.95rem;
-      text-align: center;
-    }
-    .sidebar-username small {
-      display: block;
-      font-size: 0.72rem;
-      color: #9ca3af;
-      margin-top: 2px;
-    }
   </style>
 </head>
 
@@ -145,12 +118,12 @@
       </button>
     </div>
     
-    <!-- Profile -->
-    <div class="sidebar-profile mt-5 border-b border-gray-600">
-      <img id="userPhoto" src="OIP.webp" alt="Profile Image" class="user-icon-glow" onerror="this.style.display='none'">
-      <div id="username" class="sidebar-username">
-        Loading
-      </div>
+    <!-- User Info -->
+    <div class="flex flex-col items-center py-4 border-b border-gray-700">
+      <img id="userPhoto" src="default-profile.png" alt="User Photo"
+        class="w-16 h-16 rounded-full border-2 border-yellow-400 object-cover mb-2" />
+      <h3 id="username" class="text-sm font-semibold text-yellow-300">Loading...</h3>
+    </div>
 
     <nav class="p-4 space-y-3">
       <a href="dashboard.html" class="active">
