@@ -84,6 +84,20 @@
       color: #ffd700;
       border-left: 3px solid #ffd700;
     }
+
+    .sidebar-profile img {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: 9999px;
+      border: 3px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-username {
+      font-weight: 600;
+      color: #f3f4f6;
+      font-size: 0.95rem;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -119,10 +133,10 @@
     </div>
     
     <!-- User Info -->
-    <div class="flex flex-col items-center py-4 border-b border-gray-700">
+    <div class="sidebar-profile flex flex-col items-center py-4 border-b border-gray-700">
       <img id="userPhoto" src="default-profile.png" alt="User Photo"
         class="w-16 h-16 rounded-full border-2 border-yellow-400 object-cover mb-2" />
-      <h3 id="username" class="text-sm font-semibold text-yellow-300">Loading...</h3>
+      <h3 id="username" class="sidebar-username text-sm font-semibold text-yellow-300">Loading...</h3>
     </div>
 
     <nav class="p-4 space-y-3">
