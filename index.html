@@ -256,7 +256,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -280,6 +280,7 @@
 
     const menuButton = document.getElementById("menuButton");
     const loginButton = document.getElementById("loginButton");
+    const logoutBtn = document.getElementById("logoutBtn");
 
     async function loadTeamPhotos() {
       const snap = await getDocs(collection(db, "playersform"));
@@ -424,7 +425,7 @@
       fixersContainer.innerHTML = html;
     }
 
-    // Sidebar toggle
+    // ✅ Sidebar toggle
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
     const closeSidebar = document.getElementById("closeSidebar");
@@ -442,6 +443,36 @@
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("active");
       overlay.classList.remove("active");
+    });
+
+    // ✅ Logout Function
+    logoutBtn.addEventListener("click", async () => {
+      const result = await Swal.fire({
+        title: "Logout?",
+        text: "Are you sure you want to log out?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, Logout"
+      });
+
+      if (result.isConfirmed) {
+        try {
+          await signOut(auth);
+          Swal.fire({
+            icon: "success",
+            title: "Logged out successfully!",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1500);
+        } catch (error) {
+          Swal.fire("Error", "Failed to log out. Please try again.", "error");
+        }
+      }
     });
   </script>
 
