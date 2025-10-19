@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Players List - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md relative">
+    <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
+      <p onclick="window.location.href='admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
+        <i class="fas fa-arrow-left text-2xl"></i>
+      </p>
+      <h1 class="text-xl font-bold text-gray-800">Players List</h1>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="p-4 md:p-6 space-y-6 overflow-auto flex-grow">
+    <!-- Players List Section -->
+    <div class="bg-white shadow rounded p-4">
+      <div class="flex justify-center items-center mb-4 space-x-4">
+        <button id="allPlayerBtn" class="px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">All Player (0)</button>
+        <button id="tourPlayerBtn" class="px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300">Tour Player (0)</button>
+        <!-- Complete Button -->
+        <button id="completeTourBtn" class="hidden px-4 py-1.5 rounded bg-green-600 text-white text-sm font-medium hover:bg-green-700">Complete</button>
+      </div>
+      <div id="playersCardContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <!-- Player cards will be inserted here -->
+        <div class="col-span-full text-center text-gray-500" id="loadingText">Loading players...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Firebase + Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+      authDomain: "dlstournament-31ac1.firebaseapp.com",
+      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+      projectId: "dlstournament-31ac1",
+      storageBucket: "dlstournament-31ac1.appspot.com",
+      messagingSenderId: "874377019055",
+      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+      measurementId: "G-0DGFJEV6GL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentFilter = "all"; // default all player
+    let unsubscribeAll = null;
+    let unsubscribeTour = null;
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        setupRealtimeListeners();
+      }
+    });
+
+    function setupRealtimeListeners() {
+      const allBtn = document.getElementById("allPlayerBtn");
+      const tourBtn = document.getElementById("tourPlayerBtn");
+
+      // Only free players real-time
+      const freeQuery = query(collection(db, "playersform"), where("type", "==", "free"));
+      unsubscribeAll = onSnapshot(freeQuery, snapshot => {
+        allBtn.textContent = `All Player (${snapshot.size})`;
+        if (currentFilter === "all") renderPlayers(snapshot);
+      });
+
+      // Only paid players real-time
+      const paidQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
+      unsubscribeTour = onSnapshot(paidQuery, snapshot => {
+        tourBtn.textContent = `Tour Player (${snapshot.size})`;
+        if (currentFilter === "tour") renderPlayers(snapshot);
+      });
+    }
+
+    // Button actions
+    document.getElementById("allPlayerBtn").addEventListener("click", () => {
+      currentFilter = "all";
+      toggleActiveButton("allPlayerBtn");
+      document.getElementById("completeTourBtn").classList.add("hidden");
+      setupRealtimeListeners();
+    });
+
+    document.getElementById("tourPlayerBtn").addEventListener("click", () => {
+      currentFilter = "tour";
+      toggleActiveButton("tourPlayerBtn");
+      document.getElementById("completeTourBtn").classList.remove("hidden");
+      setupRealtimeListeners();
+    });
+
+    function toggleActiveButton(activeId) {
+      const allBtn = document.getElementById("allPlayerBtn");
+      const tourBtn = document.getElementById("tourPlayerBtn");
+
+      if (activeId === "allPlayerBtn") {
+        allBtn.className = "px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700";
+        tourBtn.className = "px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300";
+      } else {
+        tourBtn.className = "px-4 py-1.5 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700";
+        allBtn.className = "px-4 py-1.5 rounded bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300";
+      }
+    }
+
+    function renderPlayers(snapshot) {
+      const container = document.getElementById("playersCardContainer");
+
+      if (snapshot.empty) {
+        container.innerHTML = `<div class="col-span-full text-center text-gray-500">No players found.</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+
+      snapshot.forEach(docSnap => {
+        const p = docSnap.data();
+        const docId = docSnap.id;
+
+        const card = document.createElement("div");
+        card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
+
+        const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
+
+        const imageId = `img-${docId}`;
+        const fileInputId = `file-${docId}`;
+        const photoUrlInputId = `photourl-${docId}`;
+        const updateBtnId = `update-${docId}`;
+        const typeBtnId = `type-${docId}`;
+
+        card.innerHTML = `
+          <div class="flex items-center mb-3">
+            <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
+            <div>
+              <div class="text-sm font-bold text-gray-800">${p.team || "N/A"}</div>
+              <div id="${typeBtnId}" class="text-xs mt-1 inline-block cursor-pointer px-2 py-0.5 rounded ${
+                p.type === "paid" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
+              }">
+                ${p.type || "N/A"}
+              </div>
+            </div>
+            <input type="file" id="${fileInputId}" class="hidden" accept="image/*" />
+            <button id="${updateBtnId}" class="ml-auto mt-3 text-sm text-green-600 hover:underline">Update</button>
+          </div>
+
+          <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white" />
+
+          <div class="flex justify-between text-sm text-gray-600 mb-2">
+            <div><span class="font-semibold">Username:</span> ${p.username || "N/A"}</div>
+            <div><span class="font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</div>
+          </div>
+
+          <div class="flex justify-between text-sm text-gray-600">
+            <div><span class="font-semibold">Age:</span> ${p.age ?? "N/A"} Years</div>
+            <div><span class="font-semibold">Played:</span> ${p.yearsPlayed ?? "N/A"} Years</div>
+          </div>
+        `;
+
+        container.appendChild(card);
+
+        // Handle direct photoUrl update
+        const updateBtn = card.querySelector(`#${updateBtnId}`);
+        const photoUrlInput = card.querySelector(`#${photoUrlInputId}`);
+        const imageEl = card.querySelector(`#${imageId}`);
+
+        updateBtn.addEventListener("click", async () => {
+          const newUrl = photoUrlInput.value.trim();
+          if (!newUrl) {
+            Swal.fire("Error", "Photo URL cannot be empty.", "error");
+            return;
+          }
+
+          try {
+            await updateDoc(doc(db, "playersform", docId), { photoUrl: newUrl });
+            imageEl.src = newUrl;
+            Swal.fire("Success", "Photo URL updated successfully!", "success");
+          } catch (err) {
+            console.error("Photo URL update error:", err);
+            Swal.fire("Error", "Failed to update photo URL.", "error");
+          }
+        });
+
+        // File upload logic
+        const fileInput = card.querySelector(`#${fileInputId}`);
+        updateBtn.addEventListener("dblclick", () => fileInput.click()); 
+
+        fileInput.addEventListener("change", async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          try {
+            const storageRef = ref(storage, `players/${docId}/photo.jpg`);
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+
+            await updateDoc(doc(db, "playersform", docId), { photoUrl: downloadURL });
+
+            imageEl.src = downloadURL;
+            photoUrlInput.value = downloadURL;
+
+            Swal.fire("Success", "Photo uploaded and updated successfully!", "success");
+          } catch (err) {
+            console.error("Photo upload error:", err);
+            Swal.fire("Error", "Failed to upload photo.", "error");
+          }
+        });
+
+        // Type toggle logic (free <-> paid)
+        const typeBtn = card.querySelector(`#${typeBtnId}`);
+        typeBtn.addEventListener("click", async () => {
+          const newType = p.type === "paid" ? "free" : "paid";
+          try {
+            await updateDoc(doc(db, "playersform", docId), { type: newType });
+            Swal.fire("Success", `Player type changed to ${newType}!`, "success");
+          } catch (err) {
+            console.error("Type update error:", err);
+            Swal.fire("Error", "Failed to update player type.", "error");
+          }
+        });
+      });
+    }
+
+    // Complete Tour Button Action
+    document.getElementById("completeTourBtn").addEventListener("click", async () => {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "This will mark all Tour Players as free!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, complete it!",
+        cancelButtonText: "Cancel"
+      });
+
+      if (!result.isConfirmed) return;
+
+      try {
+        const paidQuery = query(collection(db, "playersform"), where("type", "==", "paid"));
+        const paidPlayersSnapshot = await new Promise((resolve, reject) => {
+          onSnapshot(paidQuery, snapshot => resolve(snapshot), reject);
+        });
+
+        const promises = [];
+        paidPlayersSnapshot.forEach(docSnap => {
+          promises.push(updateDoc(doc(db, "playersform", docSnap.id), { type: "free" }));
+        });
+
+        await Promise.all(promises);
+        Swal.fire("Success", "All Tour Players marked as free!", "success");
+      } catch (err) {
+        console.error("Error completing tour:", err);
+        Swal.fire("Error", "Failed to complete tour.", "error");
+      }
+    });
+
+  </script>
+
+</body>
+</html>
