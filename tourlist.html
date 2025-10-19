@@ -34,7 +34,7 @@
               <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Entry Fee</th>
               <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Slot</th>
               <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">End Time</th>
-              <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600 border-b">Actions</th>
+              <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600 border-b">Status</th>
             </tr>
           </thead>
           <tbody id="tournamentListContainer">
@@ -51,7 +51,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -104,6 +104,8 @@
           ? new Date(t.endTime).toLocaleString()
           : "N/A";
 
+        const isActive = t.active ?? false;
+
         row.innerHTML = `
           <td class="px-4 py-2 text-sm text-gray-800 font-semibold">${t.title || "N/A"}</td>
           <td class="px-4 py-2 text-sm text-gray-700">${t.session || "N/A"}</td>
@@ -111,35 +113,26 @@
           <td class="px-4 py-2 text-sm text-gray-700">${t.slot ?? "N/A"}</td>
           <td class="px-4 py-2 text-sm text-gray-700">${formattedEndTime}</td>
           <td class="px-4 py-2 text-center">
-            <button class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 transition" id="delete-${docId}">
-              Delete
+            <button class="toggle-btn px-3 py-1 rounded text-xs ${isActive ? 'bg-green-600 text-white' : 'bg-gray-400 text-white'} hover:opacity-80 transition" id="toggle-${docId}">
+              ${isActive ? 'ON' : 'OFF'}
             </button>
           </td>
         `;
 
         container.appendChild(row);
 
-        // Delete Tournament
-        const deleteBtn = row.querySelector(`#delete-${docId}`);
-        deleteBtn.addEventListener("click", async () => {
-          const confirm = await Swal.fire({
-            title: "Are you sure?",
-            text: "This will permanently delete the tournament.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!"
-          });
-
-          if (confirm.isConfirmed) {
-            try {
-              await deleteDoc(doc(db, "tournaments", docId));
-              Swal.fire("Deleted!", "Tournament deleted successfully.", "success");
-            } catch (err) {
-              console.error("Error deleting tournament:", err);
-              Swal.fire("Error", "Failed to delete tournament.", "error");
-            }
+        // Toggle Active Status
+        const toggleBtn = row.querySelector(`#toggle-${docId}`);
+        toggleBtn.addEventListener("click", async () => {
+          const newStatus = !isActive;
+          try {
+            await updateDoc(doc(db, "tournaments", docId), { active: newStatus });
+            toggleBtn.textContent = newStatus ? "ON" : "OFF";
+            toggleBtn.classList.toggle("bg-green-600", newStatus);
+            toggleBtn.classList.toggle("bg-gray-400", !newStatus);
+          } catch (err) {
+            console.error("Error updating status:", err);
+            Swal.fire("Error", "Failed to update tournament status.", "error");
           }
         });
       });
