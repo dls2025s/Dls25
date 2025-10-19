@@ -26,9 +26,24 @@
   <main class="p-4 md:p-6 space-y-6 overflow-auto flex-grow">
     <!-- Players List Section -->
     <div class="bg-white shadow rounded p-4">
-      <div id="playersCardContainer" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <!-- Player cards will be inserted here -->
-        <div class="col-span-full text-center text-gray-500" id="loadingText">Loading players...</div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-200 rounded-lg">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Photo</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Team</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Username</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">DLS Rating</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Photo URL</th>
+              <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600 border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="playersCardContainer">
+            <tr>
+              <td colspan="6" class="text-center text-gray-500 py-4" id="loadingText">Loading players...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </main>
@@ -75,7 +90,7 @@
       const container = document.getElementById("playersCardContainer");
 
       if (snapshot.empty) {
-        container.innerHTML = `<div class="col-span-full text-center text-gray-500">No players found.</div>`;
+        container.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">No players found.</td></tr>`;
         return;
       }
 
@@ -85,40 +100,40 @@
         const p = docSnap.data();
         const docId = docSnap.id;
 
-        const card = document.createElement("div");
-        card.className = "bg-white shadow-md rounded-lg p-4 border border-gray-200";
-
-        const imageUrl = p.photoUrl || "https://via.placeholder.com/80?text=No+Image";
+        const imageUrl = p.photoUrl || "https://via.placeholder.com/60?text=No+Image";
 
         const imageId = `img-${docId}`;
         const fileInputId = `file-${docId}`;
         const photoUrlInputId = `photourl-${docId}`;
         const updateBtnId = `update-${docId}`;
 
-        card.innerHTML = `
-          <div class="flex items-center mb-3">
-            <img id="${imageId}" src="${imageUrl}" class="w-10 h-10 rounded-full object-cover border border-gray-300 mr-3" />
-            <div>
-              <div class="text-sm font-bold text-gray-800">${p.team || "N/A"}</div>
-            </div>
+        const row = document.createElement("tr");
+        row.className = "border-b hover:bg-gray-50";
+
+        row.innerHTML = `
+          <td class="px-4 py-2">
+            <img id="${imageId}" src="${imageUrl}" class="w-12 h-12 rounded-full object-cover border border-gray-300" />
             <input type="file" id="${fileInputId}" class="hidden" accept="image/*" />
-            <button id="${updateBtnId}" class="ml-auto mt-3 text-sm text-green-600 hover:underline">Update</button>
-          </div>
-
-          <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 mb-3 border rounded px-2 py-1 bg-white" />
-
-          <div class="flex justify-between text-sm text-gray-600 mb-2">
-            <div><span class="font-semibold">Username:</span> ${p.username || "N/A"}</div>
-            <div><span class="font-semibold">DLS Rating:</span> ${p.dlsRating ?? "N/A"}</div>
-          </div>
+          </td>
+          <td class="px-4 py-2 text-sm text-gray-800 font-semibold">${p.team || "N/A"}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">${p.username || "N/A"}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">${p.dlsRating ?? "N/A"}</td>
+          <td class="px-4 py-2">
+            <input type="text" id="${photoUrlInputId}" value="${imageUrl}" class="w-full text-xs text-gray-700 border rounded px-2 py-1" />
+          </td>
+          <td class="px-4 py-2 text-center">
+            <button id="${updateBtnId}" class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition">
+              Update
+            </button>
+          </td>
         `;
 
-        container.appendChild(card);
+        container.appendChild(row);
 
         // Handle direct photoUrl update
-        const updateBtn = card.querySelector(`#${updateBtnId}`);
-        const photoUrlInput = card.querySelector(`#${photoUrlInputId}`);
-        const imageEl = card.querySelector(`#${imageId}`);
+        const updateBtn = row.querySelector(`#${updateBtnId}`);
+        const photoUrlInput = row.querySelector(`#${photoUrlInputId}`);
+        const imageEl = row.querySelector(`#${imageId}`);
 
         updateBtn.addEventListener("click", async () => {
           const newUrl = photoUrlInput.value.trim();
@@ -137,9 +152,9 @@
           }
         });
 
-        // File upload logic
-        const fileInput = card.querySelector(`#${fileInputId}`);
-        updateBtn.addEventListener("dblclick", () => fileInput.click()); 
+        // File upload logic (on double click)
+        const fileInput = row.querySelector(`#${fileInputId}`);
+        updateBtn.addEventListener("dblclick", () => fileInput.click());
 
         fileInput.addEventListener("change", async (e) => {
           const file = e.target.files[0];
