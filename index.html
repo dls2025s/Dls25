@@ -120,14 +120,10 @@
       <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-blue-200 to-yellow-300 bg-clip-text text-transparent"
         style="font-family: 'Audiowide', cursive;">DCL TOUR</h2>
     </div>
-    <div class="flex space-x-4" id="headerRight">
-      <button id="menuButton" class="hidden">
+    <div class="flex space-x-4">
+      <button id="menuButton">
         <i class="fa-solid fa-bars text-white text-shadow text-xl"></i>
       </button>
-      <a href="login.html" id="loginButton"
-        class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-3 py-1 rounded-sm font-semibold text-sm hover:scale-105 transition duration-300 hidden">
-        Log In
-      </a>
     </div>
   </header>
 
@@ -154,12 +150,12 @@
         10H:59M:59S
       </div>
     </div>
-    <h3 class="text-xs font-bold text-yellow-300">DCL SESSION-10 REGISTRATION OPEN NOW 
-      <a href="reg-form.html"
+    <h3 class="text-xs font-bold
+      text-yellow-300">DCL SESSION-10 REGISTRATION OPEN NOW <a href="reg-form.html"
         class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-400 text-black text-xs font-semibold px-1 mt-1 rounded-sm shadow-md hover:scale-105  transition-transform duration-300">
         Open Form
-      </a>
-    </h3>
+      </a></h3>
+
   </section>
 
   <!-- Sidebar -->
@@ -208,6 +204,7 @@
 
   <!-- Main Content -->
   <main class="max-w-md mx-auto px-4">
+    <!-- Fixers List Section -->
     <div id="fixers-list" class="space-y-6">
       <p class="text-center text-gray-400">Loading...</p>
     </div>
@@ -256,14 +253,14 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
       authDomain: "dlstournament-31ac1.firebaseapp.com",
       databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
       projectId: "dlstournament-31ac1",
-      storageBucket: "dlstournament-31ac1.firebasestorage.app",
+      storageBucket: "dlstournament-31ac1.appspot.com",
       messagingSenderId: "874377019055",
       appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
       measurementId: "G-0DGFJEV6GL"
@@ -273,14 +270,13 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
+    // ✅ Set persistent login
+    await setPersistence(auth, browserLocalPersistence);
+
     let teamPhotos = {};
     let hiddenMatchdays = {};
     let currentUserId = null;
     let fixersData = [];
-
-    const menuButton = document.getElementById("menuButton");
-    const loginButton = document.getElementById("loginButton");
-    const logoutBtn = document.getElementById("logoutBtn");
 
     async function loadTeamPhotos() {
       const snap = await getDocs(collection(db, "playersform"));
@@ -300,19 +296,12 @@
       return `${day}-${month}-${year}`;
     }
 
-    // ✅ Auth Check
+    // ✅ Main Auth + User Load
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        menuButton.classList.add("hidden");
-        loginButton.classList.remove("hidden");
-        return;
-      }
-
+      if (!user) return window.location.href = "login.html";
       currentUserId = user.uid;
-      menuButton.classList.remove("hidden");
-      loginButton.classList.add("hidden");
 
-      // Sidebar user info
+      // Load user data for sidebar
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
@@ -425,9 +414,10 @@
       fixersContainer.innerHTML = html;
     }
 
-    // ✅ Sidebar toggle
+    // Sidebar toggle
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
+    const menuButton = document.getElementById("menuButton");
     const closeSidebar = document.getElementById("closeSidebar");
 
     menuButton.addEventListener("click", () => {
@@ -474,8 +464,8 @@
         }
       }
     });
+
   </script>
 
 </body>
-
-</html>
+ </html>
