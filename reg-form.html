@@ -161,8 +161,8 @@
       const trxId = document.getElementById("trxId").value.trim();
 
       try {
-        // Save to Firestore under "tournament" collection
-        await addDoc(collection(db, "tournament"), {
+        // Save to Firestore under "tournaments" collection
+        await addDoc(collection(db, "tournaments"), {
           teamName,
           idRating,
           paymentMethod,
