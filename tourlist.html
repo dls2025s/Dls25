@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tournaments List - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md relative">
+    <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
+      <p onclick="window.location.href='admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
+        <i class="fas fa-arrow-left text-2xl"></i>
+      </p>
+      <h1 class="text-xl font-bold text-gray-800">Tournaments List</h1>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="p-4 md:p-6 space-y-6 overflow-auto flex-grow">
+    <div class="bg-white shadow rounded p-4">
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-200 rounded-lg">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Title</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Session</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Entry Fee</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">Slot</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold text-gray-600 border-b">End Time</th>
+              <th class="px-4 py-2 text-center text-sm font-semibold text-gray-600 border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tournamentListContainer">
+            <tr>
+              <td colspan="6" class="text-center text-gray-500 py-4" id="loadingText">Loading tournaments...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Firebase + Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+      authDomain: "dlstournament-31ac1.firebaseapp.com",
+      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+      projectId: "dlstournament-31ac1",
+      storageBucket: "dlstournament-31ac1.appspot.com",
+      messagingSenderId: "874377019055",
+      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+      measurementId: "G-0DGFJEV6GL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        loadTournaments();
+      }
+    });
+
+    function loadTournaments() {
+      const tournamentsRef = collection(db, "tournaments");
+      onSnapshot(tournamentsRef, snapshot => {
+        renderTournaments(snapshot);
+      });
+    }
+
+    function renderTournaments(snapshot) {
+      const container = document.getElementById("tournamentListContainer");
+
+      if (snapshot.empty) {
+        container.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">No tournaments found.</td></tr>`;
+        return;
+      }
+
+      container.innerHTML = "";
+
+      snapshot.forEach(docSnap => {
+        const t = docSnap.data();
+        const docId = docSnap.id;
+
+        const row = document.createElement("tr");
+        row.className = "border-b hover:bg-gray-50";
+
+        const formattedEndTime = t.endTime
+          ? new Date(t.endTime).toLocaleString()
+          : "N/A";
+
+        row.innerHTML = `
+          <td class="px-4 py-2 text-sm text-gray-800 font-semibold">${t.title || "N/A"}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">${t.session || "N/A"}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">৳${t.entryFee ?? "N/A"}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">${t.slot ?? "N/A"}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">${formattedEndTime}</td>
+          <td class="px-4 py-2 text-center">
+            <button class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 transition" id="delete-${docId}">
+              Delete
+            </button>
+          </td>
+        `;
+
+        container.appendChild(row);
+
+        // Delete Tournament
+        const deleteBtn = row.querySelector(`#delete-${docId}`);
+        deleteBtn.addEventListener("click", async () => {
+          const confirm = await Swal.fire({
+            title: "Are you sure?",
+            text: "This will permanently delete the tournament.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+          });
+
+          if (confirm.isConfirmed) {
+            try {
+              await deleteDoc(doc(db, "tournaments", docId));
+              Swal.fire("Deleted!", "Tournament deleted successfully.", "success");
+            } catch (err) {
+              console.error("Error deleting tournament:", err);
+              Swal.fire("Error", "Failed to delete tournament.", "error");
+            }
+          }
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>
