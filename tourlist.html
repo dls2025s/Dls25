@@ -153,10 +153,11 @@
       }
     }
 
+    // ✅ FIXED FUNCTION: Correct Firestore path
     async function loadTeamsForSession(sessionName, container) {
       try {
-        const sessionRef = collection(db, sessionName);
-        const snapshot = await getDocs(sessionRef);
+        const teamsRef = collection(db, "tournaments", sessionName, "teams");
+        const snapshot = await getDocs(teamsRef);
 
         if (snapshot.empty) {
           container.innerHTML = `<p class="text-gray-500">No teams found in ${sessionName}.</p>`;
@@ -182,7 +183,7 @@
                      <td class="px-2 py-1">${team.teamName || "N/A"}</td>
                      <td class="px-2 py-1">${team.trxId || "N/A"}</td>
                      <td class="px-2 py-1">${team.paymentMethod || "N/A"}</td>
-                     <td class="px-2 py-1">${team.date || "N/A"}</td>
+                     <td class="px-2 py-1">${team.timestamp ? new Date(team.timestamp).toLocaleString() : "N/A"}</td>
                    </tr>`;
         });
 
