@@ -58,20 +58,8 @@
           <input type="datetime-local" id="endTime" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
         </div>
 
-        <!-- Team Name -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Team Name</label>
-          <input type="text" id="teamName" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter team name" required />
-        </div>
-
-        <!-- Player Name -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Player Name</label>
-          <input type="text" id="playerName" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter player name" required />
-        </div>
-
         <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
-          Add Team to Session
+          Create Tournament
         </button>
       </form>
     </div>
@@ -81,15 +69,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      doc, 
-      getDoc, 
-      setDoc, 
-      updateDoc, 
-      arrayUnion, 
-      serverTimestamp 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -112,6 +92,7 @@
       }
     });
 
+    // Handle tournament creation
     const form = document.getElementById("createTourForm");
 
     form.addEventListener("submit", async (e) => {
@@ -122,50 +103,31 @@
       const entryFee = parseInt(document.getElementById("entryFee").value.trim());
       const slot = parseInt(document.getElementById("slot").value.trim());
       const endTime = document.getElementById("endTime").value;
-      const teamName = document.getElementById("teamName").value.trim();
-      const playerName = document.getElementById("playerName").value.trim();
 
-      if (!title || !session || !entryFee || !slot || !endTime || !teamName || !playerName) {
+      if (!title || !session || !entryFee || !slot || !endTime) {
         Swal.fire("Error", "Please fill in all fields.", "error");
         return;
       }
 
       try {
-        const sessionRef = doc(db, "tournaments", session);
-        const docSnap = await getDoc(sessionRef);
+        // Session name e document create/update
+        await setDoc(doc(db, "tournaments", session), {
+          title,
+          session,
+          entryFee,
+          slot,
+          endTime,
+          createdAt: serverTimestamp(),
+        });
 
-        const newTeam = {
-          teamName,
-          playerName,
-          addedAt: new Date().toISOString()
-        };
-
-        if (docSnap.exists()) {
-          // Session already exists → append new team
-          await updateDoc(sessionRef, {
-            teams: arrayUnion(newTeam)
-          });
-        } else {
-          // New session document
-          await setDoc(sessionRef, {
-            title,
-            session,
-            entryFee,
-            slot,
-            endTime,
-            createdAt: serverTimestamp(),
-            teams: [newTeam]
-          });
-        }
-
-        Swal.fire("Success", "Team added successfully to " + session + "!", "success");
+        Swal.fire("Success", "Tournament created successfully!", "success");
         form.reset();
       } catch (error) {
-        console.error("Error adding team:", error);
-        Swal.fire("Error", "Failed to add team.", "error");
+        console.error("Error creating tournament:", error);
+        Swal.fire("Error", "Failed to create tournament.", "error");
       }
     });
   </script>
 
 </body>
-            </html>
+</html>
