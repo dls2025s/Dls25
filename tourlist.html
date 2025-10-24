@@ -163,12 +163,30 @@
           return;
         }
 
-        let html = `<ul class="list-disc pl-5 space-y-1">`;
+        let html = `<table class="min-w-full text-left text-sm border border-gray-200 rounded-lg">
+                      <thead class="bg-gray-100">
+                        <tr>
+                          <th class="px-2 py-1 border-b">Team Name</th>
+                          <th class="px-2 py-1 border-b">ID Rating</th>
+                          <th class="px-2 py-1 border-b">TrxID</th>
+                          <th class="px-2 py-1 border-b">Payment Method</th>
+                          <th class="px-2 py-1 border-b">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>`;
+
         snapshot.forEach(docSnap => {
           const team = docSnap.data();
-          html += `<li>${team.teamName || "Unnamed Team"}</li>`;
+          html += `<tr class="border-b hover:bg-gray-50">
+                     <td class="px-2 py-1">${team.teamName || "N/A"}</td>
+                     <td class="px-2 py-1">${team.idRating ?? "N/A"}</td>
+                     <td class="px-2 py-1">${team.trxId || "N/A"}</td>
+                     <td class="px-2 py-1">${team.paymentMethod || "N/A"}</td>
+                     <td class="px-2 py-1">${team.timestamp ? new Date(team.timestamp.toDate()).toLocaleString() : "N/A"}</td>
+                   </tr>`;
         });
-        html += `</ul>`;
+
+        html += `</tbody></table>`;
         container.innerHTML = html;
       } catch (err) {
         console.error("Error loading teams:", err);
