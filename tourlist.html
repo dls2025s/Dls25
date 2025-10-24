@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -51,7 +50,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -83,7 +82,7 @@
       });
     }
 
-    function renderTournaments(snapshot) {
+    async function renderTournaments(snapshot) {
       const container = document.getElementById("tournamentListContainer");
 
       if (snapshot.empty) {
@@ -93,17 +92,14 @@
 
       container.innerHTML = "";
 
-      snapshot.forEach(docSnap => {
+      for (const docSnap of snapshot.docs) {
         const t = docSnap.data();
         const docId = docSnap.id;
 
         const row = document.createElement("tr");
         row.className = "border-b hover:bg-gray-50";
 
-        const formattedEndTime = t.endTime
-          ? new Date(t.endTime).toLocaleString()
-          : "N/A";
-
+        const formattedEndTime = t.endTime ? new Date(t.endTime).toLocaleString() : "N/A";
         const isActive = t.active ?? false;
 
         row.innerHTML = `
@@ -121,6 +117,25 @@
 
         container.appendChild(row);
 
+        // Add session team info below tournament row
+        if (t.session) {
+          const teamInfoRow = document.createElement("tr");
+          const teamCell = document.createElement("td");
+          teamCell.colSpan = 6;
+          teamCell.className = "bg-gray-50 px-6 py-3";
+
+          const teamListContainer = document.createElement("div");
+          teamListContainer.className = "text-sm text-gray-700";
+          teamListContainer.innerHTML = `<p class="font-semibold text-gray-800 mb-1">Teams in ${t.session}:</p><p>Loading...</p>`;
+
+          teamCell.appendChild(teamListContainer);
+          teamInfoRow.appendChild(teamCell);
+          container.appendChild(teamInfoRow);
+
+          // Load team info for that session
+          loadTeamsForSession(t.session, teamListContainer);
+        }
+
         // Toggle Active Status
         const toggleBtn = row.querySelector(`#toggle-${docId}`);
         toggleBtn.addEventListener("click", async () => {
@@ -135,7 +150,30 @@
             Swal.fire("Error", "Failed to update tournament status.", "error");
           }
         });
-      });
+      }
+    }
+
+    async function loadTeamsForSession(sessionName, container) {
+      try {
+        const sessionRef = collection(db, sessionName);
+        const snapshot = await getDocs(sessionRef);
+
+        if (snapshot.empty) {
+          container.innerHTML = `<p class="text-gray-500">No teams found in ${sessionName}.</p>`;
+          return;
+        }
+
+        let html = `<ul class="list-disc pl-5 space-y-1">`;
+        snapshot.forEach(docSnap => {
+          const team = docSnap.data();
+          html += `<li>${team.teamName || "Unnamed Team"}</li>`;
+        });
+        html += `</ul>`;
+        container.innerHTML = html;
+      } catch (err) {
+        console.error("Error loading teams:", err);
+        container.innerHTML = `<p class="text-red-500">Error loading team data.</p>`;
+      }
     }
   </script>
 
