@@ -36,9 +36,16 @@
     <h2 class="text-2xl font-bold text-center mb-3 bg-gradient-to-r from-yellow-400 to-green-400 bg-clip-text text-transparent"
       style="font-family: 'Audiowide', cursive;">দল নিবন্ধন</h2>
 
-    <!-- Smaller Form -->
     <form id="teamForm"
       class="bg-gray-900 bg-opacity-60 p-4 rounded-xl shadow-lg border border-green-400 space-y-4 max-w-sm mx-auto">
+
+      <!-- Session Name -->
+      <div>
+        <label for="session" class="block text-sm font-semibold mb-2 text-gray-200">সেশন নাম</label>
+        <input type="text" id="session" name="session" required
+          class="w-full px-3 py-2 rounded-lg bg-black border border-gray-600 text-white focus:border-green-400 focus:outline-none placeholder-gray-400 text-sm"
+          placeholder="যেমনঃ Session10 / Session11">
+      </div>
 
       <!-- Team Name -->
       <div>
@@ -65,7 +72,6 @@
           <option value="bkash">বিকাশ</option>
           <option value="nagad">নগদ</option>
         </select>
-        <!-- Added Payment Number -->
         <p class="mt-2 text-xs text-yellow-400 font-semibold text-center">পেমেন্ট পাঠাতে হবে: <span class="text-green-400">01856549856</span></p>
       </div>
 
@@ -91,45 +97,41 @@
   <nav
     class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-50">
     <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Home
     </a>
     <a href="shop.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-cart-plus text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       DLS Shop
     </a>
     <a href="tour.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-trophy text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Tour Fixers
     </a>
     <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Ranking
     </a>
     <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div
-        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
       </div>
       Profile
     </a>
   </nav>
 
+  <!-- Firebase Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -147,22 +149,25 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // Sidebar toggle (if you have sidebar logic)
-    const menuButton = document.getElementById("menuButton");
-
-    // Team Form Submit
     const teamForm = document.getElementById("teamForm");
     teamForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      const session = document.getElementById("session").value.trim();
       const teamName = document.getElementById("teamName").value.trim();
       const idRating = parseFloat(document.getElementById("idRating").value);
       const paymentMethod = document.getElementById("paymentMethod").value;
       const trxId = document.getElementById("trxId").value.trim();
 
+      if (!session || !teamName || !idRating || !paymentMethod || !trxId) {
+        Swal.fire('ত্রুটি', 'সব তথ্য পূরণ করুন!', 'error');
+        return;
+      }
+
       try {
-        // Save to Firestore under "tournaments" collection
-        await addDoc(collection(db, "tournaments"), {
+        // Save team info under tournaments > session > teams
+        const sessionRef = doc(db, "tournaments", session);
+        await addDoc(collection(sessionRef, "teams"), {
           teamName,
           idRating,
           paymentMethod,
@@ -173,7 +178,7 @@
         Swal.fire({
           icon: 'success',
           title: 'সফল',
-          text: 'আপনার দল সফলভাবে জমা হয়েছে!',
+          text: 'আপনার দল সফলভাবে জমা হয়েছে!',
           confirmButtonColor: '#00FF00'
         });
 
@@ -183,7 +188,7 @@
         Swal.fire({
           icon: 'error',
           title: 'ত্রুটি',
-          text: 'দুঃখিত, দলে জমা দিতে সমস্যা হয়েছে!',
+          text: 'দল জমা দিতে সমস্যা হয়েছে!',
           confirmButtonColor: '#FF0000'
         });
       }
