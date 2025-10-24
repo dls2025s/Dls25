@@ -153,7 +153,7 @@
       }
     }
 
-    // ✅ FIXED FUNCTION: Correct Firestore path
+    // ✅ FIXED TIMESTAMP DISPLAY (team.timestamp.toDate())
     async function loadTeamsForSession(sessionName, container) {
       try {
         const teamsRef = collection(db, "tournaments", sessionName, "teams");
@@ -178,12 +178,23 @@
 
         snapshot.forEach(docSnap => {
           const team = docSnap.data();
+          let dateText = "N/A";
+
+          if (team.timestamp) {
+            try {
+              const date = team.timestamp.toDate(); // ✅ FIX: convert Firestore Timestamp to JS Date
+              dateText = date.toLocaleString();
+            } catch (e) {
+              dateText = "Invalid Timestamp";
+            }
+          }
+
           html += `<tr class="border-b hover:bg-gray-50">
                      <td class="px-2 py-1">${team.idRating ?? "N/A"}</td>
                      <td class="px-2 py-1">${team.teamName || "N/A"}</td>
                      <td class="px-2 py-1">${team.trxId || "N/A"}</td>
                      <td class="px-2 py-1">${team.paymentMethod || "N/A"}</td>
-                     <td class="px-2 py-1">${team.timestamp ? new Date(team.timestamp).toLocaleString() : "N/A"}</td>
+                     <td class="px-2 py-1">${dateText}</td>
                    </tr>`;
         });
 
