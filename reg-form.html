@@ -114,15 +114,7 @@
 
     <form id="teamForm"
       class="form-container p-5 rounded-2xl shadow-xl border border-purple-500 space-y-4 max-w-sm mx-auto">
-
-      <!-- Session Select -->
-      <div>
-        <label for="sessionSelect" class="block text-sm font-semibold mb-2 text-gray-200">সেশন নির্বাচন করুন</label>
-        <select id="sessionSelect" name="sessionSelect" required
-          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none text-sm">
-          <option value="">সেশন নির্বাচন করুন</option>
-        </select>
-      </div>
+      <p id="sessionDisplay"></p>
 
       <!-- Team Name -->
       <div>
@@ -208,7 +200,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -224,43 +216,18 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Load session list dynamically
-    const sessionSelect = document.getElementById("sessionSelect");
-
-    async function loadSessions() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "tournaments"));
-        querySnapshot.forEach(docSnap => {
-          const data = docSnap.data();
-          const option = document.createElement("option");
-          option.value = docSnap.id;
-          option.textContent = data.title || data.session || docSnap.id; // show title or session name
-          sessionSelect.appendChild(option);
-        });
-      } catch (error) {
-        console.error("Error loading sessions:", error);
-      }
-    }
-    loadSessions();
-
     // Team registration logic
     const teamForm = document.getElementById("teamForm");
     teamForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const sessionId = document.getElementById("sessionSelect").value;
       const teamName = document.getElementById("teamName").value.trim();
       const idRating = parseFloat(document.getElementById("idRating").value);
       const paymentMethod = document.getElementById("paymentMethod").value;
       const trxId = document.getElementById("trxId").value.trim();
 
-      if (!sessionId) {
-        Swal.fire("ত্রুটি", "অনুগ্রহ করে একটি সেশন নির্বাচন করুন!", "error");
-        return;
-      }
-
       try {
-        await addDoc(collection(db, "tournaments", sessionId, "teams"), {
+        await addDoc(collection(db, "tournaments", "Session1", "teams"), {
           teamName,
           idRating,
           paymentMethod,
