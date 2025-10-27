@@ -114,7 +114,6 @@
 
     <form id="teamForm"
       class="form-container p-5 rounded-2xl shadow-xl border border-purple-500 space-y-4 max-w-sm mx-auto">
-      <p id="sessionDisplay" class="text-center text-yellow-300 font-semibold"></p>
 
       <!-- Team Name -->
       <div>
@@ -200,7 +199,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -216,36 +215,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let activeSession = null;
-
-    async function loadActiveSession() {
-      const q = query(collection(db, "tournaments"), where("active", "==", true));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        activeSession = doc.data().session;
-        document.getElementById("sessionDisplay").innerText = `সেশন: ${activeSession.toUpperCase()}`;
-      } else {
-        document.getElementById("sessionDisplay").innerText = "কোনো সক্রিয় সেশন পাওয়া যায়নি";
-      }
-    }
-
-    await loadActiveSession();
-
+    // Team registration logic
     const teamForm = document.getElementById("teamForm");
     teamForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      if (!activeSession) {
-        Swal.fire({
-          icon: 'error',
-          title: 'ত্রুটি',
-          text: 'কোনো সক্রিয় সেশন পাওয়া যায়নি!',
-          confirmButtonColor: '#dc2626'
-        });
-        return;
-      }
 
       const teamName = document.getElementById("teamName").value.trim();
       const idRating = parseFloat(document.getElementById("idRating").value);
@@ -253,7 +226,7 @@
       const trxId = document.getElementById("trxId").value.trim();
 
       try {
-        await addDoc(collection(db, "tournaments", activeSession, "teams"), {
+        await addDoc(collection(db, "tournaments", "Session1", "teams"), {
           teamName,
           idRating,
           paymentMethod,
