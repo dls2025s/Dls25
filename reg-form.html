@@ -224,22 +224,23 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔥 Load session list dynamically (Now shows session name/title)
+    // Load session list dynamically (t.session)
     const sessionSelect = document.getElementById("sessionSelect");
-
     async function loadSessions() {
       const querySnapshot = await getDocs(collection(db, "tournaments"));
       querySnapshot.forEach(docSnap => {
-        const sessionData = docSnap.data();
-        const option = document.createElement("option");
-        option.value = docSnap.id;
-        option.textContent = sessionData.title || sessionData.session || docSnap.id; // ✅ show session name/title
-        sessionSelect.appendChild(option);
+        const t = docSnap.data();
+        if (t.session) { // ✅ only add if session exists
+          const option = document.createElement("option");
+          option.value = docSnap.id;
+          option.textContent = t.session;
+          sessionSelect.appendChild(option);
+        }
       });
     }
     loadSessions();
 
-    // ✅ Team registration logic
+    // Team registration
     const teamForm = document.getElementById("teamForm");
     teamForm.addEventListener("submit", async (e) => {
       e.preventDefault();
