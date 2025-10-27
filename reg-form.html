@@ -115,6 +115,15 @@
     <form id="teamForm"
       class="form-container p-5 rounded-2xl shadow-xl border border-purple-500 space-y-4 max-w-sm mx-auto">
 
+      <!-- Session Select -->
+      <div>
+        <label for="sessionSelect" class="block text-sm font-semibold mb-2 text-gray-200">সেশন নির্বাচন করুন</label>
+        <select id="sessionSelect" name="sessionSelect" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none text-sm">
+          <option value="">সেশন নির্বাচন করুন</option>
+        </select>
+      </div>
+
       <!-- Team Name -->
       <div>
         <label for="teamName" class="block text-sm font-semibold mb-2 text-gray-200">দলের নাম</label>
@@ -155,8 +164,7 @@
 
       <!-- Submit Button -->
       <div class="flex justify-center">
-        <button type="submit"
-          class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
+        <button type="submit" class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
           Submit
         </button>
       </div>
@@ -200,8 +208,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -216,19 +223,40 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
 
+    // Load session list dynamically
+    const sessionSelect = document.getElementById("sessionSelect");
+
+    async function loadSessions() {
+      const querySnapshot = await getDocs(collection(db, "tournaments"));
+      querySnapshot.forEach(docSnap => {
+        const sessionData = docSnap.data();
+        const option = document.createElement("option");
+        option.value = docSnap.id;
+        option.textContent = sessionData.session || docSnap.id;
+        sessionSelect.appendChild(option);
+      });
+    }
+    loadSessions();
+
+    // Team registration
     const teamForm = document.getElementById("teamForm");
     teamForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      const sessionId = document.getElementById("sessionSelect").value;
       const teamName = document.getElementById("teamName").value.trim();
       const idRating = parseFloat(document.getElementById("idRating").value);
       const paymentMethod = document.getElementById("paymentMethod").value;
       const trxId = document.getElementById("trxId").value.trim();
 
+      if (!sessionId) {
+        Swal.fire("ত্রুটি", "অনুগ্রহ করে একটি সেশন নির্বাচন করুন!", "error");
+        return;
+      }
+
       try {
-        await addDoc(collection(db, "tournaments"), {
+        await addDoc(collection(db, "tournaments", sessionId, "teams"), {
           teamName,
           idRating,
           paymentMethod,
