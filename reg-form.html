@@ -52,7 +52,7 @@
       transition: all 0.3s ease;
     }
 
-    .btn:hover {
+    btn:hover {
       box-shadow: 0 0 20px rgba(180, 0, 255, 0.7);
       transform: scale(1.05);
       background: linear-gradient(to right, #5b21b6, #9333ea, #5b21b6);
@@ -208,7 +208,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -224,18 +224,17 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Load session list dynamically (t.session)
+    // Load session list dynamically
     const sessionSelect = document.getElementById("sessionSelect");
+
     async function loadSessions() {
       const querySnapshot = await getDocs(collection(db, "tournaments"));
       querySnapshot.forEach(docSnap => {
-        const t = docSnap.data();
-        if (t.session) { // ✅ only add if session exists
-          const option = document.createElement("option");
-          option.value = docSnap.id;
-          option.textContent = t.session;
-          sessionSelect.appendChild(option);
-        }
+        const sessionData = docSnap.data();
+        const option = document.createElement("option");
+        option.value = docSnap.id;
+        option.textContent = sessionData.session || docSnap.id;
+        sessionSelect.appendChild(option);
       });
     }
     loadSessions();
@@ -286,4 +285,5 @@
   </script>
 
 </body>
+
 </html>
