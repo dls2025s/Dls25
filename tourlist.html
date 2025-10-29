@@ -1,237 +1,479 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tournament Setting - Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <!-- SweetAlert2 -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <style>
+    .user-icon-glow {
+      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
+    }
+
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+      transform: translateX(-100%);
+    }
+
+    #sidebar.active {
+      transform: translateX(0);
+    }
+
+    #overlay {
+      transition: opacity 0.3s ease-in-out;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #overlay.active {
+      opacity: 0.5;
+      pointer-events: all;
+    }
+
+    #sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background-color: rgba(30, 30, 30, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    #sidebar nav a:hover {
+      background-color: rgba(255, 215, 0, 0.15);
+      color: #ffd700;
+      transform: scale(1.02);
+    }
+
+    #sidebar nav a i {
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+
+    #sidebar nav a:hover i {
+      color: #ffd700;
+    }
+
+    #sidebar nav a.active {
+      background-color: rgba(255, 215, 0, 0.2);
+      color: #ffd700;
+      border-left: 3px solid #ffd700;
+    }
+
+    .sidebar-profile img {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: 9999px;
+      border: 3px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-username {
+      font-weight: 600;
+      color: #f3f4f6;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .rank-badge {
+      background: linear-gradient(90deg, #ffd700, #ff9f00);
+      color: #1e1796;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 9999px;
+      padding: 2px 10px;
+      text-align: center;
+      margin-top: 4px;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+
+    .balance-badge {
+      background: linear-gradient(90deg, #0099fd, #0099fd);
+      color: #ffff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 9999px;
+      padding: 2px 10px;
+      text-align: center;
+      margin-top: 6px;
+      box-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<body class="bg-black text-white">
 
   <!-- Header -->
-  <header class="bg-white shadow-md relative">
-    <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
-      <p onclick="window.location.href='admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
-        <i class="fas fa-arrow-left text-2xl"></i>
-      </p>
-      <h1 class="text-xl font-bold text-gray-800">Create Tournament</h1>
+  <header
+    class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mx-auto border-b border-green-400 flex items-center justify-between header-glow">
+    <div class="flex items-center space-x-2">
+      <img src="dls25.jpeg" alt="Logo" class="w-8 h-8 rounded-full border border-green-400" />
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-blue-200 to-yellow-300 bg-clip-text text-transparent"
+        style="font-family: 'Audiowide', cursive;">DCL TOUR</h2>
+    </div>
+    <div class="flex space-x-4">
+      <button id="menuButton">
+        <i class="fa-solid fa-bars text-white text-shadow text-xl"></i>
+      </button>
     </div>
   </header>
 
-  <!-- Main -->
-  <main class="flex-grow p-4 md:p-6">
-    <!-- Display Tournament List -->
-    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-4 mb-4">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">All Tournaments</h2>
-      <div id="tournamentList" class="space-y-4">
-        <p class="text-gray-500 text-sm">Loading tournaments...</p>
+  <section class="max-w-md mx-auto">
+    <div class="flex justify-between items-center">
+      <a href="fixers.html"
+        class="flex-1 bg-gradient-to-br from-yellow-700 to-yellow-500 text-white text-sm font-semibold text-center py-2 rounded-l-sm hover:scale-105 transition transform duration-300">Tour Fixers</a>
+      <a href="point-table.html"
+        class="flex-1 bg-gradient-to-br from-blue-700 to-blue-500 text-white text-sm font-semibold text-center py-2 hover:scale-105 transition transform duration-300">Point Table</a>
+      <a href="group-stage.html"
+        class="flex-1 bg-gradient-to-br from-green-700 to-green-500 text-white text-sm font-semibold text-center py-2 hover:scale-105 transition transform duration-300">Group Stage</a>
+      <a href="rules.html"
+        class="flex-1 bg-gradient-to-br from-red-700 to-red-500 text-white text-sm font-semibold text-center py-2 rounded-r-sm hover:scale-105 transition transform duration-300">Tour Rules</a>
+    </div>
+  </section>
+
+  <section id="bannerToggle" class="bg-gradient-to-r from-purple-900 via-blue-800 to-purple-900 text-center py-1 px-1 shadow-lg border border-blue-500 mb-3">
+    <!-- ✅ Registration Countdown -->
+    <div class="flex justify-center gap-2">
+      <h4 class="text-xs text-blue-200 font-semibold mb-1">Registration Close Time</h4>
+      <div
+        class="bg-black flex justify-center items-center  border border-yellow-400 font-semibold rounded-sm h-4 p-0.5 text-yellow-300 text-xs shadow-[0_0_15px_rgba(255,215,0,0.6)] tracking-widest"
+        id="countdown">
+        10H:59M:59S
       </div>
     </div>
-    
-    <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6 mb-8">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">Tournament Details</h2>
+    <h3 class="text-xs font-bold
+      text-yellow-300">DCL SESSION-10 REGISTRATION OPEN NOW <a href="reg-form.html"
+        class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-400 text-black text-xs font-semibold px-1 mt-1 rounded-sm shadow-md hover:scale-105  transition-transform duration-300">
+        Open Form
+      </a></h3>
 
-      <form id="createTourForm" class="space-y-4">
-        <!-- Title -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input type="text" id="title" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tournament title" required />
-        </div>
+  </section>
 
-        <!-- Session -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Session</label>
-          <input type="text" id="session" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Session10 / Session11" required />
-        </div>
-
-        <!-- Entry Fee -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Entry Fee</label>
-          <input type="number" id="entryFee" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter entry fee amount" required />
-        </div>
-
-        <!-- Slot -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Slot</label>
-          <input type="number" id="slot" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Total available slots" required />
-        </div>
-
-        <!-- End Time -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-          <input type="datetime-local" id="endTime" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-        </div>
-
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
-          Create Tournament
-        </button>
-      </form>
+  <!-- Sidebar -->
+  <div id="overlay" class="fixed inset-0 bg-black z-40"></div>
+  <aside id="sidebar" class="fixed top-0 left-0 w-52 h-full bg-black z-50 shadow-xl border-r border-gray-700 overflow-y-auto">
+    <div class="flex items-center justify-between p-2.5 border-b border-gray-700">
+      <h2 class="text-lg font-bold text-yellow-300">Menu</h2>
+      <button id="closeSidebar" class="bg-gray-800 px-2 rounded-sm text-gray-300 text-xl hover:text-yellow-400">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
-    
+
+    <!-- User Info -->
+    <div class="sidebar-profile flex flex-col items-center py-4 border-b border-gray-700 overflow-y-auto">
+      <img id="userPhoto" src="OIP.webp" alt="User Photo"
+        class="user-icon-glow w-16 h-16 rounded-full object-cover" />
+      <h3 id="username" class="text-sm font-semibold text-yellow-gray-00 mt-1">Rahul Ahmed</h3>
+      <div class="rank-badge text-xs">Rank Level:<span class="ml-1">74</span></div>
+      <div class="balance-badge">Gaming Balance:<span class="ml-1">৳2,450</span></div>
+    </div>
+
+    <nav class="p-4 space-y-3">
+      <a href="dashboard.html" class="active">
+        <i class="fa-solid fa-house"></i> <span>Home</span>
+      </a>
+      <a href="match.html">
+        <i class="fa-solid fa-gamepad"></i> <span>Friendly Match</span>
+      </a>
+      <a href="lottery.html">
+        <i class="fa-solid fa-dice"></i> <span>Lottery</span>
+      </a>
+      <a href="team-rank.html">
+        <i class="fa-solid fa-ranking-star"></i> <span>Ranking</span>
+      </a>
+      <a href="league-form.html">
+        <i class="fa-solid fa-user-plus"></i> <span>Registration</span>
+      </a>
+      <a href="support.html">
+        <i class="fa-solid fa-headset"></i> <span>Support</span>
+      </a>
+      <a href="#" id="logoutBtn" class="text-red-400 hover:text-red-500 bg-red-900/30 hover:bg-red-700/30">
+        <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="max-w-md mx-auto px-4">
+    <!-- Fixers List Section -->
+    <div id="fixers-list" class="space-y-6">
+      <p class="text-center text-gray-400">Loading...</p>
+    </div>
   </main>
 
-  <!-- Firebase + Logic -->
+  <!-- Bottom Navigation -->
+  <nav
+    class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-50">
+    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Home
+    </a>
+    <a href="shop.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-cart-plus text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      DLS Shop
+    </a>
+    <a href="tour.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-trophy text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Tour Fixers
+    </a>
+    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-ranking-star text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Ranking
+    </a>
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      Profile
+    </a>
+  </nav>
+
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      collection, 
-      addDoc, 
-      serverTimestamp, 
-      onSnapshot, 
-      query, 
-      orderBy, 
-      doc, 
-      updateDoc 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+  getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc, orderBy 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { 
+  getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-      authDomain: "dlstournament-31ac1.firebaseapp.com",
-      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
-      projectId: "dlstournament-31ac1",
-      storageBucket: "dlstournament-31ac1.appspot.com",
-      messagingSenderId: "874377019055",
-      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
-      measurementId: "G-0DGFJEV6GL"
-    };
+// 🔹 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+  authDomain: "dlstournament-31ac1.firebaseapp.com",
+  databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+  projectId: "dlstournament-31ac1",
+  storageBucket: "dlstournament-31ac1.appspot.com",
+  messagingSenderId: "874377019055",
+  appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+  measurementId: "G-0DGFJEV6GL"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+// 🔹 Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+await setPersistence(auth, browserLocalPersistence);
 
-    onAuthStateChanged(auth, user => {
-      if (!user) {
-        window.location.href = "login.html";
-      }
-    });
+// 🔹 Globals
+let currentUserId = null;
+let teamPhotos = {};
+let hiddenMatchdays = {};
+let fixersData = [];
 
-    // ============================
-    // 🔥 Tournament Create Logic
-    // ============================
-    const form = document.getElementById("createTourForm");
+// 🔹 DOM Elements
+const bannerToggle = document.getElementById("bannerToggle");
+const fixersContainer = document.getElementById("fixers-list");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const menuButton = document.getElementById("menuButton");
+const closeSidebar = document.getElementById("closeSidebar");
+const logoutBtn = document.getElementById("logoutBtn");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+// 🔹 Format Date
+function formatDateAndTime(dateStr) {
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
 
-      const title = document.getElementById("title").value.trim();
-      const session = document.getElementById("session").value.trim();
-      const entryFee = parseInt(document.getElementById("entryFee").value);
-      const slot = parseInt(document.getElementById("slot").value);
-      const endTime = document.getElementById("endTime").value;
+// 🔹 Load Team Photos
+async function loadTeamPhotos() {
+  const snap = await getDocs(collection(db, "playersform"));
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    if (data.team && data.photoUrl) {
+      teamPhotos[data.team.trim().toLowerCase()] = data.photoUrl;
+    }
+  });
+}
 
-      if (!title || !session || !entryFee || !slot || !endTime) {
-        Swal.fire("Error", "Please fill all fields correctly!", "error");
-        return;
-      }
+// 🔹 Render Fixers & Match Cards
+function renderFixers() {
+  if (!fixersData.length) {
+    fixersContainer.innerHTML = `<p class="text-center text-gray-400">No fixers available.</p>`;
+    return;
+  }
 
-      try {
-        await addDoc(collection(db, "toursetting"), {
-          title,
-          session,
-          entryFee,
-          slot,
-          endTime,
-          isActive: true,
-          createdAt: serverTimestamp(),
-        });
+  const matchdaysMap = {};
+  fixersData.forEach(fix => {
+    const md = fix.matchday || "Matchday-Unknown";
+    if (!matchdaysMap[md]) matchdaysMap[md] = [];
+    matchdaysMap[md].push(fix);
+  });
 
-        Swal.fire({
-          icon: "success",
-          title: "Created successfully!",
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 2000,
-          toast: true,
-        });
+  const sortedMatchdays = Object.keys(matchdaysMap).sort();
+  let html = "";
 
-        form.reset();
+  sortedMatchdays.forEach((md, index) => {
+    const matchdayId = `matchday-${index + 1}`;
+    if (hiddenMatchdays[matchdayId]) return;
 
-      } catch (error) {
-        console.error("Error adding document: ", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Something went wrong. Try again!",
-          position: "top-end",
-          toast: true,
-          showConfirmButton: false,
-          timer: 2000
-        });
-      }
-    });
+    const firstDate = matchdaysMap[md][0]?.date || "";
+    html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-md font-semibold uppercase text-yellow-300 mb-2 flex justify-center items-center">
+              ${md} || ${firstDate ? formatDateAndTime(firstDate) : ""}
+            </div>`;
 
-    // ============================
-    // 📦 Display Tournament List
-    // ============================
-    const tournamentList = document.getElementById("tournamentList");
+    matchdaysMap[md].sort((a,b) => a.groupName.localeCompare(b.groupName) || a.team1.localeCompare(b.team1))
+    .forEach(match => {
+      const team1Img = teamPhotos[match.team1?.trim().toLowerCase()] || "";
+      const team2Img = teamPhotos[match.team2?.trim().toLowerCase()] || "";
+      const t1GoalVal = match.team1Goal ?? "-";
+      const t2GoalVal = match.team2Goal ?? "-";
 
-    const q = query(collection(db, "toursetting"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (snapshot) => {
-      tournamentList.innerHTML = "";
-      if (snapshot.empty) {
-        tournamentList.innerHTML = `<p class="text-gray-500 text-sm">No tournaments created yet.</p>`;
-        return;
-      }
-
-      snapshot.forEach((docSnap) => {
-        const t = docSnap.data();
-        const id = docSnap.id;
-
-        const item = document.createElement("div");
-        item.className = "border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition";
-
-        item.innerHTML = `
-          <div class="flex justify-between items-center">
-            <div>
-              <h3 class="text-sm font-semibold text-gray-800">${t.title}</h3>
-              <p class="text-sm text-gray-600">Session: ${t.session}</p>
-              <p class="text-sm text-gray-600">Entry Fee: ${t.entryFee}</p>
-              <p class="text-sm text-gray-600">Slots: ${t.slot}</p>
-              <p class="text-sm text-gray-600">End Time: ${new Date(t.endTime).toLocaleString()}</p>
-            </div>
-            <div class="flex flex-col items-center gap-2">
-              <i class="fas fa-trophy text-yellow-500 text-2xl"></i>
-              <label class="inline-flex items-center cursor-pointer">
-                <input type="checkbox" class="sr-only peer" ${t.isActive ? "checked" : ""} data-id="${id}">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 relative after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
-              </label>
-              <p class="text-xs text-gray-600">${t.isActive ? "Active" : "Inactive"}</p>
-            </div>
+      html += `
+      <section class="mx-auto py-10 flex justify-center items-center relative rounded-lg px-4 border border-gray-500" style="background-image: url('stadium.jpeg'); background-size: cover; background-position: center; height: 207px;">
+        <div class="absolute inset-0 bg-black opacity-60"></div>
+        <div style="background: #af1f42;" class="absolute top-0 left-1/8 w-full py-1 px-4 rounded-t-lg uppercase text-lg font-extrabold z-10 opacity-70 bg-gray-800 text-center border-b border-gray-400">
+          DCL SINGLE TOURNAMENT S-8
+        </div>
+        <div style="background: #af1f42; top: 36px;" class="flex justify-center items-center w-2/4 py-1 px-4 absolute left-1/8 rounded-b-xl uppercase text-xs font-extrabold border-b border-l border-r border-gray-400 z-10 opacity-70">
+          <div>${match.groupName}</div>
+        </div>
+        <div style="background: #af1f42; top: 82px;" class="flex justify-between w-3/4 py-1.5 px-3 absolute left-1/8 rounded-t-xl uppercase text-xs font-extrabold border-t border-l border-r border-gray-400 z-10 opacity-70">
+          <div>${formatDateAndTime(match.date)}</div>
+          <div>Time 24 Hours</div>
+        </div>
+        <div style="background: #a81d3f; top: 35px;" class="rounded-lg shadow-lg w-full max-w-lg relative h-14 border-t border-l border-r border-gray-400 opacity-80">
+          <div class="flex justify-between p-2 uppercase mb-1">
+            <div class="text-left w-full"><h2 class="text-xs font-semibold">${match.team1}</h2></div>
+            <div class="text-right w-full"><h2 class="text-xs font-semibold">${match.team2}</h2></div>
           </div>
-        `;
-
-        const toggle = item.querySelector("input[type='checkbox']");
-        toggle.addEventListener("change", async (e) => {
-          const newStatus = e.target.checked;
-          try {
-            await updateDoc(doc(db, "toursetting", id), { isActive: newStatus });
-            Swal.fire({
-              icon: "success",
-              title: newStatus ? "Tournament Activated" : "Tournament Deactivated",
-              position: "top-end",
-              toast: true,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          } catch (err) {
-            console.error(err);
-            Swal.fire("Error", "Failed to update status", "error");
-          }
-        });
-
-        tournamentList.appendChild(item);
-      });
+          <div class="flex justify-center items-center space-x-6 bg-white py-3 px-2 rounded-b-lg h-10 border-b border-gray-400 opacity-80">
+            <div class="text-center"><p class="text-4xl font-medium text-black">${t1GoalVal}</p></div>
+            <div class="text-center" style="position: relative; top: -16px; color: #7f152e;">
+              <i class="fas fa-futbol text-6xl bg-white rounded-full border border-gray-400"></i>
+            </div>
+            <div class="text-center"><p class="text-4xl font-medium text-black">${t2GoalVal}</p></div>
+          </div>
+          <div style="position: relative; top: -50px; right: 10px;" class="flex justify-between">
+            ${team1Img ? `<img style="border: 4px solid #f34871;" src="${team1Img}" class="w-14 h-14 rounded-full" alt="${match.team1}" />` : ""}
+          </div>
+          <div style="position: absolute; right: -10px; top: 26px;" class="text-center">
+            ${team2Img ? `<img style="border: 4px solid #f34871;" src="${team2Img}" class="w-14 h-14 rounded-full" alt="${match.team2}" />` : ""}
+          </div>
+        </div>
+      </section>
+      `;
     });
-  </script>
+  });
+
+  fixersContainer.innerHTML = html;
+}
+
+// 🔹 Subscribe Hidden Matchdays
+function subscribeHiddenMatchdays() {
+  const userRef = doc(db, "users", currentUserId);
+  onSnapshot(userRef, (snap) => {
+    hiddenMatchdays = snap.exists() ? snap.data().hiddenMatchdays || {} : {};
+    renderFixers();
+  });
+}
+
+// 🔹 Subscribe Fixers
+function subscribeFixers() {
+  const fixersRef = collection(db, "fixers");
+  onSnapshot(query(fixersRef, orderBy("date")), (snapshot) => {
+    fixersData = [];
+    snapshot.forEach(docSnap => fixersData.push(docSnap.data()));
+    renderFixers();
+  });
+}
+
+// 🔹 Load Auth & Initial Data
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "login.html";
+  currentUserId = user.uid;
+
+  // Banner Toggle Logic
+  const tourRef = collection(db, "toursetting");
+  onSnapshot(query(tourRef), (snapshot) => {
+    let isActiveFound = snapshot.docs.some(docSnap => docSnap.data().isActive);
+    bannerToggle.style.display = isActiveFound ? "block" : "none";
+  });
+
+  // Load User Data
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    document.getElementById("username").innerText = data.username || user.displayName || "User";
+    document.getElementById("userPhoto").src = data.photoUrl || user.photoURL || "default-profile.png";
+    hiddenMatchdays = data.hiddenMatchdays || {};
+  } else {
+    document.getElementById("username").innerText = user.displayName || "User";
+    document.getElementById("userPhoto").src = user.photoURL || "default-profile.png";
+    hiddenMatchdays = {};
+  }
+
+  await loadTeamPhotos();
+  subscribeHiddenMatchdays();
+  subscribeFixers();
+});
+
+// 🔹 Sidebar Toggle
+menuButton.addEventListener("click", () => {
+  sidebar.classList.add("active");
+  overlay.classList.add("active");
+});
+closeSidebar.addEventListener("click", () => {
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
+});
+overlay.addEventListener("click", () => {
+  sidebar.classList.remove("active");
+  overlay.classList.remove("active");
+});
+
+// 🔹 Logout
+logoutBtn?.addEventListener("click", async () => {
+  const result = await Swal.fire({
+    title: "Logout?",
+    text: "Are you sure you want to log out?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, Logout"
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await signOut(auth);
+      Swal.fire({ icon: "success", title: "Logged out successfully!", showConfirmButton: false, timer: 1500 });
+      setTimeout(() => { window.location.href = "login.html"; }, 1500);
+    } catch (error) {
+      Swal.fire("Error", "Failed to log out. Please try again.", "error");
+    }
+  }
+});
+</script>
+
 
 </body>
 </html>
