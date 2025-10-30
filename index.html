@@ -147,11 +147,11 @@
       <div
         class="bg-black flex justify-center items-center  border border-yellow-400 font-semibold rounded-sm h-4 p-0.5 text-yellow-300 text-xs shadow-[0_0_15px_rgba(255,215,0,0.6)] tracking-widest"
         id="countdown">
-        10H:59M:59S
+        00H:00M:00S
       </div>
     </div>
     <h3 class="text-xs font-bold
-      text-yellow-300">DCL SESSION-10 REGISTRATION OPEN NOW <a href="reg-form.html"
+      text-yellow-300">DCL <span id="sessionDisplslay"></span> REGISTRATION OPEN NOW <a href="reg-form.html"
         class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-400 text-black text-xs font-semibold px-1 mt-1 rounded-sm shadow-md hover:scale-105  transition-transform duration-300">
         Open Form
       </a></h3>
@@ -172,7 +172,7 @@
     <div class="sidebar-profile flex flex-col items-center py-4 border-b border-gray-700 overflow-y-auto">
       <img id="userPhoto" src="OIP.webp" alt="User Photo"
         class="user-icon-glow w-16 h-16 rounded-full object-cover" />
-      <h3 id="username" class="text-sm font-semibold text-yellow-gray-00 mt-1">Rahul Ahmed</h3>
+      <h3 id="username" class="text-sm font-semibold text-yellow-gray-00 mt-1">...</h3>
       <div class="rank-badge text-xs">Rank Level:<span class="ml-1">74</span></div>
       <div class="balance-badge">Gaming Balance:<span class="ml-1">৳2,450</span></div>
     </div>
@@ -250,13 +250,13 @@
     </a>
   </nav>
 
-    <script type="module">
+   <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc, updateDoc 
+import {  
+  getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc, updateDoc  
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { 
-  getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut 
+import {  
+  getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut  
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -281,7 +281,7 @@ let hiddenMatchdays = {};
 let currentUserId = null;
 let fixersData = [];
 let countdownInterval = null;
-let activeDocId = null; // ✅ countdown শেষ হলে কোন ডকুমেন্টে isActive=false সেট হবে তা ট্র্যাক করবে
+let activeDocId = null;
 
 // ✅ Team Photos Load
 async function loadTeamPhotos() {
@@ -323,7 +323,7 @@ onAuthStateChanged(auth, async (user) => {
   await loadTeamPhotos();
   subscribeHiddenMatchdays();
   subscribeFixers();
-  subscribeBannerStatus(); // ✅ Banner listener
+  subscribeBannerStatus(); // ✅ Banner + session listener
 });
 
 function subscribeHiddenMatchdays() {
@@ -344,7 +344,15 @@ function subscribeFixers() {
   });
 }
 
-// ✅ Banner show/hide + countdown
+// ✅ NEW FUNCTION — show session name in banner
+function updateSessionDisplay(sessionName) {
+  const sessionDisplay = document.getElementById("sessionDisplslay");
+  if (sessionDisplay) {
+    sessionDisplay.textContent = sessionName || "";
+  }
+}
+
+// ✅ Banner show/hide + countdown + session display
 function subscribeBannerStatus() {
   const bannerToggle = document.getElementById("bannerToggle");
   const countdownEl = document.getElementById("countdown");
@@ -364,6 +372,7 @@ function subscribeBannerStatus() {
 
     if (activeDoc) {
       bannerToggle.style.display = "block";
+      updateSessionDisplay(activeDoc.session); // ✅ show session name in banner
       if (activeDoc.endTime) {
         startCountdown(activeDoc.endTime, countdownEl);
       } else {
@@ -371,6 +380,7 @@ function subscribeBannerStatus() {
       }
     } else {
       bannerToggle.style.display = "none";
+      updateSessionDisplay(""); // hide text when no active session
       clearInterval(countdownInterval);
     }
   });
@@ -400,7 +410,7 @@ function startCountdown(endTimeStr, element) {
     if (distance <= 0) {
       clearInterval(countdownInterval);
       element.textContent = "00H:00M:00S";
-      deactivateTournament(); // ✅ Time over → deactivate tournament
+      deactivateTournament();
       return;
     }
 
@@ -408,7 +418,7 @@ function startCountdown(endTimeStr, element) {
     const minutes = Math.floor((distance / (1000 * 60)) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    element.textContent = 
+    element.textContent =
       `${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
   }
 
