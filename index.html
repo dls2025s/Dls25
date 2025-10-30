@@ -253,7 +253,7 @@
     <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
-  getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc 
+  getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc, updateDoc 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { 
   getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut 
@@ -274,16 +274,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ✅ Persistent login
 await setPersistence(auth, browserLocalPersistence);
 
 let teamPhotos = {};
 let hiddenMatchdays = {};
 let currentUserId = null;
 let fixersData = [];
-let countdownInterval = null; // ✅ countdown control
+let countdownInterval = null;
+let activeDocId = null; // ✅ countdown শেষ হলে কোন ডকুমেন্টে isActive=false সেট হবে তা ট্র্যাক করবে
 
-// ✅ Load team photos
+// ✅ Team Photos Load
 async function loadTeamPhotos() {
   const snap = await getDocs(collection(db, "playersform"));
   snap.forEach(docSnap => {
@@ -302,7 +302,7 @@ function formatDateAndTime(dateStr) {
   return `${day}-${month}-${year}`;
 }
 
-// ✅ Auth state
+// ✅ Auth State Listener
 onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
   currentUserId = user.uid;
@@ -323,17 +323,14 @@ onAuthStateChanged(auth, async (user) => {
   await loadTeamPhotos();
   subscribeHiddenMatchdays();
   subscribeFixers();
-  subscribeBannerStatus(); // ✅ banner listener (with countdown)
+  subscribeBannerStatus(); // ✅ Banner listener
 });
 
 function subscribeHiddenMatchdays() {
   const userRef = doc(db, "users", currentUserId);
   onSnapshot(userRef, (snap) => {
-    if (snap.exists()) {
-      hiddenMatchdays = snap.data().hiddenMatchdays || {};
-    } else {
-      hiddenMatchdays = {};
-    }
+    if (snap.exists()) hiddenMatchdays = snap.data().hiddenMatchdays || {};
+    else hiddenMatchdays = {};
     renderFixers();
   });
 }
@@ -355,34 +352,46 @@ function subscribeBannerStatus() {
 
   onSnapshot(settingsRef, (snapshot) => {
     let activeDoc = null;
+    activeDocId = null;
 
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       if (data.isActive === true) {
         activeDoc = data;
+        activeDocId = docSnap.id;
       }
     });
 
     if (activeDoc) {
-      bannerToggle.style.display = "block"; // show banner
-
+      bannerToggle.style.display = "block";
       if (activeDoc.endTime) {
         startCountdown(activeDoc.endTime, countdownEl);
       } else {
         countdownEl.textContent = "N/A";
       }
-
     } else {
-      bannerToggle.style.display = "none"; // hide
+      bannerToggle.style.display = "none";
       clearInterval(countdownInterval);
     }
   });
 }
 
-// ✅ Countdown function
+// ✅ Countdown with auto isActive=false
 function startCountdown(endTimeStr, element) {
   clearInterval(countdownInterval);
   const endTime = new Date(endTimeStr).getTime();
+
+  async function deactivateTournament() {
+    if (activeDocId) {
+      try {
+        const tourRef = doc(db, "toursetting", activeDocId);
+        await updateDoc(tourRef, { isActive: false });
+        console.log("Tournament automatically deactivated (time expired)");
+      } catch (error) {
+        console.error("Failed to deactivate tournament:", error);
+      }
+    }
+  }
 
   function updateCountdown() {
     const now = new Date().getTime();
@@ -391,6 +400,7 @@ function startCountdown(endTimeStr, element) {
     if (distance <= 0) {
       clearInterval(countdownInterval);
       element.textContent = "00H:00M:00S";
+      deactivateTournament(); // ✅ Time over → deactivate tournament
       return;
     }
 
@@ -501,7 +511,7 @@ overlay.addEventListener("click", () => {
   overlay.classList.remove("active");
 });
 
-// ✅ Logout Function
+// ✅ Logout
 logoutBtn.addEventListener("click", async () => {
   const result = await Swal.fire({
     title: "Logout?",
@@ -532,6 +542,6 @@ logoutBtn.addEventListener("click", async () => {
 });
 </script>
 
-  
+
 </body>
 </html>
