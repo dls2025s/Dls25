@@ -147,11 +147,11 @@
       <div
         class="bg-black flex justify-center items-center  border border-yellow-400 font-semibold rounded-sm h-4 p-0.5 text-yellow-300 text-xs shadow-[0_0_15px_rgba(255,215,0,0.6)] tracking-widest"
         id="countdown">
-        10H:59M:59S
+        00H:00M:00S
       </div>
     </div>
     <h3 class="text-xs font-bold
-      text-yellow-300">DCL SESSION-10 REGISTRATION OPEN NOW <a href="reg-form.html"
+      text-yellow-300">DCL <span id="sessionName"></span> REGISTRATION OPEN NOW <a href="reg-form.html"
         class="inline-block bg-gradient-to-r from-yellow-400 to-yellow-400 text-black text-xs font-semibold px-1 mt-1 rounded-sm shadow-md hover:scale-105  transition-transform duration-300">
         Open Form
       </a></h3>
@@ -172,7 +172,7 @@
     <div class="sidebar-profile flex flex-col items-center py-4 border-b border-gray-700 overflow-y-auto">
       <img id="userPhoto" src="OIP.webp" alt="User Photo"
         class="user-icon-glow w-16 h-16 rounded-full object-cover" />
-      <h3 id="username" class="text-sm font-semibold text-yellow-gray-00 mt-1">Rahul Ahmed</h3>
+      <h3 id="username" class="text-sm font-semibold text-yellow-gray-00 mt-1">...</h3>
       <div class="rank-badge text-xs">Rank Level:<span class="ml-1">74</span></div>
       <div class="balance-badge">Gaming Balance:<span class="ml-1">৳2,450</span></div>
     </div>
@@ -250,8 +250,9 @@
     </a>
   </nav>
 
-    <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    <!-- Firebase + Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
   getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc, updateDoc 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -281,9 +282,10 @@ let hiddenMatchdays = {};
 let currentUserId = null;
 let fixersData = [];
 let countdownInterval = null;
-let activeDocId = null; // ✅ countdown শেষ হলে কোন ডকুমেন্টে isActive=false সেট হবে তা ট্র্যাক করবে
+let activeDocId = null; 
+let activeSessionName = ""; // ✅ session field from toursetting
 
-// ✅ Team Photos Load
+// ✅ Load team photos
 async function loadTeamPhotos() {
   const snap = await getDocs(collection(db, "playersform"));
   snap.forEach(docSnap => {
@@ -302,7 +304,7 @@ function formatDateAndTime(dateStr) {
   return `${day}-${month}-${year}`;
 }
 
-// ✅ Auth State Listener
+// ✅ Auth state listener
 onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
   currentUserId = user.uid;
@@ -323,14 +325,13 @@ onAuthStateChanged(auth, async (user) => {
   await loadTeamPhotos();
   subscribeHiddenMatchdays();
   subscribeFixers();
-  subscribeBannerStatus(); // ✅ Banner listener
+  subscribeBannerStatus(); // ✅ Banner listener with sessionName
 });
 
 function subscribeHiddenMatchdays() {
   const userRef = doc(db, "users", currentUserId);
   onSnapshot(userRef, (snap) => {
-    if (snap.exists()) hiddenMatchdays = snap.data().hiddenMatchdays || {};
-    else hiddenMatchdays = {};
+    hiddenMatchdays = snap.exists() ? snap.data().hiddenMatchdays || {} : {};
     renderFixers();
   });
 }
@@ -344,26 +345,30 @@ function subscribeFixers() {
   });
 }
 
-// ✅ Banner show/hide + countdown
+// ✅ Banner + Countdown + sessionName
 function subscribeBannerStatus() {
   const bannerToggle = document.getElementById("bannerToggle");
   const countdownEl = document.getElementById("countdown");
+  const sessionNameEl = document.getElementById("sessionName");
   const settingsRef = collection(db, "toursetting");
 
   onSnapshot(settingsRef, (snapshot) => {
     let activeDoc = null;
     activeDocId = null;
+    activeSessionName = "";
 
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       if (data.isActive === true) {
         activeDoc = data;
         activeDocId = docSnap.id;
+        activeSessionName = data.session || "";
       }
     });
 
     if (activeDoc) {
       bannerToggle.style.display = "block";
+      sessionNameEl.innerText = activeSessionName; // ✅ Set session in banner
       if (activeDoc.endTime) {
         startCountdown(activeDoc.endTime, countdownEl);
       } else {
@@ -371,12 +376,14 @@ function subscribeBannerStatus() {
       }
     } else {
       bannerToggle.style.display = "none";
+      countdownEl.textContent = "00H:00M:00S";
+      sessionNameEl.innerText = "";
       clearInterval(countdownInterval);
     }
   });
 }
 
-// ✅ Countdown with auto isActive=false
+// ✅ Countdown with auto deactivation
 function startCountdown(endTimeStr, element) {
   clearInterval(countdownInterval);
   const endTime = new Date(endTimeStr).getTime();
@@ -400,7 +407,7 @@ function startCountdown(endTimeStr, element) {
     if (distance <= 0) {
       clearInterval(countdownInterval);
       element.textContent = "00H:00M:00S";
-      deactivateTournament(); // ✅ Time over → deactivate tournament
+      deactivateTournament();
       return;
     }
 
@@ -408,8 +415,8 @@ function startCountdown(endTimeStr, element) {
     const minutes = Math.floor((distance / (1000 * 60)) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    element.textContent = 
-      `${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
+    element.textContent =
+      `${hours.toString().padStart(2,"0")}H:${minutes.toString().padStart(2,"0")}M:${seconds.toString().padStart(2,"0")}S`;
   }
 
   updateCountdown();
@@ -440,14 +447,14 @@ function renderFixers() {
 
     const firstDate = matchdaysMap[md][0]?.date || "";
     html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-md font-semibold uppercase text-yellow-300 mb-2 flex justify-center items-center">
-              ${md} || ${firstDate ? formatDateAndTime(firstDate) : ""}
-            </div>`;
+          ${md} || ${firstDate ? formatDateAndTime(firstDate) : ""}
+        </div>`;
 
     matchdaysMap[md]
       .sort((a,b) => a.groupName.localeCompare(b.groupName) || a.team1.localeCompare(b.team1))
       .forEach(match => {
-        const team1Img = teamPhotos[match.team1.trim().toLowerCase()] || "";
-        const team2Img = teamPhotos[match.team2.trim().toLowerCase()] || "";
+        const team1Img = teamPhotos[match.team1?.trim().toLowerCase()] || "";
+        const team2Img = teamPhotos[match.team2?.trim().toLowerCase()] || "";
         const t1GoalVal = match.team1Goal ?? "-";
         const t2GoalVal = match.team2Goal ?? "-";
 
@@ -512,6 +519,7 @@ overlay.addEventListener("click", () => {
 });
 
 // ✅ Logout
+const logoutBtn = document.getElementById("logoutBtn");
 logoutBtn.addEventListener("click", async () => {
   const result = await Swal.fire({
     title: "Logout?",
@@ -540,7 +548,7 @@ logoutBtn.addEventListener("click", async () => {
     }
   }
 });
-</script>
+   </script>
 
 
 </body>
