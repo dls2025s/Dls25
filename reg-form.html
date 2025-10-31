@@ -228,7 +228,7 @@
       const trxId = document.getElementById("trxId").value.trim();
 
       try {
-        await addDoc(collection(db, "tournaments"), {
+        await addDoc(collection(db, "playerlist"), {
           teamName,
           idRating,
           paymentMethod,
