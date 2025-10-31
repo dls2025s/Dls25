@@ -114,7 +114,6 @@
 
     <form id="teamForm"
       class="form-container p-5 rounded-2xl shadow-xl border border-purple-500 space-y-4 max-w-sm mx-auto">
-      <p id="sessionName" class="hidden text-center text-yellow-300 font-semibold text-lg mb-3"></p>
 
       <!-- Team Name -->
       <div>
@@ -221,14 +220,13 @@
 
     let currentSessionName = "";
 
-    // ✅ Tour Setting থেকে Session নাম আনা
+    // ✅ Tour Setting থেকে Session নাম আনা (innerText সেট করা অংশ remove করা হয়েছে)
     async function loadSessionName() {
       const querySnapshot = await getDocs(collection(db, "toursetting"));
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         if (data.session) {
           currentSessionName = data.session;
-          document.getElementById("sessionName").innerText = `Session: ${data.session.toUpperCase()}`;
         }
       });
     }
