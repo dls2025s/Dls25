@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #120024, #220044, #0a0014);
+      color: #f5f3ff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 5rem;
+    }
+    .header-glow {
+      box-shadow: 0 0 15px rgba(150, 0, 255, 0.4), 0 0 25px rgba(128, 0, 255, 0.2);
+    }
+    .card {
+      background: rgba(25, 0, 50, 0.85);
+      border: 1px solid #8b5cf6;
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 10px rgba(100, 0, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(160, 0, 255, 0.5);
+    }
+    nav {
+      background: linear-gradient(to right, #1a0033, #26004a, #1a0033);
+      box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] w-full max-w-md shadow-md py-3 px-4 mx-auto border-b border-purple-500 flex items-center justify-between header-glow rounded-b-2xl">
+    <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-yellow-300 bg-clip-text text-transparent">Registration History</h2>
+    <a href="team.html"><i class="fa-solid fa-arrow-left text-white text-lg"></i></a>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-md mx-auto px-4 py-4" id="historyContainer">
+    <p class="text-center text-gray-400">লোড হচ্ছে...</p>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
+    <a href="dashboard.html" class="flex flex-col items-center text-xs font-semibold">
+      <i class="fa-solid fa-house text-lg mb-1"></i> Home
+    </a>
+    <a href="team.html" class="flex flex-col items-center text-xs font-semibold">
+      <i class="fa-solid fa-users text-lg mb-1"></i> Register
+    </a>
+    <a href="history.html" class="flex flex-col items-center text-xs font-semibold text-yellow-300">
+      <i class="fa-solid fa-clock-rotate-left text-lg mb-1"></i> History
+    </a>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+      authDomain: "dlstournament-31ac1.firebaseapp.com",
+      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+      projectId: "dlstournament-31ac1",
+      storageBucket: "dlstournament-31ac1.appspot.com",
+      messagingSenderId: "874377019055",
+      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+      measurementId: "G-0DGFJEV6GL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const historyContainer = document.getElementById("historyContainer");
+
+    // Realtime listener
+    const q = query(collection(db, "playerlist"), orderBy("date", "desc"));
+    onSnapshot(q, (snapshot) => {
+      historyContainer.innerHTML = "";
+      if (snapshot.empty) {
+        historyContainer.innerHTML = `<p class="text-center text-gray-400">কোনো রেজিস্ট্রেশন পাওয়া যায়নি।</p>`;
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const date = data.date?.toDate ? data.date.toDate().toLocaleString() : "—";
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3 class="text-lg font-semibold text-purple-300 mb-1">${data.teamName || "N/A"}</h3>
+          <p class="text-sm text-gray-300"><b>ID Rating:</b> ${data.idRating || "N/A"}</p>
+          <p class="text-sm text-gray-300"><b>Payment:</b> ${data.paymentMethod || "N/A"}</p>
+          <p class="text-sm text-gray-300"><b>TrxID:</b> ${data.trxId || "N/A"}</p>
+          <p class="text-sm text-gray-300"><b>Entry Fee:</b> ${data.entryFee || "N/A"}৳</p>
+          <p class="text-sm text-gray-300"><b>Session:</b> ${data.sessionName || "N/A"}</p>
+          <p class="text-sm text-gray-300"><b>Status:</b> 
+            <span class="${data.status === 'Pending' ? 'text-yellow-400' : data.status === 'Approved' ? 'text-green-400' : 'text-red-400'}">
+              ${data.status || "N/A"}
+            </span>
+          </p>
+          <p class="text-xs text-gray-400 mt-1"><b>Date:</b> ${date}</p>
+        `;
+        historyContainer.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>
