@@ -226,7 +226,7 @@
       const trxId = document.getElementById("trxId").value.trim();
 
       try {
-        await addDoc(collection(db, "tournaments",) {
+        await addDoc(collection(db, "playerlist"), {
           teamName,
           idRating,
           paymentMethod,
@@ -235,24 +235,30 @@
         });
 
         Swal.fire({
+          position: 'top-end',
           icon: 'success',
-          title: 'সফল',
-          text: 'আপনার দল সফলভাবে জমা হয়েছে!',
-          confirmButtonColor: '#6f1287'
+          title: 'Submit successful!',
+          showConfirmButton: false,
+          timer: 2000,
+          background: '#1a0033',
+          color: '#fff'
         });
 
         teamForm.reset();
       } catch (error) {
         console.error(error);
         Swal.fire({
+          position: 'top-end',
           icon: 'error',
-          title: 'ত্রুটি',
-          text: 'দুঃখিত, দলে জমা দিতে সমস্যা হয়েছে!',
-          confirmButtonColor: '#dc2626'
+          title: 'Submit filed!',
+          showConfirmButton: false,
+          timer: 2500,
+          background: '#1a0033',
+          color: '#fff'
         });
       }
     });
   </script>
 
 </body>
-</html>
+      </html>
