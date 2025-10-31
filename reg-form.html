@@ -88,7 +88,6 @@
       color: #b0a7c3;
     }
 
-    /* Payment Number Box */
     .payment-box {
       background: rgba(0, 0, 0, 0.5);
       border: 1px solid #8b5cf6;
@@ -235,7 +234,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -256,24 +255,15 @@
     let currentSessionName = "";
     let entryFee = "";
 
-    // ✅ Tour Setting থেকে Session নাম ও Entry Fee আনা
-    async function loadSessionData() {
-      const querySnapshot = await getDocs(collection(db, "toursetting"));
-      querySnapshot.forEach((doc) => {
+    // ✅ Real-time onSnapshot listener for toursetting
+    onSnapshot(collection(db, "toursetting"), (snapshot) => {
+      snapshot.forEach((doc) => {
         const data = doc.data();
-        if (data.session) {
-          currentSessionName = data.session;
-        }
-        if (data.entryFee) {
-          entryFee = data.entryFee;
-        }
+        if (data.session) currentSessionName = data.session;
+        if (data.entryFee) entryFee = data.entryFee;
       });
-      // Entry Fee display
-      const entryFeeSpan = document.getElementById("entryFee");
-      entryFeeSpan.innerText = entryFee ? entryFee : "—";
-    }
-
-    loadSessionData();
+      document.getElementById("entryFee").innerText = entryFee || "—";
+    });
 
     const teamForm = document.getElementById("teamForm");
     teamForm.addEventListener("submit", async (e) => {
