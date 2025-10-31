@@ -52,7 +52,7 @@
       transition: all 0.3s ease;
     }
 
-    .btn:hover {
+    btn:hover {
       box-shadow: 0 0 20px rgba(180, 0, 255, 0.7);
       transform: scale(1.05);
       background: linear-gradient(to right, #5b21b6, #9333ea, #5b21b6);
@@ -155,7 +155,8 @@
 
       <!-- Submit Button -->
       <div class="flex justify-center">
-        <button type="submit" class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
+        <button type="submit"
+          class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
           Submit
         </button>
       </div>
@@ -200,6 +201,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -214,10 +216,10 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    // ✅ Team Form Submission
-    const form = document.getElementById("teamForm");
-    form.addEventListener("submit", async (e) => {
+    const teamForm = document.getElementById("teamForm");
+    teamForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const teamName = document.getElementById("teamName").value.trim();
@@ -225,36 +227,35 @@
       const paymentMethod = document.getElementById("paymentMethod").value;
       const trxId = document.getElementById("trxId").value.trim();
 
-      if (!teamName || !idRating || !paymentMethod || !trxId) {
-        Swal.fire("ত্রুটি!", "সব ঘর পূরণ করুন।", "warning");
-        return;
-      }
-
       try {
-        await addDoc(collection(db, "playerlist"), {
+        await addDoc(collection(db, "tournaments"), {
           teamName,
           idRating,
           paymentMethod,
           trxId,
-          date: new Date().toISOString()
+          timestamp: new Date()
         });
 
         Swal.fire({
-          icon: "success",
-          title: "সফল!",
-          text: "দল সফলভাবে নিবন্ধিত হয়েছে।",
-          confirmButtonText: "ঠিক আছে",
-          background: "#1a0033",
-          color: "#f5f3ff"
+          icon: 'success',
+          title: 'সফল',
+          text: 'আপনার দল সফলভাবে জমা হয়েছে!',
+          confirmButtonColor: '#6f1287'
         });
 
-        form.reset();
+        teamForm.reset();
       } catch (error) {
-        console.error("Error adding document: ", error);
-        Swal.fire("ত্রুটি!", "নিবন্ধনে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error");
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'ত্রুটি',
+          text: 'দুঃখিত, দলে জমা দিতে সমস্যা হয়েছে!',
+          confirmButtonColor: '#dc2626'
+        });
       }
     });
   </script>
 
 </body>
+
 </html>
