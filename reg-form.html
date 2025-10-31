@@ -2,278 +2,289 @@
 <html lang="bn">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Team Registration</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <style>
-    body {
-      background: radial-gradient(circle at top left, #120024, #220044, #0a0014);
-      color: #f5f3ff;
-      font-family: 'Poppins', sans-serif;
-      min-height: 100vh;
-    }
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #120024, #220044, #0a0014);
+      color: #f5f3ff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+    }
 
-    .header-glow {
-      box-shadow: 0 0 15px rgba(150, 0, 255, 0.4), 0 0 25px rgba(128, 0, 255, 0.2);
-    }
+    .header-glow {
+      box-shadow: 0 0 15px rgba(150, 0, 255, 0.4), 0 0 25px rgba(128, 0, 255, 0.2);
+    }
 
-    .form-container {
-      background: rgba(25, 0, 50, 0.85);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 0 20px rgba(100, 0, 255, 0.3);
-    }
+    .form-container {
+      background: rgba(25, 0, 50, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(100, 0, 255, 0.3);
+    }
 
-    input,
-    select {
-      background-color: rgba(10, 0, 20, 0.8);
-      border: 1px solid #4b0082;
-    }
+    input,
+    select {
+      background-color: rgba(10, 0, 20, 0.8);
+      border: 1px solid #4b0082;
+    }
 
-    input:focus,
-    select:focus {
-      border-color: #8b5cf6;
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
-    }
+    input:focus,
+    select:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+    }
 
-    .btn {
-      font-weight: 600;
-      background: linear-gradient(to right, #4c1d95, #7e22ce, #4c1d95);
-      color: #f5f3ff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 10px rgba(150, 0, 255, 0.4);
-      transition: all 0.3s ease;
-    }
+    .btn {
+      font-weight: 600;
+      background: linear-gradient(to right, #4c1d95, #7e22ce, #4c1d95);
+      color: #f5f3ff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(150, 0, 255, 0.4);
+      transition: all 0.3s ease;
+    }
 
-    .btn:hover {
-      box-shadow: 0 0 20px rgba(180, 0, 255, 0.7);
-      transform: scale(1.05);
-      background: linear-gradient(to right, #5b21b6, #9333ea, #5b21b6);
-    }
+    .btn:hover {
+      box-shadow: 0 0 20px rgba(180, 0, 255, 0.7);
+      transform: scale(1.05);
+      background: linear-gradient(to right, #5b21b6, #9333ea, #5b21b6);
+    }
 
-    nav {
-      background: linear-gradient(to right, #1a0033, #26004a, #1a0033);
-      box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
-    }
+    nav {
+      background: linear-gradient(to right, #1a0033, #26004a, #1a0033);
+      box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
+    }
 
-    .nav-item {
-      color: #d1b3ff;
-      transition: all 0.3s ease;
-    }
+    .nav-item {
+      color: #d1b3ff;
+      transition: all 0.3s ease;
+    }
 
-    .nav-item i {
-      color: #c084fc;
-      transition: all 0.3s ease;
-    }
+    .nav-item i {
+      color: #c084fc;
+      transition: all 0.3s ease;
+    }
 
-    .nav-item:hover i {
-      color: #facc15;
-      transform: scale(1.25);
-      text-shadow: 0 0 10px #facc15;
-    }
+    .nav-item:hover i {
+      color: #facc15;
+      transform: scale(1.25);
+      text-shadow: 0 0 10px #facc15;
+    }
 
-    .nav-item:hover {
-      color: #facc15;
-      text-shadow: 0 0 8px #facc15;
-    }
+    .nav-item:hover {
+      color: #facc15;
+      text-shadow: 0 0 8px #facc15;
+    }
 
-    ::placeholder {
-      color: #b0a7c3;
-    }
-  </style>
+    ::placeholder {
+      color: #b0a7c3;
+    }
+
+    /* Notice Box Styling */
+    .notice-box {
+      background: rgba(60, 0, 100, 0.5); /* matching background */
+      border: 1px solid #7e22ce;
+      border-radius: 12px;
+      padding: 10px 15px;
+      margin-top: 5px;
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- Header -->
-  <header
-    class="bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] w-full max-w-md shadow-md py-2 px-3 mx-auto border-b border-purple-500 flex items-center justify-between header-glow rounded-b-2xl">
-    <div class="flex items-center space-x-2">
-      <img src="dls25.jpeg" alt="Logo" class="w-9 h-9 rounded-full border border-purple-500 shadow-md" />
-      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-yellow-300 bg-clip-text text-transparent"
-        style="font-family: 'Audiowide', cursive;">DCL TOUR</h2>
-    </div>
-    <div>
-      <button id="menuButton">
-        <i class="fa-solid fa-bars text-white text-xl"></i>
-      </button>
-    </div>
-  </header>
+  <!-- Header -->
+  <header
+    class="bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] w-full max-w-md shadow-md py-2 px-3 mx-auto border-b border-purple-500 flex items-center justify-between header-glow rounded-b-2xl">
+    <div class="flex items-center space-x-2">
+      <img src="dls25.jpeg" alt="Logo" class="w-9 h-9 rounded-full border border-purple-500 shadow-md" />
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-yellow-300 bg-clip-text text-transparent"
+        style="font-family: 'Audiowide', cursive;">DCL TOUR</h2>
+    </div>
+    <div>
+      <button id="menuButton">
+        <i class="fa-solid fa-bars text-white text-xl"></i>
+      </button>
+    </div>
+  </header>
 
-  <!-- Main Content -->
-  <main class="max-w-md mx-auto px-6 py-6">
-    <h2 class="text-2xl font-bold text-center mb-5 bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent"
-      style="font-family: 'Audiowide', cursive;">দল নিবন্ধন</h2>
+  <!-- Main Content -->
+  <main class="max-w-md mx-auto px-6 py-6">
+    <h2 class="text-2xl font-bold text-center mb-5 bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent"
+      style="font-family: 'Audiowide', cursive;">দল নিবন্ধন</h2>
 
-    <form id="teamForm"
-      class="form-container p-5 rounded-2xl shadow-xl border border-purple-500 space-y-4 max-w-sm mx-auto">
+    <form id="teamForm"
+      class="form-container p-5 rounded-2xl shadow-xl border border-purple-500 space-y-4 max-w-sm mx-auto">
 
-      <!-- Team Name -->
-      <div>
-        <label for="teamName" class="block text-sm font-semibold mb-2 text-gray-200">দলের নাম</label>
-        <input type="text" id="teamName" name="teamName" required
-          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
-          placeholder="আপনার দলের নাম লিখুন">
-      </div>
+      <!-- Team Name -->
+      <div>
+        <label for="teamName" class="block text-sm font-semibold mb-2 text-gray-200">দলের নাম</label>
+        <input type="text" id="teamName" name="teamName" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
+          placeholder="আপনার দলের নাম লিখুন">
+      </div>
 
-      <!-- ID Rating -->
-      <div>
-        <label for="idRating" class="block text-sm font-semibold mb-2 text-gray-200">আইডি রেটিং</label>
-        <input type="number" id="idRating" step="any" name="idRating" required
-          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
-          placeholder="আপনার আইডি রেটিং লিখুন">
-      </div>
+      <!-- ID Rating -->
+      <div>
+        <label for="idRating" class="block text-sm font-semibold mb-2 text-gray-200">আইডি রেটিং</label>
+        <input type="number" id="idRating" step="any" name="idRating" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
+          placeholder="আপনার আইডি রেটিং লিখুন">
+      </div>
 
-      <!-- Payment Method -->
-      <div>
-        <label for="paymentMethod" class="block text-sm font-semibold mb-2 text-gray-200">পেমেন্ট মাধ্যম</label>
-        <select id="paymentMethod" name="paymentMethod" required
-          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none text-sm">
-          <option value="">মাধ্যম নির্বাচন করুন</option>
-          <option value="bkash">বিকাশ</option>
-          <option value="nagad">নগদ</option>
-        </select>
-        <p class="mt-2 text-xs text-yellow-400 font-semibold text-center">
-          📣 রেজিস্ট্রেশন সম্পূর্ণ করতে হলে অবশ্যই আপনাকে ৩০ টাকা পেমেন্ট করতে হবে। যদি পেমেন্ট না করেন তাহলে আপনার রেজিস্ট্রেশন গ্রহণযোগ্য হবে না।  
-          <br>
-          পেমেন্ট পাঠাতে হবে: <span class="text-green-400">01856549856</span>
-        </p>
-      </div>
+      <!-- Payment Method -->
+      <div>
+        <label for="paymentMethod" class="block text-sm font-semibold mb-2 text-gray-200">পেমেন্ট মাধ্যম</label>
+        <select id="paymentMethod" name="paymentMethod" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none text-sm">
+          <option value="">মাধ্যম নির্বাচন করুন</option>
+          <option value="bkash">বিকাশ</option>
+          <option value="nagad">নগদ</option>
+        </select>
+      </div>
 
-      <!-- Transaction ID -->
-      <div>
-        <label for="trxId" class="block text-sm font-semibold mb-2 text-gray-200">লেনদেন আইডি (TrxID)</label>
-        <input type="text" id="trxId" name="trxId" required
-          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
-          placeholder="আপনার TrxID লিখুন">
-      </div>
+      <!-- Notice Section -->
+      <div class="notice-box text-center">
+        <p class="mt-2 text-xs text-yellow-400 font-semibold">
+          নোটিশ:📣 রেজিস্ট্রেশন সম্পূর্ণ করতে হলে অবশ্যই আপনাকে ৩০ টাকা পেমেন্ট করতে হবে। যদি পেমেন্ট না করেন তাহলে আপনার রেজিস্ট্রেশন গ্রহণযোগ্য হবে না।  
+        </p>
+        <p class="text-white mt-1">পেমেন্ট পাঠাতে হবে: <span class="text-green-400">01856549856</span></p>
+      </div>
 
-      <!-- Submit Button -->
-      <div class="flex justify-center">
-        <button type="submit"
-          class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
-          Submit
-        </button>
-      </div>
-    </form>
-  </main>
+      <!-- Transaction ID -->
+      <div>
+        <label for="trxId" class="block text-sm font-semibold mb-2 text-gray-200">লেনদেন আইডি (TrxID)</label>
+        <input type="text" id="trxId" name="trxId" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
+          placeholder="আপনার TrxID লিখুন">
+      </div>
 
-  <!-- Bottom Navigation -->
-  <nav
-    class="fixed bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
-    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
-        <i class="fa-solid fa-house text-lg"></i>
-      </div>
-      Home
-    </a>
-    <a href="shop.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
-        <i class="fa-solid fa-cart-plus text-lg"></i>
-      </div>
-      DLS Shop
-    </a>
-    <a href="tour.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
-        <i class="fa-solid fa-trophy text-lg"></i>
-      </div>
-      Tour Fixers
-    </a>
-    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
-        <i class="fa-solid fa-ranking-star text-lg"></i>
-      </div>
-      Ranking
-    </a>
-    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
-        <i class="fa-solid fa-user text-lg"></i>
-      </div>
-      Profile
-    </a>
-  </nav>
+      <!-- Submit Button -->
+      <div class="flex justify-center">
+        <button type="submit"
+          class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
+          Submit
+        </button>
+      </div>
+    </form>
+  </main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  <!-- Bottom Navigation -->
+  <nav
+    class="fixed bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
+    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-house text-lg"></i>
+      </div>
+      Home
+    </a>
+    <a href="shop.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-cart-plus text-lg"></i>
+      </div>
+      DLS Shop
+    </a>
+    <a href="tour.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-trophy text-lg"></i>
+      </div>
+      Tour Fixers
+    </a>
+    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-ranking-star text-lg"></i>
+      </div>
+      Ranking
+    </a>
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-user text-lg"></i>
+      </div>
+      Profile
+    </a>
+  </nav>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-      authDomain: "dlstournament-31ac1.firebaseapp.com",
-      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
-      projectId: "dlstournament-31ac1",
-      storageBucket: "dlstournament-31ac1.appspot.com",
-      messagingSenderId: "874377019055",
-      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
-      measurementId: "G-0DGFJEV6GL"
-    };
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+      authDomain: "dlstournament-31ac1.firebaseapp.com",
+      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+      projectId: "dlstournament-31ac1",
+      storageBucket: "dlstournament-31ac1.appspot.com",
+      messagingSenderId: "874377019055",
+      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+      measurementId: "G-0DGFJEV6GL"
+    };
 
-    let currentSessionName = "";
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    // ✅ Tour Setting থেকে Session নাম আনা
-    async function loadSessionName() {
-      const querySnapshot = await getDocs(collection(db, "toursetting"));
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.session) {
-          currentSessionName = data.session;
-        }
-      });
-    }
+    let currentSessionName = "";
 
-    loadSessionName();
+    async function loadSessionName() {
+      const querySnapshot = await getDocs(collection(db, "toursetting"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.session) {
+          currentSessionName = data.session;
+        }
+      });
+    }
 
-    const teamForm = document.getElementById("teamForm");
-    teamForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    loadSessionName();
 
-      const teamName = document.getElementById("teamName").value.trim();
-      const idRating = parseFloat(document.getElementById("idRating").value);
-      const paymentMethod = document.getElementById("paymentMethod").value;
-      const trxId = document.getElementById("trxId").value.trim();
+    const teamForm = document.getElementById("teamForm");
+    teamForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-      try {
-        await addDoc(collection(db, "playerlist"), {
-          teamName,
-          idRating,
-          paymentMethod,
-          trxId,
-          sessionName: currentSessionName,
-          status: "Pending",
-          date: new Date()
-        });
+      const teamName = document.getElementById("teamName").value.trim();
+      const idRating = parseFloat(document.getElementById("idRating").value);
+      const paymentMethod = document.getElementById("paymentMethod").value;
+      const trxId = document.getElementById("trxId").value.trim();
 
-        Swal.fire({
-          icon: 'success',
-          title: 'সফল',
-          text: 'আপনার দল সফলভাবে জমা হয়েছে!',
-          confirmButtonColor: '#6f1287'
-        });
+      try {
+        await addDoc(collection(db, "playerlist"), {
+          teamName,
+          idRating,
+          paymentMethod,
+          trxId,
+          sessionName: currentSessionName,
+          status: "Pending",
+          date: new Date()
+        });
 
-        teamForm.reset();
-      } catch (error) {
-        console.error(error);
-        Swal.fire({
-          icon: 'error',
-          title: 'ত্রুটি',
-          text: 'দুঃখিত, দলে জমা দিতে সমস্যা হয়েছে!',
-          confirmButtonColor: '#dc2626'
-        });
-      }
-    });
-  </script>
+        Swal.fire({
+          icon: 'success',
+          title: 'সফল',
+          text: 'আপনার দল সফলভাবে জমা হয়েছে!',
+          confirmButtonColor: '#6f1287'
+        });
+
+        teamForm.reset();
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'ত্রুটি',
+          text: 'দুঃখিত, দলে জমা দিতে সমস্যা হয়েছে!',
+          confirmButtonColor: '#dc2626'
+        });
+      }
+    });
+  </script>
 
 </body>
 </html>
