@@ -140,8 +140,10 @@
           <option value="bkash">বিকাশ</option>
           <option value="nagad">নগদ</option>
         </select>
-        <p class="mt-2 text-xs text-yellow-400 font-semibold text-center">পেমেন্ট পাঠাতে হবে:
-          <span class="text-green-400">01856549856</span>
+        <p class="mt-2 text-xs text-yellow-400 font-semibold text-center">
+          📣 রেজিস্ট্রেশন সম্পূর্ণ করতে হলে অবশ্যই আপনাকে ৩০ টাকা পেমেন্ট করতে হবে। যদি পেমেন্ট না করেন তাহলে আপনার রেজিস্ট্রেশন গ্রহণযোগ্য হবে না।  
+          <br>
+          পেমেন্ট পাঠাতে হবে: <span class="text-green-400">01856549856</span>
         </p>
       </div>
 
@@ -220,7 +222,7 @@
 
     let currentSessionName = "";
 
-    // ✅ Tour Setting থেকে Session নাম আনা (innerText সেট করা অংশ remove করা হয়েছে)
+    // ✅ Tour Setting থেকে Session নাম আনা
     async function loadSessionName() {
       const querySnapshot = await getDocs(collection(db, "toursetting"));
       querySnapshot.forEach((doc) => {
@@ -248,8 +250,8 @@
           idRating,
           paymentMethod,
           trxId,
-          sessionName: currentSessionName, // ✅ toursetting থেকে session name
-          status: "Pending", // ✅ Default status field
+          sessionName: currentSessionName,
+          status: "Pending",
           date: new Date()
         });
 
