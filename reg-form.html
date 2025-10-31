@@ -114,7 +114,8 @@
 
     <form id="teamForm"
       class="form-container p-5 rounded-2xl shadow-xl border border-purple-500 space-y-4 max-w-sm mx-auto">
-       <p id="sessionName"></p>
+      <p id="sessionName" class="text-center text-yellow-300 font-semibold text-lg mb-3"></p>
+
       <!-- Team Name -->
       <div>
         <label for="teamName" class="block text-sm font-semibold mb-2 text-gray-200">দলের নাম</label>
@@ -200,7 +201,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -217,6 +218,19 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+
+    // ✅ Tour Setting থেকে Session নাম আনা
+    async function loadSessionName() {
+      const querySnapshot = await getDocs(collection(db, "toursetting"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.session) {
+          document.getElementById("sessionName").innerText = `Session: ${data.session.toUpperCase()}`;
+        }
+      });
+    }
+
+    loadSessionName();
 
     const teamForm = document.getElementById("teamForm");
     teamForm.addEventListener("submit", async (e) => {
@@ -257,5 +271,4 @@
   </script>
 
 </body>
-
 </html>
