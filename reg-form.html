@@ -52,7 +52,7 @@
       transition: all 0.3s ease;
     }
 
-    btn:hover {
+    .btn:hover {
       box-shadow: 0 0 20px rgba(180, 0, 255, 0.7);
       transform: scale(1.05);
       background: linear-gradient(to right, #5b21b6, #9333ea, #5b21b6);
@@ -250,7 +250,8 @@
           idRating,
           paymentMethod,
           trxId,
-          sessionName: currentSessionName, // ✅ toursetting থেকে আসা sessionName সেভ হচ্ছে
+          sessionName: currentSessionName, // ✅ toursetting থেকে session name
+          status: "Pending", // ✅ Default status field
           date: new Date()
         });
 
@@ -275,5 +276,4 @@
   </script>
 
 </body>
-  
 </html>
