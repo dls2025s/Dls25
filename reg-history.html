@@ -48,12 +48,13 @@
       text-shadow: 0 0 8px #facc15;
     }
 
-    /* Card design */
     .history-card {
-      background: linear-gradient(135deg, rgba(50, 0, 90, 0.8), rgba(25, 0, 55, 0.9));
+      background: linear-gradient(135deg, rgba(50,0,90,0.8), rgba(25,0,55,0.9));
       border: 1px solid rgba(170, 0, 255, 0.3);
       box-shadow: 0 0 10px rgba(150, 0, 255, 0.2);
       transition: all 0.3s ease;
+      padding: 16px;
+      border-radius: 12px;
     }
 
     .history-card:hover {
@@ -61,14 +62,32 @@
       box-shadow: 0 0 20px rgba(190, 0, 255, 0.5);
     }
 
-    .card-text {
-      color: #e4d9ff;
+    .card-label {
+      color: #d1b3ff;
+      font-weight: 500;
+    }
+
+    .card-value {
+      color: #f5f3ff;
+      font-weight: 600;
+      text-align: right;
     }
 
     .text-gradient {
       background: linear-gradient(to right, #ffcc70, #ff69b4, #d57fff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(200,200,255,0.1);
+    }
+
+    .row:last-child {
+      border-bottom: none;
     }
 
   </style>
@@ -92,7 +111,6 @@
 
   <!-- Main -->
   <main class="flex-grow p-4 md:p-6">
-    <!-- Player Registration History -->
     <div class="max-w-6xl mx-auto">
       <h2 class="text-lg font-semibold text-gradient mb-4 text-center">Registration History</h2>
       <div id="playerList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
@@ -170,7 +188,6 @@
       }
     });
 
-    // Load registration history
     const playerListDiv = document.getElementById("playerList");
     const playerQuery = query(collection(db, "playerlist"), orderBy("date", "desc"));
 
@@ -186,19 +203,16 @@
         const date = data.date?.toDate ? data.date.toDate().toLocaleString() : new Date(data.date).toLocaleString();
 
         const card = `
-          <div class="history-card rounded-xl p-4 shadow-md">
-            <h3 class="text-lg font-semibold text-gradient mb-2">${data.teamName}</h3>
-            <p class="card-text"><strong>ID Rating:</strong> ${data.idRating}</p>
-            <p class="card-text"><strong>Payment:</strong> ${data.paymentMethod}</p>
-            <p class="card-text"><strong>TrxID:</strong> ${data.trxId}</p>
-            <p class="card-text"><strong>Entry Fee:</strong> ${data.entryFee}</p>
-            <p class="card-text"><strong>Session:</strong> ${data.sessionName}</p>
-            <p class="card-text"><strong>Status:</strong> 
-              <span class="font-semibold ${data.status === 'Pending' ? 'text-yellow-400' : data.status === 'Approved' ? 'text-green-400' : 'text-red-400'}">
-                ${data.status}
-              </span>
-            </p>
-            <p class="text-xs text-gray-400 mt-2">📅 ${date}</p>
+          <div class="history-card">
+            <div class="row"><span class="card-label">Team:</span><span class="card-value">${data.teamName}</span></div>
+            <div class="row"><span class="card-label">Id Rating:</span><span class="card-value">${data.idRating}</span></div>
+            <div class="row"><span class="card-label">Session:</span><span class="card-value">${data.sessionName}</span></div>
+            <div class="row"><span class="card-label">Entry Fee:</span><span class="card-value">${data.entryFee}</span></div>
+            <div class="row"><span class="card-label">Payment:</span><span class="card-value">${data.paymentMethod}</span></div>
+            <div class="row"><span class="card-label">Status:</span>
+              <span class="card-value font-semibold ${data.status === 'Pending' ? 'text-yellow-400' : data.status === 'Approved' ? 'text-green-400' : 'text-red-400'}">${data.status}</span>
+            </div>
+            <div class="row"><span class="card-label">Date:</span><span class="card-value">${date}</span></div>
           </div>
         `;
         playerListDiv.innerHTML += card;
