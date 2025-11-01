@@ -1,131 +1,95 @@
 <!DOCTYPE html>
 <html lang="bn">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registration History</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    body {
-      background: radial-gradient(circle at top left, #120024, #220044, #0a0014);
-      color: #f5f3ff;
-      font-family: 'Poppins', sans-serif;
-      min-height: 100vh;
-    }
-
-    .card {
-      background: rgba(30, 0, 60, 0.85);
-      border: 1px solid #9333ea;
-      border-radius: 1rem;
-      box-shadow: 0 0 15px rgba(147, 51, 234, 0.3);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    .card:hover {
-      box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
-      transform: scale(1.02);
-    }
-
-    .header {
-      background: linear-gradient(to right, #1a0033, #2d0055, #1a0033);
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #facc15;
-      text-shadow: 0 0 10px #facc15;
-      border-bottom: 1px solid #9333ea;
-      margin-bottom: 1rem;
-    }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
 </head>
+<body class="bg-gray-900 text-white min-h-screen">
+  <div class="max-w-4xl mx-auto p-4">
+    <h1 class="text-2xl font-bold text-center mb-6">📜 Registration History</h1>
 
-<body>
-  <div class="header">🕹️ Registration History</div>
+    <div id="historyContainer" class="space-y-4 text-gray-200 text-sm">
+      <p class="text-center text-gray-400">Loading registration history...</p>
+    </div>
+  </div>
 
-  <main class="max-w-md mx-auto px-4 pb-24" id="historyContainer">
-    <p class="text-center text-gray-300 text-sm">Loading registration history...</p>
-  </main>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  <nav
-    class="fixed bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500 bg-black/30 backdrop-blur-lg">
-    <a href="dashboard.html" class="flex flex-col items-center text-xs font-semibold text-gray-300">
-      <i class="fa-solid fa-house text-lg mb-1 text-purple-400"></i> Home
-    </a>
-    <a href="teamregistration.html" class="flex flex-col items-center text-xs font-semibold text-gray-300">
-      <i class="fa-solid fa-plus text-lg mb-1 text-purple-400"></i> Register
-    </a>
-    <a href="registration-history.html" class="flex flex-col items-center text-xs font-semibold text-yellow-400">
-      <i class="fa-solid fa-clock-rotate-left text-lg mb-1"></i> History
-    </a>
-  </nav>
+    // 🔥 তোমার Firebase config এখানে দাও
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-    authDomain: "dlstournament-31ac1.firebaseapp.com",
-    projectId: "dlstournament-31ac1",
-    storageBucket: "dlstournament-31ac1.appspot.com",
-    messagingSenderId: "874377019055",
-    appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a"
-  };
+    const historyContainer = document.getElementById("historyContainer");
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  const historyContainer = document.getElementById("historyContainer");
-
-  const q = query(collection(db, "playerlist"), orderBy("date", "desc"));
-  onSnapshot(q, (snapshot) => {
-    historyContainer.innerHTML = "";
-
-    if (snapshot.empty) {
-      historyContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">কোনও রেজিস্ট্রেশন ইতিহাস পাওয়া যায়নি।</p>`;
-      return;
-    }
-
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-
-      // 🔧 Handle date properly (Timestamp or string)
-      let dateString = "";
-      try {
-        if (data.date?.toDate) {
-          dateString = data.date.toDate().toLocaleString();
-        } else if (typeof data.date === "string") {
-          dateString = new Date(data.date).toLocaleString();
-        } else {
-          dateString = "Unknown";
-        }
-      } catch (e) {
-        dateString = "Unknown";
+    // ✅ লগইন ইউজার চেক
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await loadRegistrationHistory();
+      } else {
+        historyContainer.innerHTML = `
+          <p class="text-center text-red-400 mt-10">⚠️ দয়া করে আগে লগইন করুন</p>`;
       }
-
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <h3 class="text-lg font-semibold text-yellow-300 mb-2">${data.teamName || "N/A"}</h3>
-        <p class="text-sm text-gray-300">🎯 ID Rating: <span class="text-purple-300">${data.idRating}</span></p>
-        <p class="text-sm text-gray-300">💳 Payment: <span class="text-purple-300">${data.paymentMethod}</span></p>
-        <p class="text-sm text-gray-300">🔖 TrxID: <span class="text-purple-300">${data.trxId}</span></p>
-        <p class="text-sm text-gray-300">💰 Entry Fee: <span class="text-purple-300">${data.entryFee}</span></p>
-        <p class="text-sm text-gray-300">🏆 Session: <span class="text-purple-300">${data.sessionName}</span></p>
-        <p class="text-sm text-gray-300">📅 Date: <span class="text-purple-300">${dateString}</span></p>
-        <p class="text-sm font-semibold mt-2 ${data.status === "Approved" ? "text-green-400" : data.status === "Rejected" ? "text-red-400" : "text-yellow-400"}">
-          Status: ${data.status}
-        </p>
-      `;
-      historyContainer.appendChild(card);
     });
-  });
-</script>
+
+    // 📜 ডেটা লোড
+    async function loadRegistrationHistory() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "playerlist"));
+
+        if (querySnapshot.empty) {
+          historyContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">কোনো রেজিস্ট্রেশন পাওয়া যায়নি</p>`;
+          return;
+        }
+
+        historyContainer.innerHTML = ""; // clear loading
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const card = document.createElement("div");
+          card.className = "bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700";
+
+          card.innerHTML = `
+            <div class="flex justify-between items-center">
+              <h2 class="text-lg font-semibold text-blue-400">${data.teamName || "N/A"}</h2>
+              <span class="px-2 py-1 text-xs rounded-full ${data.status === "Pending" ? "bg-yellow-600" : "bg-green-600"}">
+                ${data.status || "Unknown"}
+              </span>
+            </div>
+            <div class="mt-2 space-y-1 text-gray-300">
+              <p><b>ID Rating:</b> ${data.idRating || "-"}</p>
+              <p><b>Payment:</b> ${data.paymentMethod || "-"}</p>
+              <p><b>Trx ID:</b> ${data.trxId || "-"}</p>
+              <p><b>Entry Fee:</b> ${data.entryFee || "-"}</p>
+              <p><b>Session:</b> ${data.sessionName || "-"}</p>
+              <p><b>Date:</b> ${data.date ? new Date(data.date).toLocaleString() : "-"}</p>
+            </div>
+          `;
+
+          historyContainer.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error loading registration history:", error);
+        historyContainer.innerHTML = `
+          <p class="text-center text-red-400 mt-10">❌ ডেটা লোড করতে সমস্যা হয়েছে</p>`;
+      }
+    }
+  </script>
 </body>
 </html>
