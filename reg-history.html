@@ -157,17 +157,8 @@
   <!-- Firebase + Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      collection, 
-      query, 
-      orderBy, 
-      onSnapshot 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -183,13 +174,28 @@
     const db = getFirestore(app);
 
     onAuthStateChanged(auth, user => {
-      if (!user) {
-        window.location.href = "login.html";
-      }
+      if (!user) window.location.href = "login.html";
     });
 
     const playerListDiv = document.getElementById("playerList");
     const playerQuery = query(collection(db, "playerlist"), orderBy("date", "desc"));
+
+    function formatDate(date) {
+      const d = new Date(date);
+      const day = String(d.getDate()).padStart(2, '0');
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = monthNames[d.getMonth()];
+      const year = d.getFullYear();
+
+      let hours = d.getHours();
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      const seconds = String(d.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const time = `${hours}:${minutes}:${seconds} ${ampm}`;
+      return `${day}, ${month}, ${year}, ${time}`;
+    }
 
     onSnapshot(playerQuery, (snapshot) => {
       playerListDiv.innerHTML = "";
@@ -200,7 +206,7 @@
 
       snapshot.forEach((doc) => {
         const data = doc.data();
-        const date = data.date?.toDate ? data.date.toDate().toLocaleString() : new Date(data.date).toLocaleString();
+        const dateStr = formatDate(data.date?.toDate ? data.date.toDate() : data.date);
 
         const card = `
           <div class="history-card">
@@ -212,7 +218,7 @@
             <div class="row"><span class="card-label">Status:</span>
               <span class="card-value font-semibold ${data.status === 'Pending' ? 'text-yellow-400' : data.status === 'Approved' ? 'text-green-400' : 'text-red-400'}">${data.status}</span>
             </div>
-            <div class="row"><span class="card-label">Date:</span><span class="card-value">${date}</span></div>
+            <div class="row"><span class="card-label">Date:</span><span class="card-value">${dateStr}</span></div>
           </div>
         `;
         playerListDiv.innerHTML += card;
