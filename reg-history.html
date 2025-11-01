@@ -65,53 +65,67 @@
     </a>
   </nav>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-      authDomain: "dlstournament-31ac1.firebaseapp.com",
-      projectId: "dlstournament-31ac1",
-      storageBucket: "dlstournament-31ac1.appspot.com",
-      messagingSenderId: "874377019055",
-      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+    authDomain: "dlstournament-31ac1.firebaseapp.com",
+    projectId: "dlstournament-31ac1",
+    storageBucket: "dlstournament-31ac1.appspot.com",
+    messagingSenderId: "874377019055",
+    appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    const historyContainer = document.getElementById("historyContainer");
+  const historyContainer = document.getElementById("historyContainer");
 
-    // Realtime listener for playerlist
-    const q = query(collection(db, "playerlist"), orderBy("date", "desc"));
-    onSnapshot(q, (snapshot) => {
-      historyContainer.innerHTML = "";
+  const q = query(collection(db, "playerlist"), orderBy("date", "desc"));
+  onSnapshot(q, (snapshot) => {
+    historyContainer.innerHTML = "";
 
-      if (snapshot.empty) {
-        historyContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">কোনও রেজিস্ট্রেশন ইতিহাস পাওয়া যায়নি।</p>`;
-        return;
+    if (snapshot.empty) {
+      historyContainer.innerHTML = `<p class="text-center text-gray-400 mt-10">কোনও রেজিস্ট্রেশন ইতিহাস পাওয়া যায়নি।</p>`;
+      return;
+    }
+
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+
+      // 🔧 Handle date properly (Timestamp or string)
+      let dateString = "";
+      try {
+        if (data.date?.toDate) {
+          dateString = data.date.toDate().toLocaleString();
+        } else if (typeof data.date === "string") {
+          dateString = new Date(data.date).toLocaleString();
+        } else {
+          dateString = "Unknown";
+        }
+      } catch (e) {
+        dateString = "Unknown";
       }
 
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const date = data.date?.toDate ? data.date.toDate().toLocaleString() : new Date(data.date).toLocaleString();
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <h3 class="text-lg font-semibold text-yellow-300 mb-2">${data.teamName || "N/A"}</h3>
-          <p class="text-sm text-gray-300">🎯 ID Rating: <span class="text-purple-300">${data.idRating}</span></p>
-          <p class="text-sm text-gray-300">💳 Payment Method: <span class="text-purple-300">${data.paymentMethod}</span></p>
-          <p class="text-sm text-gray-300">🔖 TrxID: <span class="text-purple-300">${data.trxId}</span></p>
-          <p class="text-sm text-gray-300">💰 Entry Fee: <span class="text-purple-300">${data.entryFee}</span></p>
-          <p class="text-sm text-gray-300">🏆 Session: <span class="text-purple-300">${data.sessionName}</span></p>
-          <p class="text-sm text-gray-300">📅 Date: <span class="text-purple-300">${date}</span></p>
-          <p class="text-sm font-semibold mt-2 ${data.status === "Approved" ? "text-green-400" : data.status === "Rejected" ? "text-red-400" : "text-yellow-400"}">Status: ${data.status}</p>
-        `;
-        historyContainer.appendChild(card);
-      });
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h3 class="text-lg font-semibold text-yellow-300 mb-2">${data.teamName || "N/A"}</h3>
+        <p class="text-sm text-gray-300">🎯 ID Rating: <span class="text-purple-300">${data.idRating}</span></p>
+        <p class="text-sm text-gray-300">💳 Payment: <span class="text-purple-300">${data.paymentMethod}</span></p>
+        <p class="text-sm text-gray-300">🔖 TrxID: <span class="text-purple-300">${data.trxId}</span></p>
+        <p class="text-sm text-gray-300">💰 Entry Fee: <span class="text-purple-300">${data.entryFee}</span></p>
+        <p class="text-sm text-gray-300">🏆 Session: <span class="text-purple-300">${data.sessionName}</span></p>
+        <p class="text-sm text-gray-300">📅 Date: <span class="text-purple-300">${dateString}</span></p>
+        <p class="text-sm font-semibold mt-2 ${data.status === "Approved" ? "text-green-400" : data.status === "Rejected" ? "text-red-400" : "text-yellow-400"}">
+          Status: ${data.status}
+        </p>
+      `;
+      historyContainer.appendChild(card);
     });
-  </script>
+  });
+</script>
 </body>
 </html>
