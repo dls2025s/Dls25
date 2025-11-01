@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -59,6 +58,24 @@
       }
     });
 
+    // ✅ Custom date format function
+    function formatDate(date) {
+      const d = new Date(date);
+      const day = String(d.getDate()).padStart(2, '0');
+      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const month = monthNames[d.getMonth()];
+      const year = d.getFullYear();
+
+      let hours = d.getHours();
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      const seconds = String(d.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 -> 12
+
+      return `${day}, ${month}, ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
+    }
+
     const playerListDiv = document.getElementById("playerList");
     const playerQuery = query(collection(db, "playerlist"), orderBy("date", "desc"));
 
@@ -71,7 +88,7 @@
 
       snapshot.forEach((doc) => {
         const data = doc.data();
-        const date = data.date?.toDate ? data.date.toDate().toLocaleString() : new Date(data.date).toLocaleString();
+        const date = data.date?.toDate ? formatDate(data.date.toDate()) : formatDate(data.date);
 
         const card = `
           <div class="border border-gray-300 rounded-lg p-4 bg-gradient-to-br from-white to-gray-100 shadow hover:shadow-lg transition">
