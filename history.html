@@ -24,7 +24,7 @@
   <!-- Main -->
   <main class="flex-grow p-4 md:p-6">
     <!-- Player Registration History -->
-    <div class="max-w-6xl mx-auto p-4">
+    <div class="max-w-6xl mx-auto">
       <div id="playerList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         <p class="text-gray-500 text-sm text-center">Loading...</p>
       </div>
@@ -96,8 +96,8 @@
               <span class="font-semibold">Team:</span> <span class="text-right text-gray-800 font-medium">${data.teamName}</span>
               <span class="font-semibold">ID Rating:</span> <span class="text-right text-gray-800 font-medium">${data.idRating}</span>
               <span class="font-semibold">Session:</span> <span class="text-right text-gray-800 font-medium">${data.sessionName}</span>
-              <span class="font-semibold">Entry Fee:</span> <span class="text-right text-gray-800 font-medium">${data.entryFee}</span>
-              <span class="font-semibold">Payment:</span> <span class="text-right text-gray-800 font-medium">${data.paymentMethod}</span>
+              <span class="font-semibold">Payment:</span> <span class="text-right text-gray-800 font-medium">৳${data.entryFee}</span>
+              <span class="font-semibold">Method:</span> <span class="text-right text-gray-800 font-medium">${data.paymentMethod}</span>
               <span class="font-semibold">TrxID:</span> <span class="text-right text-gray-800 font-medium">${data.trxId}</span>
               <span class="font-semibold">Status:</span> 
               <span class="text-right font-semibold ${data.status === 'Pending' ? 'text-yellow-600' : data.status === 'Approved' ? 'text-green-600' : 'text-red-600'}">
