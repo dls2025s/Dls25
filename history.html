@@ -30,25 +30,13 @@
         <p class="text-gray-500 text-sm">Loading...</p>
       </div>
     </div>
-    
   </main>
 
   <!-- Firebase + Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { 
-      getAuth, 
-      onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      collection, 
-      addDoc, 
-      serverTimestamp, 
-      onSnapshot, 
-      query, 
-      orderBy 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -71,7 +59,6 @@
       }
     });
 
-    // ✅ Load playerlist data and display
     const playerListDiv = document.getElementById("playerList");
     const playerQuery = query(collection(db, "playerlist"), orderBy("date", "desc"));
 
@@ -88,18 +75,19 @@
 
         const card = `
           <div class="border border-gray-300 rounded-lg p-4 bg-gradient-to-br from-white to-gray-100 shadow hover:shadow-lg transition">
-            <h3 class="text-lg font-bold text-blue-700 mb-2">${data.teamName}</h3>
-            <p class="text-sm text-gray-700"><strong>ID Rating:</strong> ${data.idRating}</p>
-            <p class="text-sm text-gray-700"><strong>Payment:</strong> ${data.paymentMethod}</p>
-            <p class="text-sm text-gray-700"><strong>TrxID:</strong> ${data.trxId}</p>
-            <p class="text-sm text-gray-700"><strong>Entry Fee:</strong> ${data.entryFee}</p>
-            <p class="text-sm text-gray-700"><strong>Session:</strong> ${data.sessionName}</p>
-            <p class="text-sm text-gray-700"><strong>Status:</strong> 
-              <span class="font-semibold ${data.status === 'Pending' ? 'text-yellow-600' : data.status === 'Approved' ? 'text-green-600' : 'text-red-600'}">
+            <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+              <span class="font-semibold">Team:</span> <span class="text-right text-gray-800 font-medium">${data.teamName}</span>
+              <span class="font-semibold">ID Rating:</span> <span class="text-right text-gray-800 font-medium">${data.idRating}</span>
+              <span class="font-semibold">Session:</span> <span class="text-right text-gray-800 font-medium">${data.sessionName}</span>
+              <span class="font-semibold">Entry Fee:</span> <span class="text-right text-gray-800 font-medium">${data.entryFee}</span>
+              <span class="font-semibold">Payment:</span> <span class="text-right text-gray-800 font-medium">${data.paymentMethod}</span>
+              <span class="font-semibold">Status:</span> 
+              <span class="text-right font-semibold ${data.status === 'Pending' ? 'text-yellow-600' : data.status === 'Approved' ? 'text-green-600' : 'text-red-600'}">
                 ${data.status}
               </span>
-            </p>
-            <p class="text-xs text-gray-500 mt-2">Date: ${date}</p>
+              <span class="font-semibold">TrxID:</span> <span class="text-right text-gray-800 font-medium">${data.trxId}</span>
+              <span class="font-semibold">Date:</span> <span class="text-right text-gray-500 text-xs">${date}</span>
+            </div>
           </div>
         `;
         playerListDiv.innerHTML += card;
