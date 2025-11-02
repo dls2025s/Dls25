@@ -28,11 +28,6 @@
       animation: spin 3s linear infinite;
     }
 
-    #bannerToggle {
-      margin: 0.5rem 0.3rem;
-      background: rgba(126,34,206,0.3);
-    }
-
     .top-links {
       margin: 0.5rem 0.3rem;
       display: flex;
@@ -332,7 +327,8 @@
     </a>
   </section>
 
-  <section id="bannerToggle" class="max-w-md mx-auto px-3 mb-3">
+  <div class="px-3">
+  <section id="bannerToggle" class="bg-gradient-to-r from-purple-900 via-blue-800 to-purple-900 text-center py-1 px-1 shadow-lg border border-blue-500 mb-3">
     <!-- ✅ Registration Countdown -->
     <div class="flex justify-center gap-2">
       <h4 class="text-xs text-blue-200 font-semibold mb-1">Registration Close Time</h4>
@@ -349,6 +345,7 @@
       </a></h3>
 
   </section>
+  </div>
 
   <!-- Sidebar -->
   <div id="overlay" class="fixed inset-0 bg-black z-40"></div>
