@@ -621,13 +621,8 @@ function renderFixers() {
   let html = "";
 
   sortedMatchdays.forEach((md, index) => {
-    const matchdayId = `matchday-${index + 1}`;
+    const matchdayId = `match-day-${index + 1}`;
     if (hiddenMatchdays[matchdayId]) return;
-
-    const firstDate = matchdaysMap[md][0]?.date || "";
-    html += `<div class="bg-yellow-400 rounded-lg bg-opacity-40 py-1 px-3 text-md font-semibold uppercase text-yellow-300 mb-2 flex justify-center items-center">
-              ${md} || ${firstDate ? formatDateAndTime(firstDate) : ""}
-            </div>`;
 
     matchdaysMap[md]
       .sort((a, b) => a.groupName.localeCompare(b.groupName) || a.team1.localeCompare(b.team1))
@@ -716,7 +711,6 @@ logoutBtn.addEventListener("click", async () => {
   }
 });
 </script>
-
 
 </body>
 </html>
