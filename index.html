@@ -217,6 +217,28 @@
       box-shadow: 0 4px 10px rgba(40, 10, 80, 0.18);
       backdrop-filter: blur(3px);
     }
+
+    nav {
+      background: linear-gradient(to right, #1a0033, #26004a, #1a0033);
+      box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
+    }
+    .nav-item {
+      color: #d1b3ff;
+      transition: all 0.3s ease;
+    }
+    .nav-item i {
+      color: #c084fc;
+      transition: all 0.3s ease;
+    }
+    .nav-item:hover i {
+      color: #facc15;
+      transform: scale(1.25);
+      text-shadow: 0 0 10px #facc15;
+    }
+    .nav-item:hover {
+      color: #facc15;
+      text-shadow: 0 0 8px #facc15;
+    }
     @media (min-width: 640px) {
       main {
         max-width: 560px;
