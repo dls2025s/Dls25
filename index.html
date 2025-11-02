@@ -23,6 +23,34 @@
     .header-glow {
       box-shadow: 0 0 15px rgba(150, 0, 255, 0.4), 0 0 25px rgba(128, 0, 255, 0.2);
     }
+
+    .top-links {
+      margin: 0.5rem 0.3rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .top-links a {
+      flex: 1;
+      background: rgba(126, 34, 206, 0.4);
+      border: 1px solid rgba(126, 34, 206, 0.25);
+      box-shadow: 0 0 15px rgba(128,0,255,0.2);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.3s ease;
+    }
+    .top-links a:hover {
+      background: rgba(126, 34, 206, 0.4);
+      color: #facc15;
+    }
     
     .user-icon-glow {
       box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
@@ -264,6 +292,18 @@
       </button>
     </div>
   </header>
+
+  <section class="max-w-md mx-auto top-links">
+    <a href="fixers.html">
+      <i class="fa-solid fa-trophy"></i> Tour Fixers
+    </a>
+    <a href="point-table.html">
+      <i class="fa-solid fa-table"></i> Point Table
+    </a>
+    <a href="rules.html">
+      <i class="fa-solid fa-book"></i> Tour Rules
+    </a>
+  </section>
 
   <section id="bannerToggle" class="bg-gradient-to-r from-purple-900 via-blue-800 to-purple-900 text-center py-1 px-1 shadow-lg border border-blue-500 mb-3">
     <!-- ✅ Registration Countdown -->
