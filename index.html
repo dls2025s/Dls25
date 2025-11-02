@@ -223,10 +223,29 @@
     .score-box {
       min-width: 110px;
       text-align: center;
-      margin-top: 5px;
+      margin-top: 23px;
     }
+
     .date-box {
       font-size: 11px;
+      font-weight: 600;
+      color: #dec24c;
+      margin-top: 1px;
+    }
+
+    .matchday-box {
+      width: 65px;
+      font-size: 4px;
+      font-weight: 600;
+      background: rgba(126,34,206,0.3);
+      color: #fff;
+      padding: 0px 2px;
+      border-radius: 4px;
+      border: 1px solid #7e22ce;
+      text-align: center;
+      margin: 2px auto 0 auto;
+      display: block;
+      text-transform: uppercase;
     }
     .Rating-box {
       display: flex;
@@ -632,7 +651,7 @@ function renderFixers() {
           <div class="score-box text-center">
             <p class="text-3xl font-bold">${t1GoalVal} : ${t2GoalVal}</p>
             <p class="date-box text-xs text-gray-300 mt-1 font-semibold">${formattedDate}</p>
-            <p class="matchday-box text-[10px] bg-gray-200 rounded px-1 py-0.5 mt-1 text-gray-500 font-semibold text-center">${md}</p>
+            <p class="matchday-box">${md}</p>
           </div>
           <div class="team-stack">
             <img src="${team2Img}" class="team-logo" alt="${match.team2}">
