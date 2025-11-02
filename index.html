@@ -632,6 +632,7 @@ function renderFixers() {
           <div class="score-box text-center">
             <p class="text-3xl font-bold">${t1GoalVal} : ${t2GoalVal}</p>
             <p class="date-box text-xs text-gray-300 mt-1 font-semibold">${formattedDate}</p>
+            <p class="matchday-box text-[10px] bg-gray-200 rounded px-1 py-0.5 mt-1 text-gray-500 font-semibold text-center">${md}</p>
           </div>
           <div class="team-stack">
             <img src="${team2Img}" class="team-logo" alt="${match.team2}">
@@ -696,7 +697,6 @@ logoutBtn.addEventListener("click", async () => {
   }
 });
 </script>
-
 
 
 </body>
