@@ -22,30 +22,23 @@
       box-shadow: 0 0 20px rgba(155, 0, 255, 0.4), 0 0 30px rgba(128, 0, 255, 0.2);
     }
 
-    nav {
-      background: linear-gradient(to right, #12002a, #1e0040, #12002a);
+    .nav-bottom {
       box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
     }
-
+    
+    .nav-box {
+      background: rgba(126, 34, 206, 0.25);
+    }
     .nav-item {
-      color: #cdb4ff;
+      color: #d0d1d1;
       transition: all 0.3s ease;
     }
-
     .nav-item i {
       color: #c084fc;
       transition: all 0.3s ease;
     }
-
     .nav-item:hover i {
       color: #facc15;
-      transform: scale(1.25);
-      text-shadow: 0 0 10px #facc15;
-    }
-
-    .nav-item:hover {
-      color: #facc15;
-      text-shadow: 0 0 8px #facc15;
     }
 
     .history-card {
@@ -139,40 +132,39 @@
   </main>
 
   <!-- Bottom Navigation -->
-  <nav
-    class="fixed bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
+  <nav class="nav-bottom fixed bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
     <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
         <i class="fa-solid fa-house text-lg"></i>
       </div>
       Home
     </a>
     <a href="shop.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
         <i class="fa-solid fa-cart-plus text-lg"></i>
       </div>
       DLS Shop
     </a>
     <a href="tour.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
         <i class="fa-solid fa-trophy text-lg"></i>
       </div>
-      Tour Fixers
+      Tour Match
     </a>
     <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
         <i class="fa-solid fa-ranking-star text-lg"></i>
       </div>
       Ranking
     </a>
     <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
-      <div class="bg-black/40 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
         <i class="fa-solid fa-user text-lg"></i>
       </div>
       Profile
     </a>
   </nav>
-
+    
   <!-- Firebase + Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
