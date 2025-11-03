@@ -61,22 +61,25 @@
     .nav-bottom {
       box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
     }
-    
+
     .nav-box {
       background: rgba(126, 34, 206, 0.25);
     }
+
     .nav-item {
       color: #d0d1d1;
       transition: all 0.3s ease;
     }
+
     .nav-item i {
       color: #c084fc;
       transition: all 0.3s ease;
     }
+
     .nav-item:hover i {
       color: #facc15;
     }
-    
+
     ::placeholder {
       color: #b0a7c3;
     }
@@ -247,7 +250,7 @@
     let currentSessionName = "";
     let entryFee = "";
 
-    // ✅ Real-time onSnapshot listener for toursetting
+    // ✅ Real-time toursetting listener
     onSnapshot(collection(db, "toursetting"), (snapshot) => {
       snapshot.forEach((doc) => {
         const data = doc.data();
@@ -257,6 +260,7 @@
       document.getElementById("entryFee").innerText = entryFee || "—";
     });
 
+    // ✅ Team form submit event
     const teamForm = document.getElementById("teamForm");
     teamForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -266,17 +270,21 @@
       const paymentMethod = document.getElementById("paymentMethod").value;
       const trxId = document.getElementById("trxId").value.trim();
 
+      const formData = {
+        teamName,
+        idRating,
+        paymentMethod,
+        trxId,
+        entryFee: entryFee,
+        sessionName: currentSessionName,
+        status: "Pending",
+        date: new Date()
+      };
+
       try {
-        await addDoc(collection(db, "playerlist"), {
-          teamName,
-          idRating,
-          paymentMethod,
-          trxId,
-          entryFee: entryFee, // ✅ Automatically save entryFee
-          sessionName: currentSessionName,
-          status: "Pending",
-          date: new Date()
-        });
+        // ✅ Save to both collections
+        await addDoc(collection(db, "playerlist"), formData);
+        await addDoc(collection(db, "reghistory"), formData);
 
         Swal.fire({
           icon: 'success',
@@ -297,7 +305,7 @@
       }
     });
 
-    // Copy Payment Number
+    // ✅ Copy Payment Number
     const paymentBox = document.getElementById("paymentBox");
     paymentBox.addEventListener("click", async () => {
       const number = document.getElementById("paymentNumber").innerText;
