@@ -288,7 +288,18 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    
+    // ===== Simulated Firestore Loading =====
+    window.addEventListener('load', async () => {
+      try {
+        // Simulate fetching Firestore data
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Hide loader and show main content
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('mainContent').style.display = 'block';
+      } catch (err) {
+        console.error('Error loading data:', err);
+      }
+    });
   </script>
 
 </body>
