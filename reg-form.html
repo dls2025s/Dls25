@@ -229,7 +229,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -265,24 +265,54 @@
     teamForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      const user = auth.currentUser;
+      if (!user) {
+        Swal.fire({
+          icon: 'error',
+          title: 'লগইন প্রয়োজন',
+          text: 'দল নিবন্ধনের আগে লগইন করুন!',
+          confirmButtonColor: '#dc2626'
+        });
+        return;
+      }
+
+      const uid = user.uid;
       const teamName = document.getElementById("teamName").value.trim();
       const idRating = parseFloat(document.getElementById("idRating").value);
       const paymentMethod = document.getElementById("paymentMethod").value;
       const trxId = document.getElementById("trxId").value.trim();
 
-      const formData = {
-        teamName,
-        idRating,
-        paymentMethod,
-        trxId,
-        entryFee: entryFee,
-        sessionName: currentSessionName,
-        status: "Pending",
-        date: new Date()
-      };
-
       try {
-        // ✅ Save to both collections
+        // 🔍 Check if user already registered with Pending or Approved
+        const q = query(collection(db, "playerlist"),
+          where("uid", "==", uid),
+          where("status", "in", ["Pending", "Approved"])
+        );
+        const existing = await getDocs(q);
+
+        if (!existing.empty) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Already Registration Successful',
+            text: 'আপনি ইতিমধ্যেই একটি দল নিবন্ধন করেছেন!',
+            confirmButtonColor: '#f59e0b'
+          });
+          return;
+        }
+
+        // ✅ Proceed if not already registered
+        const formData = {
+          uid,
+          teamName,
+          idRating,
+          paymentMethod,
+          trxId,
+          entryFee: entryFee,
+          sessionName: currentSessionName,
+          status: "Pending",
+          date: new Date()
+        };
+
         await addDoc(collection(db, "playerlist"), formData);
         await addDoc(collection(db, "reghistory"), formData);
 
