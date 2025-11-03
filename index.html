@@ -20,6 +20,7 @@
       font-family: 'Poppins', sans-serif;
       min-height: 100vh;
     }
+
     .header-glow {
       box-shadow: 0 0 15px rgba(150, 0, 255, 0.4), 0 0 25px rgba(128, 0, 255, 0.2);
     }
@@ -34,11 +35,12 @@
       justify-content: space-between;
       gap: 0.5rem;
     }
+
     .top-links a {
       flex: 1;
       background: rgba(126, 34, 206, 0.4);
       border: 1px solid rgba(126, 34, 206, 0.25);
-      box-shadow: 0 0 15px rgba(128,0,255,0.2);
+      box-shadow: 0 0 15px rgba(128, 0, 255, 0.2);
       color: #fff;
       font-size: 0.8rem;
       font-weight: 600;
@@ -51,11 +53,12 @@
       gap: 0.4rem;
       transition: all 0.3s ease;
     }
+
     .top-links a:hover {
       background: rgba(126, 34, 206, 0.4);
       color: #facc15;
     }
-    
+
     .user-icon-glow {
       box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
     }
@@ -63,6 +66,9 @@
     #sidebar {
       transition: transform 0.3s ease-in-out;
       transform: translateX(-100%);
+      background: radial-gradient(circle at top left, #120024, #220044, #0a0014);
+      border-right: 1px solid rgba(126, 34, 206, 0.4);
+      box-shadow: 0 0 30px rgba(128, 0, 255, 0.2);
     }
 
     #sidebar.active {
@@ -86,8 +92,9 @@
       gap: 10px;
       padding: 8px 10px;
       border-radius: 8px;
-      background-color: rgba(30, 30, 30, 0.7);
+      background-color: rgba(40, 0, 90, 0.45);
       transition: all 0.3s ease;
+      color: #ddd;
     }
 
     #sidebar nav a:hover {
@@ -97,7 +104,7 @@
     }
 
     #sidebar nav a i {
-      color: #ccc;
+      color: #c084fc;
       transition: color 0.3s ease;
     }
 
@@ -164,24 +171,27 @@
       min-height: 120px;
       background: linear-gradient(145deg, rgba(26, 0, 51, 0.7), rgba(42, 0, 80, 0.7));
     }
+
     .match-card::before {
       content: '';
       position: absolute;
       margin-top: 10px;
       inset: 0;
-      background: 
-        linear-gradient(rgba(42, 0, 80, 0.4), rgba(42, 0, 80, 0.4)), 
+      background:
+        linear-gradient(rgba(42, 0, 80, 0.4), rgba(42, 0, 80, 0.4)),
         url('9864.png') center/cover no-repeat;
       filter: blur(2px) brightness(0.6);
       z-index: 0;
     }
+
     .match-card > * {
       position: relative;
       z-index: 1;
     }
+
     .league-badge {
       position: absolute;
-      top: 0px; 
+      top: 0px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(126, 34, 206, 0.25);
@@ -198,6 +208,7 @@
       white-space: nowrap;
       text-transform: uppercase;
     }
+
     .team-stack {
       margin-top: 10px;
       display: flex;
@@ -206,6 +217,7 @@
       gap: 1px;
       min-width: 100px;
     }
+
     .team-name {
       font-size: 0.62rem;
       font-weight: 600;
@@ -214,6 +226,7 @@
       text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
       text-transform: uppercase;
     }
+
     .team-logo {
       width: 44px;
       height: 44px;
@@ -224,6 +237,7 @@
       border: 2px solid #9746cceb;
       box-shadow: 0 6px 18px rgba(34, 0, 68, 0.35);
     }
+
     .score-box {
       min-width: 110px;
       text-align: center;
@@ -241,7 +255,7 @@
       width: 60px;
       font-size: 8px;
       font-weight: 600;
-      background: rgba(126,34,206,0.3);
+      background: rgba(126, 34, 206, 0.3);
       color: #fff;
       padding: 0px 2px;
       border-radius: 4px;
@@ -251,6 +265,7 @@
       display: block;
       text-transform: uppercase;
     }
+
     .Rating-box {
       display: flex;
       justify-content: center;
@@ -269,25 +284,28 @@
       backdrop-filter: blur(3px);
     }
 
-   .nav-bottom {
+    .nav-bottom {
       box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
     }
-    
+
     .nav-box {
       background: rgba(126, 34, 206, 0.25);
     }
+
     .nav-item {
       color: #d0d1d1;
       transition: all 0.3s ease;
     }
+
     .nav-item i {
       color: #c084fc;
       transition: all 0.3s ease;
     }
+
     .nav-item:hover i {
       color: #facc15;
     }
-     
+
     @media (min-width: 640px) {
       main {
         max-width: 560px;
