@@ -631,7 +631,7 @@ function startCountdown(endTimeStr, element) {
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-// ✅ Render Fixers with NEW MATCH CARD DESIGN
+// ✅ Render Fixers with current date filter
 function renderFixers() {
   const fixersContainer = document.getElementById("fixers-list");
   if (!fixersData.length) {
@@ -639,8 +639,26 @@ function renderFixers() {
     return;
   }
 
+  // ✅ Current date (Bangladesh local)
+  const today = new Date();
+  const todayStr = today.toISOString().split("T")[0]; // YYYY-MM-DD
+
+  // ✅ Filter matches that match today's date only
+  const todayMatches = fixersData.filter(fix => {
+    if (!fix.date) return false;
+    const matchDate = new Date(fix.date);
+    const matchStr = matchDate.toISOString().split("T")[0];
+    return matchStr === todayStr;
+  });
+
+  if (!todayMatches.length) {
+    fixersContainer.innerHTML = `<p class="text-center text-gray-400">No matches scheduled for today.</p>`;
+    return;
+  }
+
+  // ✅ Group today's matches by matchday
   const matchdaysMap = {};
-  fixersData.forEach(fix => {
+  todayMatches.forEach(fix => {
     const md = fix.matchday || "Matchday-Unknown";
     if (!matchdaysMap[md]) matchdaysMap[md] = [];
     matchdaysMap[md].push(fix);
@@ -740,6 +758,7 @@ logoutBtn.addEventListener("click", async () => {
   }
 });
 </script>
+
 
 </body>
 </html>
