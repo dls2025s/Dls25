@@ -593,7 +593,7 @@ function subscribeBannerStatus() {
   });
 }
 
-// ✅ Countdown (Now includes Days)
+// ✅ Countdown (Updated format 1D:2H:30M:20S)
 function startCountdown(endTimeStr, element) {
   clearInterval(countdownInterval);
   const endTime = new Date(endTimeStr).getTime();
@@ -621,15 +621,14 @@ function startCountdown(endTimeStr, element) {
       return;
     }
 
-    // ✅ Calculate days, hours, minutes, seconds
     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
     const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((distance / (1000 * 60)) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    // ✅ Display with day if more than 0 day left
+    // ✅ Show "1D:2H:30M:20S" format
     if (days > 0) {
-      element.textContent = `${days.toString().padStart(2, "0")}D:${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
+      element.textContent = `${days}D:${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
     } else {
       element.textContent = `${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
     }
@@ -767,4 +766,4 @@ logoutBtn.addEventListener("click", async () => {
 
 
 </body>
-</html>
+        </html>
