@@ -593,57 +593,10 @@ function subscribeBannerStatus() {
   });
 }
 
-/*
-  Robust countdown:
-  - parseDateFlexible tries different parsing strategies and appends local GMT offset if needed
-  - displays TOTAL hours (not hours % 24) so "31h 29m" shows as 31 hours, etc.
-*/
-function parseDateFlexible(dateStr) {
-  if (!dateStr) return null;
-
-  // 1) Try direct Date parsing first
-  let parsed = new Date(dateStr);
-  if (!isNaN(parsed.getTime())) return parsed;
-
-  // 2) If direct fails (or gives an earlier date), append local GMT offset (e.g., "GMT+0600")
-  const tzOffsetMin = new Date().getTimezoneOffset(); // minutes to add to local -> UTC
-  // convert to GMT sign format: getTimezoneOffset for UTC+6 -> -360
-  const sign = tzOffsetMin <= 0 ? '+' : '-';
-  const absMin = Math.abs(tzOffsetMin);
-  const hh = String(Math.floor(absMin / 60)).padStart(2, '0');
-  const mm = String(absMin % 60).padStart(2, '0');
-  const gmtSuffix = ` GMT${sign}${hh}${mm}`;
-
-  parsed = new Date(dateStr + gmtSuffix);
-  if (!isNaN(parsed.getTime())) return parsed;
-
-  // 3) Try interpreting as ISO if it uses slashes (convert MM/DD/YYYY to YYYY-MM-DD)
-  // Attempt to detect common US format MM/DD/YYYY or DD/MM/YYYY — best effort:
-  const m = dateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-  if (m) {
-    const part1 = Number(m[1]), part2 = Number(m[2]), part3 = Number(m[3]);
-    // assume mm/dd/yyyy common in your data — if this fails you may need server-side ISO dates
-    const iso = `${part3}-${String(part1).padStart(2,'0')}-${String(part2).padStart(2,'0')}`;
-    parsed = new Date(iso + (dateStr.includes(':') ? ' ' + dateStr.split(' ')[1] : '') + gmtSuffix);
-    if (!isNaN(parsed.getTime())) return parsed;
-  }
-
-  // fallback: Date.parse
-  const fallback = new Date(Date.parse(dateStr));
-  if (!isNaN(fallback.getTime())) return fallback;
-
-  return null;
-}
-
+// ✅ Countdown with Days:Hours:Minutes:Seconds
 function startCountdown(endTimeStr, element) {
   clearInterval(countdownInterval);
-
-  const endDateObj = parseDateFlexible(endTimeStr);
-  if (!endDateObj) {
-    element.textContent = "Invalid date";
-    return;
-  }
-  const endTime = endDateObj.getTime();
+  const endTime = new Date(endTimeStr).getTime();
 
   async function deactivateTournament() {
     if (activeDocId) {
@@ -659,27 +612,21 @@ function startCountdown(endTimeStr, element) {
 
   function updateCountdown() {
     const now = new Date().getTime();
-    let distance = endTime - now;
+    const distance = endTime - now;
     if (distance <= 0) {
       clearInterval(countdownInterval);
-      element.textContent = "00H:00M:00S";
+      element.textContent = "00D:00H:00M:00S";
       deactivateTournament();
       return;
     }
 
-    // compute total hours (not modulo 24) if you want total hours
-    const totalHours = Math.floor(distance / (1000 * 60 * 60));
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((distance / (1000 * 60)) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    // If you prefer days + hours display instead, uncomment below and comment out totalHours form:
-    // const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    // const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-    // element.textContent = `${String(days).padStart(2,'0')}D:${String(hours).padStart(2,'0')}H:${String(minutes).padStart(2,'0')}M:${String(seconds).padStart(2,'0')}S`;
-
-    // Show total hours format (so 1 day +7 hours = 31H)
-    element.textContent =
-      `${String(totalHours).padStart(2, "0")}H:${String(minutes).padStart(2, "0")}M:${String(seconds).padStart(2, "0")}S`;
+    element.textContent = 
+      `${days.toString().padStart(2, "0")}D:${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
   }
 
   updateCountdown();
@@ -816,4 +763,4 @@ logoutBtn.addEventListener("click", async () => {
 
 
 </body>
-</html>
+                                                  </html>
