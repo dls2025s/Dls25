@@ -484,20 +484,23 @@ const auth = getAuth(app);
 await setPersistence(auth, browserLocalPersistence);
 
 let teamPhotos = {};
+let teamRatings = {}; // ✅ store idRating from playersform
 let hiddenMatchdays = {};
 let currentUserId = null;
 let fixersData = [];
 let countdownInterval = null;
 let activeDocId = null;
-let activeTitle = ""; // ✅ Store the active tour title
+let activeTitle = ""; // ✅ active tour title
 
-// ✅ Load team photos
+// ✅ Load team photos + idRating
 async function loadTeamPhotos() {
   const snap = await getDocs(collection(db, "playersform"));
   snap.forEach(docSnap => {
     const data = docSnap.data();
-    if (data.team && data.photoUrl) {
-      teamPhotos[data.team.trim().toLowerCase()] = data.photoUrl;
+    if (data.team) {
+      const teamKey = data.team.trim().toLowerCase();
+      if (data.photoUrl) teamPhotos[teamKey] = data.photoUrl;
+      if (data.idRating) teamRatings[teamKey] = data.idRating;
     }
   });
 }
@@ -552,7 +555,7 @@ function subscribeFixers() {
   });
 }
 
-// ✅ Update session display in banner
+// ✅ Update session display
 function updateSessionDisplay(sessionName) {
   const sessionDisplay = document.getElementById("sessionDisplslay");
   if (sessionDisplay) {
@@ -569,14 +572,14 @@ function subscribeBannerStatus() {
   onSnapshot(settingsRef, (snapshot) => {
     let activeDoc = null;
     activeDocId = null;
-    activeTitle = ""; // reset
+    activeTitle = "";
 
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       if (data.isActive === true) {
         activeDoc = data;
         activeDocId = docSnap.id;
-        activeTitle = data.title || ""; // ✅ Save title
+        activeTitle = data.title || "";
       }
     });
 
@@ -594,12 +597,11 @@ function subscribeBannerStatus() {
       clearInterval(countdownInterval);
     }
 
-    // ✅ Re-render fixers whenever active title changes
     renderFixers();
   });
 }
 
-// ✅ Countdown (Updated format 1D:2H:30M:20S)
+// ✅ Countdown timer
 function startCountdown(endTimeStr, element) {
   clearInterval(countdownInterval);
   const endTime = new Date(endTimeStr).getTime();
@@ -635,7 +637,7 @@ function startCountdown(endTimeStr, element) {
     if (days > 0) {
       element.textContent = `${days}D:${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
     } else {
-      element.textContent = `${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
+      element.textContent = `${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
     }
   }
 
@@ -643,7 +645,7 @@ function startCountdown(endTimeStr, element) {
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-// ✅ Render Fixers with tour title on match card
+// ✅ Render Fixers + Rating + idRating
 function renderFixers() {
   const fixersContainer = document.getElementById("fixers-list");
   if (!fixersData.length) {
@@ -683,21 +685,30 @@ function renderFixers() {
     matchdaysMap[md]
       .sort((a, b) => a.groupName.localeCompare(b.groupName) || a.team1.localeCompare(b.team1))
       .forEach(match => {
-        const team1Img = teamPhotos[match.team1.trim().toLowerCase()] || "dls25.jpg";
-        const team2Img = teamPhotos[match.team2.trim().toLowerCase()] || "dls25.jpg";
+        const team1Key = match.team1.trim().toLowerCase();
+        const team2Key = match.team2.trim().toLowerCase();
+
+        const team1Img = teamPhotos[team1Key] || "dls25.jpg";
+        const team2Img = teamPhotos[team2Key] || "dls25.jpg";
         const t1GoalVal = match.team1Goal ?? "-";
         const t2GoalVal = match.team2Goal ?? "-";
         const formattedDate = formatDateAndTime(match.date);
 
+        const t1Rating = match.team1Rating || "N/A";
+        const t2Rating = match.team2Rating || "N/A";
+        const t1IdRating = teamRatings[team1Key] || "N/A"; // ✅ from playersform
+        const t2IdRating = teamRatings[team2Key] || "N/A"; // ✅ from playersform
+
         html += `
         <div class="match-card">
-          <div id="matchTitle" class="league-badge">
+          <div id="matchTitle" class="league-badge text-center font-semibold text-sm mb-1">
             ${activeTitle || ""}
           </div>
           <div class="team-stack">
             <img src="${team1Img}" class="team-logo" alt="${match.team1}">
             <div class="team-name">${match.team1}</div>
-            <div class="Rating-box font-semibold">⭐ ${match.team1Rating || "N/A"}</div>
+            <div class="Rating-box font-semibold">⭐ ${t1Rating}</div>
+            <div class="text-xs text-gray-500 font-semibold">ID Rating: ${t1IdRating}</div>
           </div>
           <div class="score-box text-center">
             <p class="text-3xl font-bold">${t1GoalVal} : ${t2GoalVal}</p>
@@ -707,7 +718,8 @@ function renderFixers() {
           <div class="team-stack">
             <img src="${team2Img}" class="team-logo" alt="${match.team2}">
             <div class="team-name">${match.team2}</div>
-            <div class="Rating-box font-semibold">⭐ ${match.team2Rating || "N/A"}</div>
+            <div class="Rating-box font-semibold">⭐ ${t2Rating}</div>
+            <div class="text-xs text-gray-500 font-semibold">ID Rating: ${t2IdRating}</div>
           </div>
         </div>`;
       });
