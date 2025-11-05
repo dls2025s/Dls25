@@ -294,7 +294,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -327,7 +327,6 @@
             if (data.entryFee) entryFee = data.entryFee;
           });
           document.getElementById("entryFee").innerText = entryFee || "—";
-
           loader.classList.add("hidden");
         });
       } catch (error) {
@@ -376,12 +375,12 @@
       });
 
       try {
+        // ✅ Check existing user registration
         const qUser = query(collection(db, "playerlist"),
           where("uid", "==", uid),
           where("status", "in", ["Pending", "Approved"])
         );
         const existingUser = await getDocs(qUser);
-
         if (!existingUser.empty) {
           Swal.close();
           Swal.fire({
@@ -393,12 +392,12 @@
           return;
         }
 
+        // ✅ Check existing team name
         const qTeam = query(collection(db, "playerlist"),
           where("teamName", "==", teamName),
           where("sessionName", "==", currentSessionName)
         );
         const existingTeam = await getDocs(qTeam);
-
         if (!existingTeam.empty) {
           Swal.close();
           Swal.fire({
@@ -410,6 +409,14 @@
           return;
         }
 
+        // ✅ Fetch user's photoUrl from 'users' collection
+        const userDoc = await getDoc(doc(db, "users", uid));
+        let photoUrl = "";
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          photoUrl = userData.photoUrl || "";
+        }
+
         const formData = {
           uid,
           teamName,
@@ -419,6 +426,7 @@
           entryFee: entryFee,
           sessionName: currentSessionName,
           status: "Pending",
+          photoUrl, // 🔥 added photoUrl
           date: new Date()
         };
 
