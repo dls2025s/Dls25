@@ -161,12 +161,12 @@
     }
 
     @keyframes glow {
-      0% {
+      from {
         text-shadow: 0 0 5px #facc15, 0 0 10px #c084fc;
       }
 
-      100% {
-        text-shadow: 0 0 15px #f472b6, 0 0 25px #c084fc;
+      to {
+        text-shadow: 0 0 10px #f472b6, 0 0 15px #c084fc;
       }
     }
   </style>
@@ -251,8 +251,7 @@
 
       <!-- Submit Button -->
       <div class="flex justify-center">
-        <button type="submit"
-          class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
+        <button type="submit" class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
           Submit
         </button>
       </div>
@@ -316,15 +315,29 @@
     let currentSessionName = "";
     let entryFee = "";
 
-    // ✅ Real-time toursetting listener
-    onSnapshot(collection(db, "toursetting"), (snapshot) => {
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.session) currentSessionName = data.session;
-        if (data.entryFee) entryFee = data.entryFee;
-      });
-      document.getElementById("entryFee").innerText = entryFee || "—";
-    });
+    const loader = document.getElementById("loader");
+
+    // ✅ Real-time toursetting listener with loading
+    const loadSettings = async () => {
+      try {
+        onSnapshot(collection(db, "toursetting"), (snapshot) => {
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.session) currentSessionName = data.session;
+            if (data.entryFee) entryFee = data.entryFee;
+          });
+          document.getElementById("entryFee").innerText = entryFee || "—";
+
+          // Hide loader after data is loaded
+          loader.classList.add("hidden");
+        });
+      } catch (error) {
+        console.error("Error loading settings:", error);
+        loader.classList.add("hidden");
+      }
+    };
+
+    loadSettings();
 
     // ✅ Team form submit event
     const teamForm = document.getElementById("teamForm");
@@ -349,7 +362,6 @@
       const trxId = document.getElementById("trxId").value.trim();
 
       try {
-        // 🔍 Check if user already registered with Pending or Approved
         const qUser = query(collection(db, "playerlist"),
           where("uid", "==", uid),
           where("status", "in", ["Pending", "Approved"])
@@ -366,7 +378,6 @@
           return;
         }
 
-        // 🔍 Check if team name already exists in current session
         const qTeam = query(collection(db, "playerlist"),
           where("teamName", "==", teamName),
           where("sessionName", "==", currentSessionName)
@@ -383,7 +394,6 @@
           return;
         }
 
-        // ✅ Proceed if not already registered
         const formData = {
           uid,
           teamName,
@@ -437,14 +447,7 @@
         console.error('Failed to copy:', err);
       }
     });
-
-    // ✅ Loader hide on window load
-    window.addEventListener("load", () => {
-      const loader = document.getElementById("loader");
-      loader.classList.add("hidden");
-    });
   </script>
 
 </body>
-
-</html>
+      </html>
