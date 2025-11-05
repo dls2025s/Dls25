@@ -328,7 +328,6 @@
           });
           document.getElementById("entryFee").innerText = entryFee || "—";
 
-          // Hide loader after data is loaded
           loader.classList.add("hidden");
         });
       } catch (error) {
@@ -361,6 +360,21 @@
       const paymentMethod = document.getElementById("paymentMethod").value;
       const trxId = document.getElementById("trxId").value.trim();
 
+      // 🌀 Processing Popup Show
+      Swal.fire({
+        title: 'Processing...',
+        html: `
+          <div class="flex flex-col items-center">
+            <i class="fa-solid fa-spinner fa-spin text-purple-400 text-3xl mb-3"></i>
+            <p>অপেক্ষা করুন, কিছু সময়ের মধ্যে<br>রেজিস্ট্রেশন সম্পূর্ণ হয়ে যাবে।</p>
+          </div>
+        `,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        background: '#1e0a3c',
+        color: '#f5f3ff'
+      });
+
       try {
         const qUser = query(collection(db, "playerlist"),
           where("uid", "==", uid),
@@ -369,6 +383,7 @@
         const existingUser = await getDocs(qUser);
 
         if (!existingUser.empty) {
+          Swal.close();
           Swal.fire({
             icon: 'warning',
             title: 'Already Registration Successful',
@@ -385,6 +400,7 @@
         const existingTeam = await getDocs(qTeam);
 
         if (!existingTeam.empty) {
+          Swal.close();
           Swal.fire({
             icon: 'warning',
             title: 'দল নাম ব্যবহৃত হয়েছে',
@@ -409,6 +425,7 @@
         await addDoc(collection(db, "playerlist"), formData);
         await addDoc(collection(db, "reghistory"), formData);
 
+        Swal.close();
         Swal.fire({
           icon: 'success',
           title: 'সফল',
@@ -420,12 +437,12 @@
 
         teamForm.reset();
 
-        // 2 সেকেন্ড পরে reg-history.html রিডিরেক্ট
         setTimeout(() => {
           window.location.href = "reg-history.html";
         }, 2000);
 
       } catch (error) {
+        Swal.close();
         console.error(error);
         Swal.fire({
           icon: 'error',
