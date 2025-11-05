@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Point Tables</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
   <style>
     body {
@@ -45,6 +42,31 @@
     .nav-item:hover i {
       color: #facc15;
     }
+
+    /* Table Styling */
+    table {
+      background: rgba(20, 0, 40, 0.7);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    thead {
+      background: linear-gradient(90deg, #3b0764, #581c87, #3b0764);
+      color: #f3e8ff;
+    }
+
+    tbody tr {
+      transition: all 0.2s ease-in-out;
+    }
+
+    tbody tr:hover {
+      background: rgba(234, 179, 8, 0.15);
+      color: #fde68a;
+    }
+
+    td, th {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
   </style>
 </head>
 <body>
@@ -64,13 +86,12 @@
 
   <!-- Main content -->
   <main class="max-w-4xl mx-auto p-4 space-y-4 pb-24">
-    <div id="pointTablesContainer" class="bg-gray-900 shadow rounded p-4">
+    <div id="pointTablesContainer" class="bg-[rgba(12,0,30,0.8)] backdrop-blur-md shadow-lg rounded-2xl p-4 border border-purple-700">
       <p class="text-xs text-center text-gray-400 mb-3">Loading...</p>
-      <!-- Group-wise point tables will appear here -->
     </div>
   </main>
 
-   <!-- Bottom Navigation -->
+  <!-- Bottom Navigation -->
   <nav class="nav-bottom fixed bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
     <a href="index.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
@@ -103,7 +124,7 @@
       Profile
     </a>
   </nav>
-  
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -135,7 +156,6 @@
           photoMap[data.teamName.trim().toLowerCase()] = data.photoUrl;
         }
       });
-      console.log("PhotoMap Loaded:", photoMap);
     }
 
     onAuthStateChanged(auth, async (user) => {
@@ -220,42 +240,39 @@
           allPointsHTML = `<p class="text-gray-500 text-center">No point tables to show.</p>`;
         } else {
           allPointsHTML = allGroupsPoints.map(({ groupName, sortedTeams }) => `
-            <div class="mb-4">
-              <div class="font-semibold mb-1 text-yellow-400 text-xs uppercase text-center">Point Table - ${groupName}</div>
-              <table class="text-xs w-full table-auto border border-gray-700">
+            <div class="mb-5 bg-[rgba(22,0,45,0.6)] rounded-xl border border-purple-800 shadow-md p-2">
+              <div class="font-semibold mb-2 text-yellow-400 text-xs uppercase text-center tracking-wide">Point Table - ${groupName}</div>
+              <table class="text-[11px] sm:text-xs w-full table-auto border border-gray-700">
                 <thead>
-                  <tr class="bg-gray-800 text-gray-300">
-                    <th class="px-1 py-1 border border-gray-700">Pic</th>
-                    <th class="px-1 py-1 border border-gray-700">Team</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">P</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">W</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">L</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">D</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">G</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">P</th>
+                  <tr>
+                    <th class="px-1 py-1 border">Pic</th>
+                    <th class="px-1 py-1 border">Team</th>
+                    <th class="px-1 py-1 border text-center">P</th>
+                    <th class="px-1 py-1 border text-center">W</th>
+                    <th class="px-1 py-1 border text-center">L</th>
+                    <th class="px-1 py-1 border text-center">D</th>
+                    <th class="px-1 py-1 border text-center">G</th>
+                    <th class="px-1 py-1 border text-center">Pts</th>
                   </tr>
                 </thead>
                 <tbody>
                   ${sortedTeams.map((team, index) => {
                     const photoUrl = photoMap[team.team.trim().toLowerCase()] || "dls25.jpg";
                     const qualifiedBadge = (team.played === 3 && (index === 0 || index === 1)) 
-                      ? `<span class="absolute -top-0 -right-0 bg-red-600 text-white font-semibold text-[8px] font-bold w-2 h-2 flex justify-center items-center rounded-sm">Q</span>` 
+                      ? `<span class="absolute -top-0 -right-0 bg-red-600 text-white font-semibold text-[8px] w-2 h-2 flex justify-center items-center rounded-sm">Q</span>` 
                       : "";
                     return `
-                      <tr class="even:bg-gray-900 odd:bg-gray-800 hover:bg-yellow-900 hover:text-yellow-300">
-                        <td class="px-1 py-1 border border-gray-700 text-center">
-                          <img src="${photoUrl}" alt="${team.team}" class="inline-block w-6 h-6 rounded-full object-cover border border-gray-500 p-[1px]" />
+                      <tr class="even:bg-[rgba(60,0,100,0.4)] odd:bg-[rgba(20,0,40,0.4)] hover:bg-yellow-900 hover:text-yellow-300">
+                        <td class="px-1 py-1 border text-center">
+                          <img src="${photoUrl}" alt="${team.team}" class="inline-block w-6 h-6 rounded-full object-cover border border-purple-500 p-[1px]" />
                         </td>
-                        <td class="px-1 py-1 border border-gray-700 relative">
-                          ${team.team}
-                          ${qualifiedBadge}
-                        </td>
-                        <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.played}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center">${team.win}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center">${team.loss}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center">${team.draw}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.goals}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center font-bold">${team.points}</td>
+                        <td class="px-1 py-1 border relative">${team.team}${qualifiedBadge}</td>
+                        <td class="px-1 py-1 border text-center font-semibold">${team.played}</td>
+                        <td class="px-1 py-1 border text-center">${team.win}</td>
+                        <td class="px-1 py-1 border text-center">${team.loss}</td>
+                        <td class="px-1 py-1 border text-center">${team.draw}</td>
+                        <td class="px-1 py-1 border text-center">${team.goals}</td>
+                        <td class="px-1 py-1 border text-center font-bold">${team.points}</td>
                       </tr>
                     `;
                   }).join('')}
@@ -268,6 +285,5 @@
       });
     }
   </script>
-                                
 </body>
 </html>
