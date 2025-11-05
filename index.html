@@ -493,24 +493,15 @@ let activeDocId = null;
 let activeTitle = "";
 let teamRatings = {}; // ✅ Store ratings from playerlist
 
-// ✅ Load team photos
-async function loadTeamPhotos() {
-  const snap = await getDocs(collection(db, "playersform"));
-  snap.forEach(docSnap => {
-    const data = docSnap.data();
-    if (data.team && data.photoUrl) {
-      teamPhotos[data.team.trim().toLowerCase()] = data.photoUrl;
-    }
-  });
-}
-
-// ✅ Load team ratings from playerlist
-async function loadTeamRatings() {
+// ✅ Load team photos from playerlist using uid or teamName
+async function loadTeamPhotosAndRatings() {
   const snap = await getDocs(collection(db, "playerlist"));
   snap.forEach(docSnap => {
     const data = docSnap.data();
-    if (data.teamName && data.idRating) {
-      teamRatings[data.teamName.trim().toLowerCase()] = data.idRating;
+    if (data.teamName) {
+      const teamKey = data.teamName.trim().toLowerCase();
+      if (data.photoUrl) teamPhotos[teamKey] = data.photoUrl;
+      if (data.idRating) teamRatings[teamKey] = data.idRating;
     }
   });
 }
@@ -542,8 +533,7 @@ onAuthStateChanged(auth, async (user) => {
     hiddenMatchdays = {};
   }
 
-  await loadTeamPhotos();
-  await loadTeamRatings(); // ✅ Load ratings
+  await loadTeamPhotosAndRatings(); // ✅ Load photos + ratings from playerlist
   subscribeHiddenMatchdays();
   subscribeFixers();
   subscribeBannerStatus();
@@ -552,8 +542,7 @@ onAuthStateChanged(auth, async (user) => {
 function subscribeHiddenMatchdays() {
   const userRef = doc(db, "users", currentUserId);
   onSnapshot(userRef, (snap) => {
-    if (snap.exists()) hiddenMatchdays = snap.data().hiddenMatchdays || {};
-    else hiddenMatchdays = {};
+    hiddenMatchdays = snap.exists() ? snap.data().hiddenMatchdays || {} : {};
     renderFixers();
   });
 }
@@ -570,9 +559,7 @@ function subscribeFixers() {
 // ✅ Update session display
 function updateSessionDisplay(sessionName) {
   const sessionDisplay = document.getElementById("sessionDisplslay");
-  if (sessionDisplay) {
-    sessionDisplay.textContent = sessionName || "";
-  }
+  if (sessionDisplay) sessionDisplay.textContent = sessionName || "";
 }
 
 // ✅ Banner toggle + countdown
@@ -653,7 +640,7 @@ function startCountdown(endTimeStr, element) {
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-// ✅ Render Fixers + Ratings
+// ✅ Render Fixers + Ratings + playerlist photoUrl
 function renderFixers() {
   const fixersContainer = document.getElementById("fixers-list");
   if (!fixersData.length) {
@@ -661,15 +648,8 @@ function renderFixers() {
     return;
   }
 
-  const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
-
-  const todayMatches = fixersData.filter(fix => {
-    if (!fix.date) return false;
-    const matchDate = new Date(fix.date);
-    const matchStr = matchDate.toISOString().split("T")[0];
-    return matchStr === todayStr;
-  });
+  const todayStr = new Date().toISOString().split("T")[0];
+  const todayMatches = fixersData.filter(fix => fix.date && new Date(fix.date).toISOString().split("T")[0] === todayStr);
 
   if (!todayMatches.length) {
     fixersContainer.innerHTML = `<p class="text-center text-gray-400">No matches scheduled for today.</p>`;
@@ -693,15 +673,16 @@ function renderFixers() {
     matchdaysMap[md]
       .sort((a, b) => a.groupName.localeCompare(b.groupName) || a.team1.localeCompare(b.team1))
       .forEach(match => {
-        const team1Img = teamPhotos[match.team1.trim().toLowerCase()] || "dls25.jpg";
-        const team2Img = teamPhotos[match.team2.trim().toLowerCase()] || "dls25.jpg";
+        const team1Key = match.team1.trim().toLowerCase();
+        const team2Key = match.team2.trim().toLowerCase();
+        const team1Img = teamPhotos[team1Key] || "dls25.jpg"; // playerlist photoUrl
+        const team2Img = teamPhotos[team2Key] || "dls25.jpg"; // playerlist photoUrl
         const t1GoalVal = match.team1Goal ?? "-";
         const t2GoalVal = match.team2Goal ?? "-";
         const formattedDate = formatDateAndTime(match.date);
 
-        // ✅ Get ratings from playerlist
-        const team1Rating = teamRatings[match.team1.trim().toLowerCase()] || "N/A";
-        const team2Rating = teamRatings[match.team2.trim().toLowerCase()] || "N/A";
+        const team1Rating = teamRatings[team1Key] || "N/A";
+        const team2Rating = teamRatings[team2Key] || "N/A";
 
         html += `
         <div class="match-card">
@@ -781,6 +762,7 @@ logoutBtn.addEventListener("click", async () => {
   }
 });
 </script>
+
 
 
 </body>
