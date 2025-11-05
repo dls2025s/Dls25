@@ -466,6 +466,7 @@ import {
   getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
   authDomain: "dlstournament-31ac1.firebaseapp.com",
@@ -489,7 +490,8 @@ let currentUserId = null;
 let fixersData = [];
 let countdownInterval = null;
 let activeDocId = null;
-let activeTitle = ""; // ✅ Store the active tour title
+let activeTitle = "";
+let teamRatings = {}; // ✅ Store ratings from playerlist
 
 // ✅ Load team photos
 async function loadTeamPhotos() {
@@ -502,6 +504,18 @@ async function loadTeamPhotos() {
   });
 }
 
+// ✅ Load team ratings from playerlist
+async function loadTeamRatings() {
+  const snap = await getDocs(collection(db, "playerlist"));
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    if (data.teamName && data.idRating) {
+      teamRatings[data.teamName.trim().toLowerCase()] = data.idRating;
+    }
+  });
+}
+
+// ✅ Date format
 function formatDateAndTime(dateStr) {
   const date = new Date(dateStr);
   const day = date.getDate().toString().padStart(2, "0");
@@ -529,6 +543,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   await loadTeamPhotos();
+  await loadTeamRatings(); // ✅ Load ratings
   subscribeHiddenMatchdays();
   subscribeFixers();
   subscribeBannerStatus();
@@ -552,7 +567,7 @@ function subscribeFixers() {
   });
 }
 
-// ✅ Update session display in banner
+// ✅ Update session display
 function updateSessionDisplay(sessionName) {
   const sessionDisplay = document.getElementById("sessionDisplslay");
   if (sessionDisplay) {
@@ -560,7 +575,7 @@ function updateSessionDisplay(sessionName) {
   }
 }
 
-// ✅ Banner toggle and countdown
+// ✅ Banner toggle + countdown
 function subscribeBannerStatus() {
   const bannerToggle = document.getElementById("bannerToggle");
   const countdownEl = document.getElementById("countdown");
@@ -569,37 +584,33 @@ function subscribeBannerStatus() {
   onSnapshot(settingsRef, (snapshot) => {
     let activeDoc = null;
     activeDocId = null;
-    activeTitle = ""; // reset
+    activeTitle = "";
 
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       if (data.isActive === true) {
         activeDoc = data;
         activeDocId = docSnap.id;
-        activeTitle = data.title || ""; // ✅ Save title
+        activeTitle = data.title || "";
       }
     });
 
     if (activeDoc) {
       bannerToggle.style.display = "block";
       updateSessionDisplay(activeDoc.session);
-      if (activeDoc.endTime) {
-        startCountdown(activeDoc.endTime, countdownEl);
-      } else {
-        countdownEl.textContent = "N/A";
-      }
+      if (activeDoc.endTime) startCountdown(activeDoc.endTime, countdownEl);
+      else countdownEl.textContent = "N/A";
     } else {
       bannerToggle.style.display = "none";
       updateSessionDisplay("");
       clearInterval(countdownInterval);
     }
 
-    // ✅ Re-render fixers whenever active title changes
     renderFixers();
   });
 }
 
-// ✅ Countdown (Updated format 1D:2H:30M:20S)
+// ✅ Countdown
 function startCountdown(endTimeStr, element) {
   clearInterval(countdownInterval);
   const endTime = new Date(endTimeStr).getTime();
@@ -609,9 +620,8 @@ function startCountdown(endTimeStr, element) {
       try {
         const tourRef = doc(db, "toursetting", activeDocId);
         await updateDoc(tourRef, { isActive: false });
-        console.log("Tournament automatically deactivated");
       } catch (error) {
-        console.error("Failed to deactivate:", error);
+        console.error("Deactivate failed:", error);
       }
     }
   }
@@ -643,7 +653,7 @@ function startCountdown(endTimeStr, element) {
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-// ✅ Render Fixers with tour title on match card
+// ✅ Render Fixers + Ratings
 function renderFixers() {
   const fixersContainer = document.getElementById("fixers-list");
   if (!fixersData.length) {
@@ -689,6 +699,10 @@ function renderFixers() {
         const t2GoalVal = match.team2Goal ?? "-";
         const formattedDate = formatDateAndTime(match.date);
 
+        // ✅ Get ratings from playerlist
+        const team1Rating = teamRatings[match.team1.trim().toLowerCase()] || "N/A";
+        const team2Rating = teamRatings[match.team2.trim().toLowerCase()] || "N/A";
+
         html += `
         <div class="match-card">
           <div id="matchTitle" class="league-badge">
@@ -697,7 +711,7 @@ function renderFixers() {
           <div class="team-stack">
             <img src="${team1Img}" class="team-logo" alt="${match.team1}">
             <div class="team-name">${match.team1}</div>
-            <div class="Rating-box font-semibold">⭐ ${match.team1idRating || "N/A"}</div>
+            <div class="Rating-box font-semibold">⭐ ${team1Rating}</div>
           </div>
           <div class="score-box text-center">
             <p class="text-3xl font-bold">${t1GoalVal} : ${t2GoalVal}</p>
@@ -707,7 +721,7 @@ function renderFixers() {
           <div class="team-stack">
             <img src="${team2Img}" class="team-logo" alt="${match.team2}">
             <div class="team-name">${match.team2}</div>
-            <div class="Rating-box font-semibold">⭐ ${match.team2idRating || "N/A"}</div>
+            <div class="Rating-box font-semibold">⭐ ${team2Rating}</div>
           </div>
         </div>`;
       });
