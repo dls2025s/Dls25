@@ -135,9 +135,9 @@
       const session = document.getElementById("session").value.trim();
       const entryFee = parseInt(document.getElementById("entryFee").value);
       const slot = parseInt(document.getElementById("slot").value);
-      const endTime = document.getElementById("endTime").value;
+      const endTime = document.getElementById("endTime")?.value;
 
-      if (!title || !session || !entryFee || !slot || !endTime) {
+      if (!title || !session || !entryFee || !slot) {
         Swal.fire("Error", "Please fill all fields correctly!", "error");
         return;
       }
@@ -205,7 +205,6 @@
               <p class="text-sm text-gray-600">Session: ${t.session}</p>
               <p class="text-sm text-gray-600">Entry Fee: ${t.entryFee}</p>
               <p class="text-sm text-gray-600">Slots: ${t.slot}</p>
-              <p class="text-sm text-gray-600">End Time: ${new Date(t.endTime).toLocaleString()}</p>
             </div>
             <div class="flex flex-col items-center gap-2">
               <i class="fas fa-trophy text-yellow-500 text-2xl"></i>
