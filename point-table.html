@@ -236,7 +236,7 @@
                 </thead>
                 <tbody>
                   ${sortedTeams.map((team, index) => {
-                    const photoUrl = photoMap[team.team.trim().toLowerCase()] || "default-player.png";
+                    const photoUrl = photoMap[team.team.trim().toLowerCase()] || "dls25.jpg";
                     const qualifiedBadge = (team.played === 3 && (index === 0 || index === 1)) 
                       ? `<span class="absolute -top-0 -right-0 bg-red-600 text-white font-semibold text-[8px] font-bold w-2 h-2 flex justify-center items-center rounded-sm">Q</span>` 
                       : "";
