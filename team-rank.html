@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Ranking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #120024, #220044, #0a0014);
+      color: #f5f3ff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+    }
+
+    .header-glow {
+      box-shadow: 0 0 15px rgba(150, 0, 255, 0.4), 0 0 25px rgba(128, 0, 255, 0.2);
+    }
+
+    .nav-bottom {
+      box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
+    }
+
+    .nav-box {
+      background: rgba(126, 34, 206, 0.25);
+    }
+
+    .nav-item {
+      color: #d0d1d1;
+      transition: all 0.3s ease;
+    }
+
+    .nav-item i {
+      color: #c084fc;
+      transition: all 0.3s ease;
+    }
+
+    .nav-item:hover i {
+      color: #facc15;
+    }
+
+    /* Coming Soon Animation */
+    .coming-soon {
+      margin-top: 50%;
+      font-family: 'Audiowide', cursive;
+      font-size: 3rem;
+      text-align: center;
+      color: #facc15;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header
+    class="bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] w-full max-w-md shadow-md py-2 px-3 mx-auto border-b border-purple-500 flex items-center justify-between header-glow rounded-b-2xl">
+    <div class="flex items-center space-x-2">
+      <img src="dls25.jpg" alt="Logo" class="w-8 h-8 rounded-full border border-purple-500 shadow-md" />
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-yellow-300 bg-clip-text text-transparent"
+        style="font-family: 'Audiowide', cursive;">DSL TOUR</h2>
+    </div>
+    <div>
+      <button id="menuButton">
+        <i class="fa-solid fa-bars text-white text-xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-md mx-auto px-4 py-4 flex items-center justify-center h-[60vh]">
+    <h1 class="coming-soon">Coming Soon</h1>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="nav-bottom fixed bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
+    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-house text-lg"></i>
+      </div>
+      Home
+    </a>
+    <a href="shop.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-cart-plus text-lg"></i>
+      </div>
+      DLS Shop
+    </a>
+    <a href="tour.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-trophy text-lg"></i>
+      </div>
+      Tour Match
+    </a>
+    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-ranking-star text-lg"></i>
+      </div>
+      Ranking
+    </a>
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
+        <i class="fa-solid fa-user text-lg"></i>
+      </div>
+      Profile
+    </a>
+  </nav>
+
+</body>
+
+</html>
