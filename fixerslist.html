@@ -104,7 +104,7 @@
     });
 
     async function loadTeams() {
-      const snapshot = await getDocs(query(collection(db, "playersform"), where("type", "==", "paid")));
+      const snapshot = await getDocs(query(collection(db, "playerlist"), where("type", "==", "paid")));
       const teams = new Set();
       teamUidMap.clear();
       teamRatingMap.clear();
