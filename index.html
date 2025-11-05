@@ -484,23 +484,32 @@ const auth = getAuth(app);
 await setPersistence(auth, browserLocalPersistence);
 
 let teamPhotos = {};
-let teamRatings = {}; // ✅ store idRating from playersform
+let teamRatings = {};
 let hiddenMatchdays = {};
 let currentUserId = null;
 let fixersData = [];
 let countdownInterval = null;
 let activeDocId = null;
-let activeTitle = ""; // ✅ active tour title
+let activeTitle = "";
 
-// ✅ Load team photos + idRating
+// ✅ Load team photos from playersform
 async function loadTeamPhotos() {
   const snap = await getDocs(collection(db, "playersform"));
   snap.forEach(docSnap => {
     const data = docSnap.data();
-    if (data.team) {
-      const teamKey = data.team.trim().toLowerCase();
-      if (data.photoUrl) teamPhotos[teamKey] = data.photoUrl;
-      if (data.idRating) teamRatings[teamKey] = data.idRating;
+    if (data.team && data.photoUrl) {
+      teamPhotos[data.team.trim().toLowerCase()] = data.photoUrl;
+    }
+  });
+}
+
+// ✅ Load idRating from playerlist
+async function loadTeamRatings() {
+  const snap = await getDocs(collection(db, "playerlist"));
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    if (data.team && data.idRating) {
+      teamRatings[data.team.trim().toLowerCase()] = data.idRating;
     }
   });
 }
@@ -532,6 +541,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   await loadTeamPhotos();
+  await loadTeamRatings();
   subscribeHiddenMatchdays();
   subscribeFixers();
   subscribeBannerStatus();
@@ -563,7 +573,7 @@ function updateSessionDisplay(sessionName) {
   }
 }
 
-// ✅ Banner toggle and countdown
+// ✅ Banner + Countdown
 function subscribeBannerStatus() {
   const bannerToggle = document.getElementById("bannerToggle");
   const countdownEl = document.getElementById("countdown");
@@ -601,7 +611,7 @@ function subscribeBannerStatus() {
   });
 }
 
-// ✅ Countdown timer
+// ✅ Countdown
 function startCountdown(endTimeStr, element) {
   clearInterval(countdownInterval);
   const endTime = new Date(endTimeStr).getTime();
@@ -637,7 +647,7 @@ function startCountdown(endTimeStr, element) {
     if (days > 0) {
       element.textContent = `${days}D:${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
     } else {
-      element.textContent = `${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
+      element.textContent = `${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
     }
   }
 
@@ -645,7 +655,7 @@ function startCountdown(endTimeStr, element) {
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-// ✅ Render Fixers + Rating + idRating
+// ✅ Render Fixers (with idRating)
 function renderFixers() {
   const fixersContainer = document.getElementById("fixers-list");
   if (!fixersData.length) {
@@ -687,17 +697,13 @@ function renderFixers() {
       .forEach(match => {
         const team1Key = match.team1.trim().toLowerCase();
         const team2Key = match.team2.trim().toLowerCase();
-
         const team1Img = teamPhotos[team1Key] || "dls25.jpg";
         const team2Img = teamPhotos[team2Key] || "dls25.jpg";
+        const idRating1 = teamRatings[team1Key] || "N/A";
+        const idRating2 = teamRatings[team2Key] || "N/A";
         const t1GoalVal = match.team1Goal ?? "-";
         const t2GoalVal = match.team2Goal ?? "-";
         const formattedDate = formatDateAndTime(match.date);
-
-        const t1Rating = match.team1Rating || "N/A";
-        const t2Rating = match.team2Rating || "N/A";
-        const t1IdRating = teamRatings[team1Key] || "N/A"; // ✅ from playersform
-        const t2IdRating = teamRatings[team2Key] || "N/A"; // ✅ from playersform
 
         html += `
         <div class="match-card">
@@ -707,8 +713,8 @@ function renderFixers() {
           <div class="team-stack">
             <img src="${team1Img}" class="team-logo" alt="${match.team1}">
             <div class="team-name">${match.team1}</div>
-            <div class="Rating-box font-semibold">⭐ ${t1Rating}</div>
-            <div class="text-xs text-gray-500 font-semibold">ID Rating: ${t1IdRating}</div>
+            <div class="Rating-box font-semibold">⭐ ${match.team1Rating || "N/A"}</div>
+            <div class="text-xs text-gray-500 font-semibold">ID Rating: ${idRating1}</div>
           </div>
           <div class="score-box text-center">
             <p class="text-3xl font-bold">${t1GoalVal} : ${t2GoalVal}</p>
@@ -718,8 +724,8 @@ function renderFixers() {
           <div class="team-stack">
             <img src="${team2Img}" class="team-logo" alt="${match.team2}">
             <div class="team-name">${match.team2}</div>
-            <div class="Rating-box font-semibold">⭐ ${t2Rating}</div>
-            <div class="text-xs text-gray-500 font-semibold">ID Rating: ${t2IdRating}</div>
+            <div class="Rating-box font-semibold">⭐ ${match.team2Rating || "N/A"}</div>
+            <div class="text-xs text-gray-500 font-semibold">ID Rating: ${idRating2}</div>
           </div>
         </div>`;
       });
@@ -728,7 +734,7 @@ function renderFixers() {
   fixersContainer.innerHTML = html;
 }
 
-// ✅ Sidebar toggle
+// ✅ Sidebar & Logout
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const menuButton = document.getElementById("menuButton");
@@ -749,7 +755,6 @@ overlay.addEventListener("click", () => {
   overlay.classList.remove("active");
 });
 
-// ✅ Logout
 logoutBtn.addEventListener("click", async () => {
   const result = await Swal.fire({
     title: "Logout?",
@@ -782,4 +787,4 @@ logoutBtn.addEventListener("click", async () => {
 
 
 </body>
-</html>
+    </html>
