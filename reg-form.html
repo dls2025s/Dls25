@@ -284,17 +284,34 @@
 
       try {
         // 🔍 Check if user already registered with Pending or Approved
-        const q = query(collection(db, "playerlist"),
+        const qUser = query(collection(db, "playerlist"),
           where("uid", "==", uid),
           where("status", "in", ["Pending", "Approved"])
         );
-        const existing = await getDocs(q);
+        const existingUser = await getDocs(qUser);
 
-        if (!existing.empty) {
+        if (!existingUser.empty) {
           Swal.fire({
             icon: 'warning',
             title: 'Already Registration Successful',
             text: 'আপনি ইতিমধ্যেই একটি দল নিবন্ধন করেছেন!',
+            confirmButtonColor: '#f59e0b'
+          });
+          return;
+        }
+
+        // 🔍 Check if team name already exists in current session
+        const qTeam = query(collection(db, "playerlist"),
+          where("teamName", "==", teamName),
+          where("sessionName", "==", currentSessionName)
+        );
+        const existingTeam = await getDocs(qTeam);
+
+        if (!existingTeam.empty) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'দল নাম ব্যবহৃত হয়েছে',
+            text: 'এই দলের নাম ইতিমধ্যেই নিবন্ধিত। অন্য নাম ব্যবহার করুন।',
             confirmButtonColor: '#f59e0b'
           });
           return;
