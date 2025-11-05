@@ -249,7 +249,7 @@
     onAuthStateChanged(auth, user => {
       if (!user) window.location.href = "login.html";
 
-      const playerQuery = query(collection(db, "playerlist"), orderBy("date", "desc"));
+      const playerQuery = query(collection(db, "reghistory"), orderBy("date", "desc"));
 
       onSnapshot(playerQuery, (snapshot) => {
         playerListDiv.innerHTML = "";
