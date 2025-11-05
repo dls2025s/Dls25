@@ -126,7 +126,7 @@
     let photoMap = {};
 
     async function loadPlayersPhotos() {
-      const playersSnap = await getDocs(collection(db, "playerlist")); // changed from "playersform" to "playerlist"
+      const playersSnap = await getDocs(collection(db, "playerlist")); // playerlist db
       photoMap = {};
       playersSnap.forEach(doc => {
         const data = doc.data();
@@ -134,6 +134,7 @@
           photoMap[data.team.trim().toLowerCase()] = data.photoUrl;
         }
       });
+      console.log("PhotoMap Loaded:", photoMap); // debug
     }
 
     onAuthStateChanged(auth, async (user) => {
