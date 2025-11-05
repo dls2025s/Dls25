@@ -25,7 +25,7 @@
     .nav-bottom {
       box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
     }
-    
+
     .nav-box {
       background: rgba(126, 34, 206, 0.25);
     }
@@ -140,7 +140,6 @@
         transform: scale(1);
         box-shadow: 0 0 10px #c084fc, 0 0 20px #facc15;
       }
-
       to {
         transform: scale(1.1);
         box-shadow: 0 0 25px #facc15, 0 0 40px #c084fc;
@@ -224,7 +223,7 @@
       Profile
     </a>
   </nav>
-    
+
   <!-- Firebase + Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -246,7 +245,8 @@
     const loader = document.getElementById("loader");
     const playerListDiv = document.getElementById("playerList");
 
-    onAuthStateChanged(auth, (user) => {
+    // 🔹 লগইন ইউজার অনুযায়ী UID ভিত্তিক ডেটা ফেচ
+    onAuthStateChanged(auth, user => {
       if (!user) {
         window.location.href = "login.html";
         return;
@@ -254,7 +254,7 @@
 
       const playerQuery = query(
         collection(db, "reghistory"),
-        where("uid", "==", user.uid),
+        where("uid", "==", user.uid), // ✅ শুধুমাত্র নিজের হিস্টোরি দেখাবে
         orderBy("date", "desc")
       );
 
@@ -284,7 +284,7 @@
             playerListDiv.innerHTML += card;
           });
         }
-        loader.classList.add("hidden"); // hide loader
+        loader.classList.add("hidden"); // ✅ ডেটা লোড হলে লোডার হাইড
       });
     });
 
