@@ -72,20 +72,20 @@
       doc,
       onSnapshot,
       query,
-      where,
-      updateDoc
+      updateDoc,
+      where
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
-  apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-  authDomain: "dlstournament-31ac1.firebaseapp.com",
-  databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
-  projectId: "dlstournament-31ac1",
-  storageBucket: "dlstournament-31ac1.appspot.com",
-  messagingSenderId: "874377019055",
-  appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
-  measurementId: "G-0DGFJEV6GL"
-};
+      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+      authDomain: "dlstournament-31ac1.firebaseapp.com",
+      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+      projectId: "dlstournament-31ac1",
+      storageBucket: "dlstournament-31ac1.appspot.com",
+      messagingSenderId: "874377019055",
+      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+      measurementId: "G-0DGFJEV6GL"
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -104,7 +104,7 @@
     });
 
     async function loadTeams() {
-      const snapshot = await getDocs(query(collection(db, "playerlist"), where("type", "==", "paid")));
+      const snapshot = await getDocs(collection(db, "playerlist"));
       const teams = new Set();
       teamUidMap.clear();
       teamRatingMap.clear();
