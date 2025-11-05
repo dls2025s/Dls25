@@ -413,10 +413,18 @@
           icon: 'success',
           title: 'সফল',
           text: 'আপনার দল সফলভাবে জমা হয়েছে!',
-          confirmButtonColor: '#6f1287'
+          confirmButtonColor: '#6f1287',
+          timer: 2000,
+          showConfirmButton: false
         });
 
         teamForm.reset();
+
+        // 2 সেকেন্ড পরে reg-history.html রিডিরেক্ট
+        setTimeout(() => {
+          window.location.href = "reg-history.html";
+        }, 2000);
+
       } catch (error) {
         console.error(error);
         Swal.fire({
@@ -450,4 +458,4 @@
   </script>
 
 </body>
-      </html>
+</html>
