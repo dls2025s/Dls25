@@ -460,7 +460,7 @@
    <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc, updateDoc
+  getFirestore, collection, onSnapshot, query, getDocs, doc, getDoc, updateDoc, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut
@@ -489,6 +489,7 @@ let currentUserId = null;
 let fixersData = [];
 let countdownInterval = null;
 let activeDocId = null;
+let activeTournamentTitle = "";
 
 // ✅ Load team photos
 async function loadTeamPhotos() {
@@ -531,6 +532,7 @@ onAuthStateChanged(auth, async (user) => {
   subscribeHiddenMatchdays();
   subscribeFixers();
   subscribeBannerStatus();
+  displayActiveTournamentTitle(); // ✅ Load match title
 });
 
 function subscribeHiddenMatchdays() {
@@ -574,12 +576,14 @@ function subscribeBannerStatus() {
       if (data.isActive === true) {
         activeDoc = data;
         activeDocId = docSnap.id;
+        activeTournamentTitle = data.title || "";
       }
     });
 
     if (activeDoc) {
       bannerToggle.style.display = "block";
       updateSessionDisplay(activeDoc.session);
+      displayActiveTournamentTitle(); // ✅ Update title display
       if (activeDoc.endTime) {
         startCountdown(activeDoc.endTime, countdownEl);
       } else {
@@ -588,9 +592,18 @@ function subscribeBannerStatus() {
     } else {
       bannerToggle.style.display = "none";
       updateSessionDisplay("");
+      document.getElementById("activeTournamentTitle").textContent = "";
       clearInterval(countdownInterval);
     }
   });
+}
+
+// ✅ Display active tournament title
+function displayActiveTournamentTitle() {
+  const titleEl = document.getElementById("activeTournamentTitle");
+  if (titleEl) {
+    titleEl.textContent = activeTournamentTitle || "No active tournament";
+  }
 }
 
 // ✅ Countdown (Updated format 1D:2H:30M:20S)
@@ -626,7 +639,6 @@ function startCountdown(endTimeStr, element) {
     const minutes = Math.floor((distance / (1000 * 60)) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    // ✅ Show "1D:2H:30M:20S" format
     if (days > 0) {
       element.textContent = `${days}D:${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
     } else {
@@ -687,7 +699,7 @@ function renderFixers() {
         html += `
         <div class="match-card">
           <div class="league-badge">
-            DLS Champion League (DSL Session-10)
+            ${match.title}
           </div>
           <div class="team-stack">
             <img src="${team1Img}" class="team-logo" alt="${match.team1}">
@@ -762,7 +774,6 @@ logoutBtn.addEventListener("click", async () => {
   }
 });
 </script>
-
 
 
 </body>
