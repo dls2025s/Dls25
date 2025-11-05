@@ -103,19 +103,22 @@
       }
     });
 
+    // ✅ Load Teams from playerlist (teamName + idRating)
     async function loadTeams() {
       const snapshot = await getDocs(collection(db, "playerlist"));
       const teams = new Set();
       teamUidMap.clear();
       teamRatingMap.clear();
+
       snapshot.forEach(doc => {
         const data = doc.data();
-        if (data.team && data.uid) {
-          teams.add(data.team);
-          teamUidMap.set(data.team, data.uid);
-          teamRatingMap.set(data.team, parseFloat(data.dlsRating) || 0);
+        if (data.teamName && data.uid) {
+          teams.add(data.teamName);
+          teamUidMap.set(data.teamName, data.uid);
+          teamRatingMap.set(data.teamName, parseFloat(data.idRating) || 0);
         }
       });
+
       teamList = Array.from(teams);
       document.getElementById("teamSelector").innerHTML = teamList
         .map(t => `<option value="${t}">${t} (⭐ ${teamRatingMap.get(t)})</option>`)
@@ -192,7 +195,7 @@
 
         fixersContainer.innerHTML = html;
 
-        // Edit header icon
+        // Edit header
         document.querySelectorAll(".editHeaderBtn").forEach(btn => {
           btn.addEventListener("click", async (e) => {
             const { group, matchday, date } = e.target.dataset;
@@ -203,13 +206,11 @@
                 `<input id="swalMatchday" class="swal2-input" placeholder="Matchday" value="${matchday}">` +
                 `<input id="swalDate" type="date" class="swal2-input" value="${date}">`,
               focusConfirm: false,
-              preConfirm: () => {
-                return {
-                  group: document.getElementById('swalGroup').value,
-                  matchday: document.getElementById('swalMatchday').value,
-                  date: document.getElementById('swalDate').value
-                }
-              }
+              preConfirm: () => ({
+                group: document.getElementById('swalGroup').value,
+                matchday: document.getElementById('swalMatchday').value,
+                date: document.getElementById('swalDate').value
+              })
             });
 
             if (formValues) {
@@ -245,7 +246,6 @@
       });
     }
 
-    // Function: sort and group teams by rating
     function groupTeamsByRating(teams, groupCount) {
       const sorted = [...teams].sort((a, b) => (teamRatingMap.get(a) || 0) - (teamRatingMap.get(b) || 0));
       const groups = [];
@@ -270,7 +270,6 @@
         return;
       }
 
-      // group teams by rating
       const groupedTeams = groupTeamsByRating(selectedTeams, groupCount);
 
       const commonMatchDates = [0, 1, 2].map(offset => addDays(baseDate, offset));
@@ -294,7 +293,7 @@
             team1: groupTeams[i],
             team2: groupTeams[j],
             date,
-            matchday: `Matchday-${matchday+1}`,
+            matchday: `Matchday-${matchday + 1}`,
             team1Goal: null,
             team2Goal: null,
             status: "Pending",
