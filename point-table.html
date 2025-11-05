@@ -119,6 +119,7 @@
       appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
       measurementId: "G-0DGFJEV6GL"
     };
+    
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -126,7 +127,7 @@
     let photoMap = {};
 
     async function loadPlayersPhotos() {
-      const playersSnap = await getDocs(collection(db, "users")); // playerlist db
+      const playersSnap = await getDocs(collection(db, "playerlist"));
       photoMap = {};
       playersSnap.forEach(doc => {
         const data = doc.data();
