@@ -489,6 +489,7 @@ let currentUserId = null;
 let fixersData = [];
 let countdownInterval = null;
 let activeDocId = null;
+let activeTitle = ""; // ✅ Store the active tour title
 
 // ✅ Load team photos
 async function loadTeamPhotos() {
@@ -568,12 +569,14 @@ function subscribeBannerStatus() {
   onSnapshot(settingsRef, (snapshot) => {
     let activeDoc = null;
     activeDocId = null;
+    activeTitle = ""; // reset
 
     snapshot.forEach(docSnap => {
       const data = docSnap.data();
       if (data.isActive === true) {
         activeDoc = data;
         activeDocId = docSnap.id;
+        activeTitle = data.title || ""; // ✅ Save title
       }
     });
 
@@ -590,6 +593,9 @@ function subscribeBannerStatus() {
       updateSessionDisplay("");
       clearInterval(countdownInterval);
     }
+
+    // ✅ Re-render fixers whenever active title changes
+    renderFixers();
   });
 }
 
@@ -626,7 +632,6 @@ function startCountdown(endTimeStr, element) {
     const minutes = Math.floor((distance / (1000 * 60)) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    // ✅ Show "1D:2H:30M:20S" format
     if (days > 0) {
       element.textContent = `${days}D:${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
     } else {
@@ -638,7 +643,7 @@ function startCountdown(endTimeStr, element) {
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-// ✅ Render Fixers with current date filter
+// ✅ Render Fixers with tour title on match card
 function renderFixers() {
   const fixersContainer = document.getElementById("fixers-list");
   if (!fixersData.length) {
@@ -686,8 +691,8 @@ function renderFixers() {
 
         html += `
         <div class="match-card">
-          <div class="league-badge">
-            DLS Champion League (DSL Session-10)
+          <div id="matchTitle" class="league-badge text-center font-semibold text-sm mb-1">
+            ${activeTitle || ""}
           </div>
           <div class="team-stack">
             <img src="${team1Img}" class="team-logo" alt="${match.team1}">
@@ -762,7 +767,6 @@ logoutBtn.addEventListener("click", async () => {
   }
 });
 </script>
-
 
 
 </body>
