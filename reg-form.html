@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Point Tables</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Registration</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
@@ -22,6 +23,39 @@
 
     .header-glow {
       box-shadow: 0 0 15px rgba(150, 0, 255, 0.4), 0 0 25px rgba(128, 0, 255, 0.2);
+    }
+
+    .form-container {
+      background: rgba(25, 0, 50, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 20px rgba(100, 0, 255, 0.3);
+    }
+
+    input,
+    select {
+      background-color: rgba(10, 0, 20, 0.8);
+      border: 1px solid #4b0082;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn {
+      font-weight: 600;
+      background: linear-gradient(to right, #4c1d95, #7e22ce, #4c1d95);
+      color: #f5f3ff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(150, 0, 255, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 20px rgba(180, 0, 255, 0.7);
+      transform: scale(1.05);
+      background: linear-gradient(to right, #5b21b6, #9333ea, #5b21b6);
     }
 
     .nav-bottom {
@@ -45,15 +79,114 @@
     .nav-item:hover i {
       color: #facc15;
     }
+
+    ::placeholder {
+      color: #b0a7c3;
+    }
+
+    .payment-box {
+      background: rgba(50, 0, 80, 0.7);
+      border: 1px solid #8b5cf6;
+      border-radius: 0.5rem;
+      padding: 0.2rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .copy-icon {
+      color: #facc15;
+      transition: all 0.3s ease;
+    }
+
+    .copy-icon:hover {
+      transform: scale(1.2);
+    }
+
+    /* ===== Loading Screen ===== */
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at top left, #120024, #220044, #0a0014);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loading-image {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #facc15;
+      padding: 5px;
+      box-shadow: 0 0 10px #c084fc, 0 0 25px #facc15;
+      animation: pulse 1.5s infinite alternate;
+      margin-bottom: 15px;
+    }
+
+    @keyframes pulse {
+      from {
+        transform: scale(1);
+        box-shadow: 0 0 10px #c084fc, 0 0 20px #facc15;
+      }
+
+      to {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px #facc15, 0 0 40px #c084fc;
+      }
+    }
+
+    .loading-text {
+      font-family: 'Audiowide', cursive;
+      background: linear-gradient(to right, #facc15, #c084fc, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px #facc15, 0 0 10px #c084fc;
+      }
+
+      to {
+        text-shadow: 0 0 10px #f472b6, 0 0 15px #c084fc;
+      }
+    }
   </style>
 </head>
-<body">
+
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loader">
+    <img src="dls25.jpg" alt="Loading" class="loading-image" />
+    <div class="loading-text">Loading...</div>
+  </div>
 
   <!-- Header -->
-  <header class="bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] w-full max-w-md shadow-md py-2 px-3 mx-auto border-b border-purple-500 flex items-center justify-between header-glow rounded-b-2xl">
+  <header
+    class="bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] w-full max-w-md shadow-md py-2 px-3 mx-auto border-b border-purple-500 flex items-center justify-between header-glow rounded-b-2xl">
     <div class="flex items-center space-x-2">
-      <img src="dls25.jpg" alt="Logo" class="w-8 h-8 rounded-full border border-purple-500 shadow-md"/>
-      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-yellow-300 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">DSL TOUR</h2>
+      <img src="dls25.jpg" alt="Logo" class="w-8 h-8 rounded-full border border-purple-500 shadow-md" />
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-pink-300 to-yellow-300 bg-clip-text text-transparent"
+        style="font-family: 'Audiowide', cursive;">DSL TOUR</h2>
     </div>
     <div>
       <button id="menuButton">
@@ -62,15 +195,70 @@
     </div>
   </header>
 
-  <!-- Main content -->
-  <main class="max-w-4xl mx-auto p-4 space-y-4 pb-24">
-    <div id="pointTablesContainer" class="bg-gray-900 shadow rounded p-4">
-      <p class="text-xs text-center text-gray-400 mb-3">Loading...</p>
-      <!-- Group-wise point tables will appear here -->
-    </div>
+  <!-- Main Content -->
+  <main class="max-w-md mx-auto px-6 py-4">
+    <h2 class="text-2xl font-bold text-center mb-3 bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent"
+      style="font-family: 'Audiowide', cursive;">দল নিবন্ধন</h2>
+
+    <form id="teamForm"
+      class="form-container py-2 px-3 rounded-xl shadow-xl border border-purple-500 space-y-4 max-w-sm mx-auto">
+
+      <!-- Team Name -->
+      <div>
+        <label for="teamName" class="block text-sm font-semibold mb-2 text-gray-200">দলের নাম</label>
+        <input type="text" id="teamName" name="teamName" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
+          placeholder="আপনার দলের নাম লিখুন">
+      </div>
+
+      <!-- ID Rating -->
+      <div>
+        <label for="idRating" class="block text-sm font-semibold mb-2 text-gray-200">আইডি রেটিং</label>
+        <input type="number" id="idRating" step="any" name="idRating" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
+          placeholder="আপনার আইডি রেটিং লিখুন">
+      </div>
+
+      <!-- Payment Method -->
+      <div>
+        <label for="paymentMethod" class="block text-sm font-semibold text-gray-200">পেমেন্ট মাধ্যম</label>
+        <select id="paymentMethod" name="paymentMethod" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none text-sm">
+          <option value="">মাধ্যম নির্বাচন করুন</option>
+          <option value="Bkash">বিকাশ</option>
+          <option value="Nagad">নগদ</option>
+        </select>
+      </div>
+
+      <!-- Payment Notice -->
+      <div class="text-center w-full">
+        <p class="text-xs bg-gradient-to-r from-yellow-200 via-yellow-200 to-yellow-200 bg-clip-text text-transparent font-semibold mb-1">
+          📣 রেজিস্ট্রেশন সম্পূর্ণ করতে হলে অবশ্যই আপনাকে নিচে দেওয়া নাম্বারে <span id="entryFee"></span> টাকা সেন্ডমানি করতে হবে। পেমেন্ট না করলে আপনার রেজিস্ট্রেশন গ্রহণযোগ্য হবে না।
+        </p>
+        <div class="payment-box mx-auto w-fit" id="paymentBox">
+          <span id="paymentNumber" class="font-semibold text-green-400">01856549856</span>
+          <i class="fa-regular fa-copy copy-icon" title="Copy Number"></i>
+        </div>
+      </div>
+
+      <!-- Transaction ID -->
+      <div>
+        <label for="trxId" class="block text-sm font-semibold mb-2 text-gray-200">লেনদেন আইডি (ট্রানজেকশন)</label>
+        <input type="text" id="trxId" name="trxId" required
+          class="w-full px-3 py-2 rounded-lg text-white focus:outline-none placeholder-gray-400 text-sm"
+          placeholder="আপনার ট্রানজেকশন আইডি লিখুন">
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-center">
+        <button type="submit" class="btn w-full py-2 text-base rounded-lg transition-all duration-300">
+          সম্পূর্ণ করুন
+        </button>
+      </div>
+    </form>
   </main>
 
-   <!-- Bottom Navigation -->
+  <!-- Bottom Navigation -->
   <nav class="nav-bottom fixed bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
     <a href="index.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
@@ -103,11 +291,11 @@
       Profile
     </a>
   </nav>
-  
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -119,155 +307,180 @@
       appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
       measurementId: "G-0DGFJEV6GL"
     };
-    
+
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    let photoMap = {};
+    let currentSessionName = "";
+    let entryFee = "";
 
-    async function loadPlayersPhotos() {
-      const playersSnap = await getDocs(collection(db, "playerlist"));
-      photoMap = {};
-      playersSnap.forEach(doc => {
-        const data = doc.data();
-        if (data.team && data.photoUrl) {
-          photoMap[data.team.trim().toLowerCase()] = data.photoUrl;
-        }
-      });
-      console.log("PhotoMap Loaded:", photoMap); // debug
-    }
+    const loader = document.getElementById("loader");
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        await loadPlayersPhotos();
-        loadPointTables();
+    // ✅ Real-time toursetting listener with loading
+    const loadSettings = async () => {
+      try {
+        onSnapshot(collection(db, "toursetting"), (snapshot) => {
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.session) currentSessionName = data.session;
+            if (data.entryFee) entryFee = data.entryFee;
+          });
+          document.getElementById("entryFee").innerText = entryFee || "—";
+          loader.classList.add("hidden");
+        });
+      } catch (error) {
+        console.error("Error loading settings:", error);
+        loader.classList.add("hidden");
       }
-    });
+    };
 
-    function loadPointTables() {
-      const pointTablesContainer = document.getElementById("pointTablesContainer");
+    loadSettings();
 
-      onSnapshot(collection(db, "fixers"), (snapshot) => {
-        if (snapshot.empty) {
-          pointTablesContainer.innerHTML = `<p class="text-gray-500 text-center">No point tables to show.</p>`;
+    // ✅ Team form submit event
+    const teamForm = document.getElementById("teamForm");
+    teamForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const user = auth.currentUser;
+      if (!user) {
+        Swal.fire({
+          icon: 'error',
+          title: 'লগইন প্রয়োজন',
+          text: 'দল নিবন্ধনের আগে লগইন করুন!',
+          confirmButtonColor: '#dc2626'
+        });
+        return;
+      }
+
+      const uid = user.uid;
+      const teamName = document.getElementById("teamName").value.trim();
+      const idRating = parseFloat(document.getElementById("idRating").value);
+      const paymentMethod = document.getElementById("paymentMethod").value;
+      const trxId = document.getElementById("trxId").value.trim();
+
+      // 🌀 Processing Popup Show
+      Swal.fire({
+        title: 'Processing...',
+        html: `
+          <div class="flex flex-col items-center">
+            <i class="fa-solid fa-spinner fa-spin text-purple-400 text-3xl mb-3"></i>
+            <p>অপেক্ষা করুন, কিছু সময়ের মধ্যে<br>রেজিস্ট্রেশন সম্পূর্ণ হয়ে যাবে।</p>
+          </div>
+        `,
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        background: '#1e0a3c',
+        color: '#f5f3ff'
+      });
+
+      try {
+        // ✅ Check existing user registration
+        const qUser = query(collection(db, "playerlist"),
+          where("uid", "==", uid),
+          where("status", "in", ["Pending", "Approved"])
+        );
+        const existingUser = await getDocs(qUser);
+        if (!existingUser.empty) {
+          Swal.close();
+          Swal.fire({
+            icon: 'warning',
+            title: 'Already Registration Successful',
+            text: 'আপনি ইতিমধ্যেই একটি দল নিবন্ধন করেছেন!',
+            confirmButtonColor: '#f59e0b'
+          });
           return;
         }
 
-        const fixers = [];
-        snapshot.forEach(doc => fixers.push(doc.data()));
-
-        const groupsMap = {};
-        fixers.forEach(fix => {
-          if (!groupsMap[fix.groupName]) groupsMap[fix.groupName] = [];
-          groupsMap[fix.groupName].push(fix);
-        });
-
-        const allGroupsPoints = [];
-
-        Object.keys(groupsMap).sort().forEach(groupName => {
-          const matches = groupsMap[groupName];
-
-          const points = {};
-          const goals = {};
-
-          matches.forEach(match => {
-            const g1 = match.team1Goal;
-            const g2 = match.team2Goal;
-
-            if (!points[match.team1]) points[match.team1] = { win: 0, loss: 0, draw: 0 };
-            if (!points[match.team2]) points[match.team2] = { win: 0, loss: 0, draw: 0 };
-            if (!goals[match.team1]) goals[match.team1] = 0;
-            if (!goals[match.team2]) goals[match.team2] = 0;
-
-            if (typeof g1 === "number") goals[match.team1] += g1;
-            if (typeof g2 === "number") goals[match.team2] += g2;
-
-            if (typeof g1 === "number" && typeof g2 === "number") {
-              if (g1 > g2) {
-                points[match.team1].win++;
-                points[match.team2].loss++;
-              } else if (g2 > g1) {
-                points[match.team2].win++;
-                points[match.team1].loss++;
-              } else {
-                points[match.team1].draw++;
-                points[match.team2].draw++;
-              }
-            }
+        // ✅ Check existing team name
+        const qTeam = query(collection(db, "playerlist"),
+          where("teamName", "==", teamName),
+          where("sessionName", "==", currentSessionName)
+        );
+        const existingTeam = await getDocs(qTeam);
+        if (!existingTeam.empty) {
+          Swal.close();
+          Swal.fire({
+            icon: 'warning',
+            title: 'দল নাম ব্যবহৃত হয়েছে',
+            text: 'এই দলের নাম ইতিমধ্যেই নিবন্ধিত। অন্য নাম ব্যবহার করুন।',
+            confirmButtonColor: '#f59e0b'
           });
-
-          let sortedTeams = Object.entries(points).map(([team, stat]) => ({
-            team,
-            ...stat,
-            points: stat.win * 3 + stat.draw,
-            played: stat.win + stat.loss + stat.draw,
-            goals: goals[team] || 0,
-          })).sort((a, b) => {
-            if (b.points !== a.points) return b.points - a.points;
-            return b.goals - a.goals;
-          });
-
-          sortedTeams = sortedTeams.slice(0, 4);
-
-          allGroupsPoints.push({ groupName, sortedTeams });
-        });
-
-        let allPointsHTML = "";
-        if (allGroupsPoints.length === 0) {
-          allPointsHTML = `<p class="text-gray-500 text-center">No point tables to show.</p>`;
-        } else {
-          allPointsHTML = allGroupsPoints.map(({ groupName, sortedTeams }) => `
-            <div class="mb-4">
-              <div class="font-semibold mb-1 text-yellow-400 text-xs uppercase text-center">Point Table - ${groupName}</div>
-              <table class="text-xs w-full table-auto border border-gray-700">
-                <thead>
-                  <tr class="bg-gray-800 text-gray-300">
-                    <th class="px-1 py-1 border border-gray-700">Pic</th>
-                    <th class="px-1 py-1 border border-gray-700">Team</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">P</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">W</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">L</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">D</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">G</th>
-                    <th class="px-1 py-1 border border-gray-700 text-center">P</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${sortedTeams.map((team, index) => {
-                    const photoUrl = photoMap[team.team.trim().toLowerCase()] || "dls25.jpg";
-                    const qualifiedBadge = (team.played === 3 && (index === 0 || index === 1)) 
-                      ? `<span class="absolute -top-0 -right-0 bg-red-600 text-white font-semibold text-[8px] font-bold w-2 h-2 flex justify-center items-center rounded-sm">Q</span>` 
-                      : "";
-                    return `
-                      <tr class="even:bg-gray-900 odd:bg-gray-800 hover:bg-yellow-900 hover:text-yellow-300">
-                        <td class="px-1 py-1 border border-gray-700 text-center">
-                          <img src="${photoUrl}" alt="${team.team}" class="inline-block w-6 h-6 rounded-full object-cover border border-gray-500 p-[1px]" />
-                        </td>
-                        <td class="px-1 py-1 border border-gray-700 relative">
-                          ${team.team}
-                          ${qualifiedBadge}
-                        </td>
-                        <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.played}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center">${team.win}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center">${team.loss}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center">${team.draw}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.goals}</td>
-                        <td class="px-1 py-1 border border-gray-700 text-center font-bold">${team.points}</td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
-          `).join('');
+          return;
         }
-        pointTablesContainer.innerHTML = allPointsHTML;
-      });
-    }
+
+        // ✅ Fetch user's photoUrl from 'users' collection
+        const userDoc = await getDoc(doc(db, "users", uid));
+        let photoUrl = "";
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          photoUrl = userData.photoUrl || "";
+        }
+
+        const formData = {
+          uid,
+          teamName,
+          idRating,
+          paymentMethod,
+          trxId,
+          entryFee: entryFee,
+          sessionName: currentSessionName,
+          status: "Pending",
+          photoUrl, // 🔥 added photoUrl
+          date: new Date()
+        };
+
+        await addDoc(collection(db, "playerlist"), formData);
+        await addDoc(collection(db, "reghistory"), formData);
+
+        Swal.close();
+        Swal.fire({
+          icon: 'success',
+          title: 'সফল',
+          text: 'আপনার দল সফলভাবে জমা হয়েছে!',
+          confirmButtonColor: '#6f1287',
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        teamForm.reset();
+
+        setTimeout(() => {
+          window.location.href = "reg-history.html";
+        }, 2000);
+
+      } catch (error) {
+        Swal.close();
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'ত্রুটি',
+          text: 'দুঃখিত, দলে জমা দিতে সমস্যা হয়েছে!',
+          confirmButtonColor: '#dc2626'
+        });
+      }
+    });
+
+    // ✅ Copy Payment Number
+    const paymentBox = document.getElementById("paymentBox");
+    paymentBox.addEventListener("click", async () => {
+      const number = document.getElementById("paymentNumber").innerText;
+      try {
+        await navigator.clipboard.writeText(number);
+        Swal.fire({
+          icon: 'success',
+          title: 'Copied!',
+          text: 'Payment number copied to clipboard',
+          timer: 1500,
+          showConfirmButton: false,
+          background: '#1e0a3c',
+          color: '#f5f3ff'
+        });
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    });
   </script>
-                                
+
 </body>
 </html>
