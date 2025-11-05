@@ -47,7 +47,7 @@
     }
   </style>
 </head>
-<body">
+<body>
 
   <!-- Header -->
   <header class="bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] w-full max-w-md shadow-md py-2 px-3 mx-auto border-b border-purple-500 flex items-center justify-between header-glow rounded-b-2xl">
@@ -131,11 +131,11 @@
       photoMap = {};
       playersSnap.forEach(doc => {
         const data = doc.data();
-        if (data.team && data.photoUrl) {
-          photoMap[data.team.trim().toLowerCase()] = data.photoUrl;
+        if (data.teamName && data.photoUrl) {
+          photoMap[data.teamName.trim().toLowerCase()] = data.photoUrl;
         }
       });
-      console.log("PhotoMap Loaded:", photoMap); // debug
+      console.log("PhotoMap Loaded:", photoMap);
     }
 
     onAuthStateChanged(auth, async (user) => {
