@@ -126,7 +126,7 @@
     let photoMap = {};
 
     async function loadPlayersPhotos() {
-      const playersSnap = await getDocs(collection(db, "playerlist")); // playerlist db
+      const playersSnap = await getDocs(collection(db, "users")); // playerlist db
       photoMap = {};
       playersSnap.forEach(doc => {
         const data = doc.data();
