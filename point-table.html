@@ -19,23 +19,29 @@
       font-family: 'Poppins', sans-serif;
       min-height: 100vh;
     }
+
     .header-glow {
       box-shadow: 0 0 15px rgba(150, 0, 255, 0.4), 0 0 25px rgba(128, 0, 255, 0.2);
     }
+
     .nav-bottom {
       box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
     }
+
     .nav-box {
       background: rgba(126, 34, 206, 0.25);
     }
+
     .nav-item {
       color: #d0d1d1;
       transition: all 0.3s ease;
     }
+
     .nav-item i {
       color: #c084fc;
       transition: all 0.3s ease;
     }
+
     .nav-item:hover i {
       color: #facc15;
     }
@@ -64,7 +70,7 @@
     </div>
   </main>
 
-  <!-- Bottom Navigation -->
+   <!-- Bottom Navigation -->
   <nav class="nav-bottom fixed bg-gradient-to-r from-[#0a001f] via-[#2d0055] to-[#0a001f] bottom-0 left-0 right-0 flex justify-around items-center py-2 rounded-t-2xl text-white h-16 sm:h-14 sm:px-2 z-50 border-t border-purple-500">
     <a href="index.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
       <div class="nav-box w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-purple-500">
@@ -104,15 +110,15 @@
     import { getFirestore, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
-      authDomain: "dlstournament-31ac1.firebaseapp.com",
-      databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
-      projectId: "dlstournament-31ac1",
-      storageBucket: "dlstournament-31ac1.appspot.com",
-      messagingSenderId: "874377019055",
-      appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
-      measurementId: "G-0DGFJEV6GL"
-    };
+  apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+  authDomain: "dlstournament-31ac1.firebaseapp.com",
+  databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+  projectId: "dlstournament-31ac1",
+  storageBucket: "dlstournament-31ac1.appspot.com",
+  messagingSenderId: "874377019055",
+  appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+  measurementId: "G-0DGFJEV6GL"
+};
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -126,7 +132,6 @@
       playersSnap.forEach(doc => {
         const data = doc.data();
         if (data.team && data.photoUrl) {
-          // Use lower case and trim for consistent matching
           photoMap[data.team.trim().toLowerCase()] = data.photoUrl;
         }
       });
@@ -231,8 +236,7 @@
                 </thead>
                 <tbody>
                   ${sortedTeams.map((team, index) => {
-                    const key = team.team.trim().toLowerCase();
-                    const photoUrl = photoMap[key] || "default-player.png";
+                    const photoUrl = photoMap[team.team.trim().toLowerCase()] || "default-player.png";
                     const qualifiedBadge = (team.played === 3 && (index === 0 || index === 1)) 
                       ? `<span class="absolute -top-0 -right-0 bg-red-600 text-white font-semibold text-[8px] font-bold w-2 h-2 flex justify-center items-center rounded-sm">Q</span>` 
                       : "";
