@@ -25,7 +25,7 @@
     .nav-bottom {
       box-shadow: 0 -2px 20px rgba(120, 0, 255, 0.3);
     }
-    
+
     .nav-box {
       background: rgba(126, 34, 206, 0.25);
     }
@@ -140,7 +140,6 @@
         transform: scale(1);
         box-shadow: 0 0 10px #c084fc, 0 0 20px #facc15;
       }
-
       to {
         transform: scale(1.1);
         box-shadow: 0 0 25px #facc15, 0 0 40px #c084fc;
@@ -224,12 +223,12 @@
       Profile
     </a>
   </nav>
-    
+
   <!-- Firebase + Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
@@ -246,13 +245,19 @@
     const loader = document.getElementById("loader");
     const playerListDiv = document.getElementById("playerList");
 
-    onAuthStateChanged(auth, user => {
-      if (!user) window.location.href = "login.html";
+    // 🔹 লগইন ইউজার অনুযায়ী ডেটা ফেচ
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-      const playerQuery = query(collection(db, "reghistory"), orderBy("date", "desc"));
+      try {
+        const q = query(collection(db, "reghistory"), where("uid", "==", user.uid));
+        const snapshot = await getDocs(q);
 
-      onSnapshot(playerQuery, (snapshot) => {
         playerListDiv.innerHTML = "";
+
         if (snapshot.empty) {
           playerListDiv.innerHTML = `<p class='text-gray-400 text-center col-span-full'>No registration found.</p>`;
         } else {
@@ -277,8 +282,12 @@
             playerListDiv.innerHTML += card;
           });
         }
-        loader.classList.add("hidden"); // hide loader after data loaded
-      });
+      } catch (error) {
+        console.error(error);
+        Swal.fire("Error", "Failed to load history.", "error");
+      } finally {
+        loader.classList.add("hidden");
+      }
     });
 
     function formatDate(date) {
