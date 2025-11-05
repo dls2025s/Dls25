@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Point Tables</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+</head>
+<body class="bg-black text-gray-300">
+
+  <!-- Header -->
+  <header
+    class="bg-gradient-to-r from-black via-gray-900 to-black w-full max-w-md shadow-md py-2 px-3 mb-3 mx-auto border-b border-gray-700 flex items-center justify-between header-glow rounded-b-xl">
+    <div class="flex items-center space-x-2">
+      <img src="dcl1.jpeg" alt="Logo" class="w-8 h-8 rounded-full border border-yellow-400" />
+      <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-300 via-blue-200 to-yellow-300 bg-clip-text text-transparent"
+        style="font-family: 'Audiowide', cursive;">DCL TOUR</h2>
+    </div>
+    <div class="flex space-x-4">
+      <a href="#">
+        <i class="fa-solid fa-bell text-yellow-300 text-shadow text-xl"></i>
+      </a>
+      <a href="https://facebook.com" target="_blank">
+        <i class="fa-brands fa-facebook text-gray-300 hover:text-yellow-400 text-shadow text-xl"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="max-w-4xl mx-auto p-4 space-y-4 pb-24">
+    <div id="pointTablesContainer" class="bg-gray-900 shadow rounded p-4">
+      <p class="text-xs text-center text-gray-400 mb-3">Loading...</p>
+      <!-- Group-wise point tables will appear here -->
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav
+    class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-gray-300 h-16 sm:flex sm:justify-between sm:h-14 sm:px-2 z-50">
+    <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-600 hover:border-yellow-400">
+        <i class="fa-solid fa-house text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      Home
+    </a>
+    <a href="match.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-600 hover:border-yellow-400">
+        <i class="fa-solid fa-gamepad text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      Matches
+    </a>
+    <a href="league.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-600 hover:border-yellow-400">
+        <i class="fa-solid fa-trophy text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      League
+    </a>
+    <a href="rank.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-600 hover:border-yellow-400">
+        <i class="fa-solid fa-ranking-star text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      Ranking
+    </a>
+    <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+      <div
+        class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-600 hover:border-yellow-400">
+        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      Profile
+    </a>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyDooTNeDHoWUU9nLxYxyBIhewydt7Xl_M0",
+  authDomain: "dlstournament-31ac1.firebaseapp.com",
+  databaseURL: "https://dlstournament-31ac1-default-rtdb.firebaseio.com",
+  projectId: "dlstournament-31ac1",
+  storageBucket: "dlstournament-31ac1.appspot.com",
+  messagingSenderId: "874377019055",
+  appId: "1:874377019055:web:6e38db2ec7f0d541d2de5a",
+  measurementId: "G-0DGFJEV6GL"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let photoMap = {};
+
+    async function loadPlayersPhotos() {
+      const playersSnap = await getDocs(collection(db, "playersform"));
+      photoMap = {};
+      playersSnap.forEach(doc => {
+        const data = doc.data();
+        if (data.team && data.photoUrl) {
+          photoMap[data.team.trim().toLowerCase()] = data.photoUrl;
+        }
+      });
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        await loadPlayersPhotos();
+        loadPointTables();
+      }
+    });
+
+    function loadPointTables() {
+      const pointTablesContainer = document.getElementById("pointTablesContainer");
+
+      onSnapshot(collection(db, "fixers"), (snapshot) => {
+        if (snapshot.empty) {
+          pointTablesContainer.innerHTML = `<p class="text-gray-500 text-center">No point tables to show.</p>`;
+          return;
+        }
+
+        const fixers = [];
+        snapshot.forEach(doc => fixers.push(doc.data()));
+
+        const groupsMap = {};
+        fixers.forEach(fix => {
+          if (!groupsMap[fix.groupName]) groupsMap[fix.groupName] = [];
+          groupsMap[fix.groupName].push(fix);
+        });
+
+        const allGroupsPoints = [];
+
+        Object.keys(groupsMap).sort().forEach(groupName => {
+          const matches = groupsMap[groupName];
+
+          const points = {};
+          const goals = {};
+
+          matches.forEach(match => {
+            const g1 = match.team1Goal;
+            const g2 = match.team2Goal;
+
+            if (!points[match.team1]) points[match.team1] = { win: 0, loss: 0, draw: 0 };
+            if (!points[match.team2]) points[match.team2] = { win: 0, loss: 0, draw: 0 };
+            if (!goals[match.team1]) goals[match.team1] = 0;
+            if (!goals[match.team2]) goals[match.team2] = 0;
+
+            if (typeof g1 === "number") goals[match.team1] += g1;
+            if (typeof g2 === "number") goals[match.team2] += g2;
+
+            if (typeof g1 === "number" && typeof g2 === "number") {
+              if (g1 > g2) {
+                points[match.team1].win++;
+                points[match.team2].loss++;
+              } else if (g2 > g1) {
+                points[match.team2].win++;
+                points[match.team1].loss++;
+              } else {
+                points[match.team1].draw++;
+                points[match.team2].draw++;
+              }
+            }
+          });
+
+          let sortedTeams = Object.entries(points).map(([team, stat]) => ({
+            team,
+            ...stat,
+            points: stat.win * 3 + stat.draw,
+            played: stat.win + stat.loss + stat.draw,
+            goals: goals[team] || 0,
+          })).sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            return b.goals - a.goals;
+          });
+
+          sortedTeams = sortedTeams.slice(0, 4);
+
+          allGroupsPoints.push({ groupName, sortedTeams });
+        });
+
+        let allPointsHTML = "";
+        if (allGroupsPoints.length === 0) {
+          allPointsHTML = `<p class="text-gray-500 text-center">No point tables to show.</p>`;
+        } else {
+          allPointsHTML = allGroupsPoints.map(({ groupName, sortedTeams }) => `
+            <div class="mb-4">
+              <div class="font-semibold mb-1 text-yellow-400 text-xs uppercase text-center">Point Table - ${groupName}</div>
+              <table class="text-xs w-full table-auto border border-gray-700">
+                <thead>
+                  <tr class="bg-gray-800 text-gray-300">
+                    <th class="px-1 py-1 border border-gray-700">Pic</th>
+                    <th class="px-1 py-1 border border-gray-700">Team</th>
+                    <th class="px-1 py-1 border border-gray-700 text-center">P</th>
+                    <th class="px-1 py-1 border border-gray-700 text-center">W</th>
+                    <th class="px-1 py-1 border border-gray-700 text-center">L</th>
+                    <th class="px-1 py-1 border border-gray-700 text-center">D</th>
+                    <th class="px-1 py-1 border border-gray-700 text-center">G</th>
+                    <th class="px-1 py-1 border border-gray-700 text-center">P</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${sortedTeams.map((team, index) => {
+                    const photoUrl = photoMap[team.team.trim().toLowerCase()] || "default-player.png";
+                    const qualifiedBadge = (team.played === 3 && (index === 0 || index === 1)) 
+                      ? `<span class="absolute -top-0 -right-0 bg-red-600 text-white font-semibold text-[8px] font-bold w-2 h-2 flex justify-center items-center rounded-sm">Q</span>` 
+                      : "";
+                    return `
+                      <tr class="even:bg-gray-900 odd:bg-gray-800 hover:bg-yellow-900 hover:text-yellow-300">
+                        <td class="px-1 py-1 border border-gray-700 text-center">
+                          <img src="${photoUrl}" alt="${team.team}" class="inline-block w-6 h-6 rounded-full object-cover border border-gray-500 p-[1px]" />
+                        </td>
+                        <td class="px-1 py-1 border border-gray-700 relative">
+                          ${team.team}
+                          ${qualifiedBadge}
+                        </td>
+                        <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.played}</td>
+                        <td class="px-1 py-1 border border-gray-700 text-center">${team.win}</td>
+                        <td class="px-1 py-1 border border-gray-700 text-center">${team.loss}</td>
+                        <td class="px-1 py-1 border border-gray-700 text-center">${team.draw}</td>
+                        <td class="px-1 py-1 border border-gray-700 text-center font-semibold">${team.goals}</td>
+                        <td class="px-1 py-1 border border-gray-700 text-center font-bold">${team.points}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `).join('');
+        }
+        pointTablesContainer.innerHTML = allPointsHTML;
+      });
+    }
+  </script>
+</body>
+</html>
