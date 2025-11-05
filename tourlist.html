@@ -97,9 +97,7 @@
       serverTimestamp, 
       onSnapshot, 
       query, 
-      orderBy, 
-      doc, 
-      updateDoc 
+      orderBy 
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -135,7 +133,6 @@
       const session = document.getElementById("session").value.trim();
       const entryFee = parseInt(document.getElementById("entryFee").value);
       const slot = parseInt(document.getElementById("slot").value);
-      const endTime = document.getElementById("endTime")?.value;
 
       if (!title || !session || !entryFee || !slot) {
         Swal.fire("Error", "Please fill all fields correctly!", "error");
@@ -148,8 +145,6 @@
           session,
           entryFee,
           slot,
-          endTime,
-          isActive: true,
           createdAt: serverTimestamp(),
         });
 
@@ -193,48 +188,17 @@
 
       snapshot.forEach((docSnap) => {
         const t = docSnap.data();
-        const id = docSnap.id;
-
         const item = document.createElement("div");
         item.className = "border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition";
 
         item.innerHTML = `
-          <div class="flex justify-between items-center">
-            <div>
-              <h3 class="text-sm font-semibold text-gray-800">${t.title}</h3>
-              <p class="text-sm text-gray-600">Session: ${t.session}</p>
-              <p class="text-sm text-gray-600">Entry Fee: ${t.entryFee}</p>
-              <p class="text-sm text-gray-600">Slots: ${t.slot}</p>
-            </div>
-            <div class="flex flex-col items-center gap-2">
-              <i class="fas fa-trophy text-yellow-500 text-2xl"></i>
-              <label class="inline-flex items-center cursor-pointer">
-                <input type="checkbox" class="sr-only peer" ${t.isActive ? "checked" : ""} data-id="${id}">
-                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 relative after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
-              </label>
-              <p class="text-xs text-gray-600">${t.isActive ? "Active" : "Inactive"}</p>
-            </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-800">${t.title}</h3>
+            <p class="text-sm text-gray-600">Session: ${t.session}</p>
+            <p class="text-sm text-gray-600">Entry Fee: ${t.entryFee}</p>
+            <p class="text-sm text-gray-600">Slots: ${t.slot}</p>
           </div>
         `;
-
-        const toggle = item.querySelector("input[type='checkbox']");
-        toggle.addEventListener("change", async (e) => {
-          const newStatus = e.target.checked;
-          try {
-            await updateDoc(doc(db, "toursetting", id), { isActive: newStatus });
-            Swal.fire({
-              icon: "success",
-              title: newStatus ? "Tournament Activated" : "Tournament Deactivated",
-              position: "top-end",
-              toast: true,
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          } catch (err) {
-            console.error(err);
-            Swal.fire("Error", "Failed to update status", "error");
-          }
-        });
 
         tournamentList.appendChild(item);
       });
