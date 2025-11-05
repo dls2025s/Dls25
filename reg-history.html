@@ -102,9 +102,69 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    /* ===== Loading Screen ===== */
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at top left, #120024, #220044, #0a0014);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      flex-direction: column;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loading-image {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #facc15;
+      padding: 5px;
+      box-shadow: 0 0 10px #c084fc, 0 0 25px #facc15;
+      animation: pulse 1.5s infinite alternate;
+      margin-bottom: 15px;
+    }
+
+    @keyframes pulse {
+      from {
+        transform: scale(1);
+        box-shadow: 0 0 10px #c084fc, 0 0 20px #facc15;
+      }
+
+      to {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px #facc15, 0 0 40px #c084fc;
+      }
+    }
+
+    .loading-text {
+      font-family: 'Audiowide', cursive;
+      background: linear-gradient(to right, #facc15, #c084fc, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Loading Screen -->
+  <div id="loader">
+    <img src="dls25.jpg" alt="Loading" class="loading-image" />
+    <div class="loading-text">Loading...</div>
+  </div>
 
   <!-- Header -->
   <header
@@ -183,59 +243,57 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const loader = document.getElementById("loader");
+    const playerListDiv = document.getElementById("playerList");
 
     onAuthStateChanged(auth, user => {
       if (!user) window.location.href = "login.html";
-    });
 
-    const playerListDiv = document.getElementById("playerList");
-    const playerQuery = query(collection(db, "playerlist"), orderBy("date", "desc"));
+      const playerQuery = query(collection(db, "playerlist"), orderBy("date", "desc"));
+
+      onSnapshot(playerQuery, (snapshot) => {
+        playerListDiv.innerHTML = "";
+        if (snapshot.empty) {
+          playerListDiv.innerHTML = `<p class='text-gray-400 text-center col-span-full'>No registration found.</p>`;
+        } else {
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            const dateObj = data.date?.toDate ? data.date.toDate() : new Date(data.date);
+            const formattedDate = formatDate(dateObj);
+
+            const card = `
+              <div class="history-card">
+                <div class="row"><span class="card-label">Team:</span><span class="card-value">${data.teamName}</span></div>
+                <div class="row"><span class="card-label">Id Rating:</span><span class="card-value">${data.idRating}</span></div>
+                <div class="row"><span class="card-label">Session:</span><span class="card-value">${data.sessionName}</span></div>
+                <div class="row"><span class="card-label">Payment:</span><span class="card-value">৳${data.entryFee}</span></div>
+                <div class="row"><span class="card-label">Method:</span><span class="card-value">${data.paymentMethod}</span></div>
+                <div class="row"><span class="card-label">Status:</span>
+                  <span class="card-value font-semibold ${data.status === 'Pending' ? 'text-yellow-400' : data.status === 'Approved' ? 'text-green-400' : 'text-red-400'}">${data.status}</span>
+                </div>
+                <div class="row"><span class="card-label">Date:</span><span class="card-value">${formattedDate}</span></div>
+              </div>
+            `;
+            playerListDiv.innerHTML += card;
+          });
+        }
+        loader.classList.add("hidden"); // hide loader after data loaded
+      });
+    });
 
     function formatDate(date) {
       const d = new Date(date);
       const day = String(d.getDate()).padStart(2, '0');
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const month = monthNames[d.getMonth()];
       const year = d.getFullYear();
-
       let hours = d.getHours();
       const minutes = String(d.getMinutes()).padStart(2, '0');
       const seconds = String(d.getSeconds()).padStart(2, '0');
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12 || 12;
-      const time = `${hours}:${minutes}:${seconds} ${ampm}`;
-      return `${day}, ${month}, ${year}, ${time}`;
+      return `${day}, ${month}, ${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
     }
-
-    onSnapshot(playerQuery, (snapshot) => {
-      playerListDiv.innerHTML = "";
-      if (snapshot.empty) {
-        playerListDiv.innerHTML = `<p class='text-gray-400 text-center col-span-full'>No registration found.</p>`;
-        return;
-      }
-
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const dateStr = formatDate(data.date?.toDate ? data.date.toDate() : data.date);
-
-        const card = `
-          <div class="history-card">
-            <div class="row"><span class="card-label">Team:</span><span class="card-value">${data.teamName}</span></div>
-            <div class="row"><span class="card-label">Id Rating:</span><span class="card-value">${data.idRating}</span></div>
-            <div class="row"><span class="card-label">Session:</span><span class="card-value">${data.sessionName}</span></div>
-            <div class="row"><span class="card-label">Payment:</span><span class="card-value">৳${data.entryFee}</span></div>
-            <div class="row"><span class="card-label">Method:</span><span class="card-value">${data.paymentMethod}</span></div>
-            <div class="row"><span class="card-label">Status:</span>
-              <span class="card-value font-semibold ${data.status === 'Pending' ? 'text-yellow-400' : data.status === 'Approved' ? 'text-green-400' : 'text-red-400'}">${data.status}</span>
-            </div>
-            <div class="row"><span class="card-label">Date:</span><span class="card-value">${dateStr}</span></div>
-          </div>
-        `;
-        playerListDiv.innerHTML += card;
-      });
-    });
   </script>
-
 </body>
 </html>
