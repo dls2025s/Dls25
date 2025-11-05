@@ -489,18 +489,19 @@ let hiddenMatchdays = {};
 let currentUserId = null;
 let fixersData = [];
 let countdownInterval = null;
-let teamRatings = {};
+let activeDocId = null;
 let activeTitle = "";
+let teamRatings = {}; // ✅ Store ratings from playerlist
 
-// ✅ Load team photos + ratings
+// ✅ Load team photos from playerlist using uid or teamName
 async function loadTeamPhotosAndRatings() {
   const snap = await getDocs(collection(db, "playerlist"));
   snap.forEach(docSnap => {
     const data = docSnap.data();
     if (data.teamName) {
-      const key = data.teamName.trim().toLowerCase();
-      if (data.photoUrl) teamPhotos[key] = data.photoUrl;
-      if (data.idRating) teamRatings[key] = data.idRating;
+      const teamKey = data.teamName.trim().toLowerCase();
+      if (data.photoUrl) teamPhotos[teamKey] = data.photoUrl;
+      if (data.idRating) teamRatings[teamKey] = data.idRating;
     }
   });
 }
@@ -514,7 +515,7 @@ function formatDateAndTime(dateStr) {
   return `${day}, ${month}, ${year}`;
 }
 
-// ✅ Auth
+// ✅ Auth listener
 onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
   currentUserId = user.uid;
@@ -523,18 +524,21 @@ onAuthStateChanged(auth, async (user) => {
   const userSnap = await getDoc(userRef);
   if (userSnap.exists()) {
     const data = userSnap.data();
-    document.getElementById("username").innerText = data.username || "User";
-    document.getElementById("userPhoto").src = data.photoUrl || "default-profile.png";
+    document.getElementById("username").innerText = data.username || user.displayName || "User";
+    document.getElementById("userPhoto").src = data.photoUrl || user.photoURL || "default-profile.png";
     hiddenMatchdays = data.hiddenMatchdays || {};
+  } else {
+    document.getElementById("username").innerText = user.displayName || "User";
+    document.getElementById("userPhoto").src = user.photoURL || "default-profile.png";
+    hiddenMatchdays = {};
   }
 
-  await loadTeamPhotosAndRatings();
+  await loadTeamPhotosAndRatings(); // ✅ Load photos + ratings from playerlist
   subscribeHiddenMatchdays();
   subscribeFixers();
-  subscribeBannerStatus(); // ✅ banner from adsetting/banner
+  subscribeBannerStatus();
 });
 
-// ✅ Hidden matchday listener
 function subscribeHiddenMatchdays() {
   const userRef = doc(db, "users", currentUserId);
   onSnapshot(userRef, (snap) => {
@@ -543,7 +547,6 @@ function subscribeHiddenMatchdays() {
   });
 }
 
-// ✅ Fixers listener
 function subscribeFixers() {
   const fixersRef = collection(db, "fixers");
   onSnapshot(query(fixersRef), (snapshot) => {
@@ -553,23 +556,40 @@ function subscribeFixers() {
   });
 }
 
-// ✅ UPDATE: Banner Toggle + Countdown (adsetting/banner)
+// ✅ Update session display
+function updateSessionDisplay(sessionName) {
+  const sessionDisplay = document.getElementById("sessionDisplslay");
+  if (sessionDisplay) sessionDisplay.textContent = sessionName || "";
+}
+
+// ✅ Banner toggle + countdown
 function subscribeBannerStatus() {
-  const bannerRef = doc(db, "adsetting", "banner"); // ✅ Correct Firestore path
   const bannerToggle = document.getElementById("bannerToggle");
   const countdownEl = document.getElementById("countdown");
+  const settingsRef = collection(db, "toursetting");
 
-  onSnapshot(bannerRef, (snap) => {
-    if (!snap.exists()) return;
+  onSnapshot(settingsRef, (snapshot) => {
+    let activeDoc = null;
+    activeDocId = null;
+    activeTitle = "";
 
-    const data = snap.data();
-    activeTitle = data.title || "";
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.isActive === true) {
+        activeDoc = data;
+        activeDocId = docSnap.id;
+        activeTitle = data.title || "";
+      }
+    });
 
-    if (data.isActive === true) {
+    if (activeDoc) {
       bannerToggle.style.display = "block";
-      startCountdown(data.endTime, countdownEl);
+      updateSessionDisplay(activeDoc.session);
+      if (activeDoc.endTime) startCountdown(activeDoc.endTime, countdownEl);
+      else countdownEl.textContent = "N/A";
     } else {
       bannerToggle.style.display = "none";
+      updateSessionDisplay("");
       clearInterval(countdownInterval);
     }
 
@@ -577,23 +597,30 @@ function subscribeBannerStatus() {
   });
 }
 
-// ✅ Countdown function
+// ✅ Countdown
 function startCountdown(endTimeStr, element) {
   clearInterval(countdownInterval);
   const endTime = new Date(endTimeStr).getTime();
 
-  async function deactivateBanner() {
-    await updateDoc(doc(db, "adsetting", "banner"), { isActive: false });
+  async function deactivateTournament() {
+    if (activeDocId) {
+      try {
+        const tourRef = doc(db, "toursetting", activeDocId);
+        await updateDoc(tourRef, { isActive: false });
+      } catch (error) {
+        console.error("Deactivate failed:", error);
+      }
+    }
   }
 
   function updateCountdown() {
-    const now = Date.now();
+    const now = new Date().getTime();
     const distance = endTime - now;
 
     if (distance <= 0) {
       clearInterval(countdownInterval);
       element.textContent = "0D:0H:0M:0S";
-      deactivateBanner();
+      deactivateTournament();
       return;
     }
 
@@ -602,25 +629,32 @@ function startCountdown(endTimeStr, element) {
     const minutes = Math.floor((distance / (1000 * 60)) % 60);
     const seconds = Math.floor((distance / 1000) % 60);
 
-    element.textContent =
-      days > 0
-        ? `${days}D:${hours}H:${minutes}M:${seconds}S`
-        : `${hours}H:${minutes}M:${seconds}S`;
+    if (days > 0) {
+      element.textContent = `${days}D:${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
+    } else {
+      element.textContent = `${hours.toString().padStart(2, "0")}H:${minutes.toString().padStart(2, "0")}M:${seconds.toString().padStart(2, "0")}S`;
+    }
   }
 
   updateCountdown();
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-// ✅ Render Fixers + Ratings + Photo
+// ✅ Render Fixers + Ratings + playerlist photoUrl
 function renderFixers() {
   const fixersContainer = document.getElementById("fixers-list");
-  if (!fixersData.length) return fixersContainer.innerHTML = `<p>No fixers available.</p>`;
+  if (!fixersData.length) {
+    fixersContainer.innerHTML = `<p class="text-center text-gray-400">No fixers available.</p>`;
+    return;
+  }
 
   const todayStr = new Date().toISOString().split("T")[0];
   const todayMatches = fixersData.filter(fix => fix.date && new Date(fix.date).toISOString().split("T")[0] === todayStr);
 
-  if (!todayMatches.length) return fixersContainer.innerHTML = `<p>No matches scheduled for today.</p>`;
+  if (!todayMatches.length) {
+    fixersContainer.innerHTML = `<p class="text-center text-gray-400">No matches scheduled for today.</p>`;
+    return;
+  }
 
   const matchdaysMap = {};
   todayMatches.forEach(fix => {
@@ -629,52 +663,70 @@ function renderFixers() {
     matchdaysMap[md].push(fix);
   });
 
+  const sortedMatchdays = Object.keys(matchdaysMap).sort();
   let html = "";
-  Object.keys(matchdaysMap).sort().forEach((md, index) => {
+
+  sortedMatchdays.forEach((md, index) => {
     const matchdayId = `match-day-${index + 1}`;
     if (hiddenMatchdays[matchdayId]) return;
 
-    matchdaysMap[md].forEach(match => {
-      const t1 = match.team1.trim().toLowerCase();
-      const t2 = match.team2.trim().toLowerCase();
+    matchdaysMap[md]
+      .sort((a, b) => a.groupName.localeCompare(b.groupName) || a.team1.localeCompare(b.team1))
+      .forEach(match => {
+        const team1Key = match.team1.trim().toLowerCase();
+        const team2Key = match.team2.trim().toLowerCase();
+        const team1Img = teamPhotos[team1Key] || "dls25.jpg"; // playerlist photoUrl
+        const team2Img = teamPhotos[team2Key] || "dls25.jpg"; // playerlist photoUrl
+        const t1GoalVal = match.team1Goal ?? "-";
+        const t2GoalVal = match.team2Goal ?? "-";
+        const formattedDate = formatDateAndTime(match.date);
 
-      html += `
-      <div class="match-card">
-        <div class="league-badge">${activeTitle}</div>
-        <div class="team-stack">
-          <img src="${teamPhotos[t1] || "dls25.jpg"}" class="team-logo">
-          <div class="team-name">${match.team1}</div>
-          <div class="Rating-box">⭐ ${teamRatings[t1] || "N/A"}</div>
-        </div>
+        const team1Rating = teamRatings[team1Key] || "N/A";
+        const team2Rating = teamRatings[team2Key] || "N/A";
 
-        <div class="score-box">
-          <p>${match.team1Goal ?? "-"} : ${match.team2Goal ?? "-"}</p>
-          <p>${formatDateAndTime(match.date)}</p>
-          <p>${md}</p>
-        </div>
-
-        <div class="team-stack">
-          <img src="${teamPhotos[t2] || "dls25.jpg"}" class="team-logo">
-          <div class="team-name">${match.team2}</div>
-          <div class="Rating-box">⭐ ${teamRatings[t2] || "N/A"}</div>
-        </div>
-      </div>`;
-    });
-
+        html += `
+        <div class="match-card">
+          <div id="matchTitle" class="league-badge">
+            ${activeTitle || ""}
+          </div>
+          <div class="team-stack">
+            <img src="${team1Img}" class="team-logo" alt="${match.team1}">
+            <div class="team-name">${match.team1}</div>
+            <div class="Rating-box font-semibold">⭐ ${team1Rating}</div>
+          </div>
+          <div class="score-box text-center">
+            <p class="text-3xl font-bold">${t1GoalVal} : ${t2GoalVal}</p>
+            <p class="date-box text-xs font-semibold mb-1">${formattedDate}</p>
+            <p class="matchday-box">${md}</p>
+          </div>
+          <div class="team-stack">
+            <img src="${team2Img}" class="team-logo" alt="${match.team2}">
+            <div class="team-name">${match.team2}</div>
+            <div class="Rating-box font-semibold">⭐ ${team2Rating}</div>
+          </div>
+        </div>`;
+      });
   });
 
   fixersContainer.innerHTML = html;
 }
 
-// ✅ Sidebar Toggle
+// ✅ Sidebar toggle
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const menuButton = document.getElementById("menuButton");
+const closeSidebar = document.getElementById("closeSidebar");
+
 menuButton.addEventListener("click", () => {
   sidebar.classList.add("active");
   overlay.classList.add("active");
 });
+
 closeSidebar.addEventListener("click", () => {
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
 });
+
 overlay.addEventListener("click", () => {
   sidebar.classList.remove("active");
   overlay.classList.remove("active");
@@ -710,6 +762,8 @@ logoutBtn.addEventListener("click", async () => {
   }
 });
 </script>
+
+
 
 </body>
 </html>
