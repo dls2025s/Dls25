@@ -492,7 +492,7 @@ let countdownInterval = null;
 let activeDocId = null;
 let teamRatings = {}; // ✅ Store ratings from playerlist
 
-// ✅ Load team photos + ratings from playerlist
+// ✅ Load team photos + ratings
 async function loadTeamPhotosAndRatings() {
   const snap = await getDocs(collection(db, "playerlist"));
   snap.forEach(docSnap => {
@@ -536,10 +536,10 @@ onAuthStateChanged(auth, async (user) => {
   await loadTeamPhotosAndRatings();
   subscribeHiddenMatchdays();
   subscribeFixers();
-  subscribeBannerStatus();
+  subscribeBannerStatus();  // ✅ Here banner runs
 });
 
-// ✅ Listen for hidden matchdays
+// ✅ Listen hidden matchdays
 function subscribeHiddenMatchdays() {
   const userRef = doc(db, "users", currentUserId);
   onSnapshot(userRef, (snap) => {
@@ -564,11 +564,15 @@ function updateSessionDisplay(sessionName) {
   if (sessionDisplay) sessionDisplay.textContent = sessionName || "";
 }
 
-// ✅ Banner + Countdown
+/* ------------------------------------------------------------------
+ ✅ Banner + Countdown (UPDATED → now uses adsetting/banner)
+------------------------------------------------------------------ */
 function subscribeBannerStatus() {
   const bannerToggle = document.getElementById("bannerToggle");
   const countdownEl = document.getElementById("countdown");
-  const settingsRef = collection(db, "toursetting");
+
+  // 🔥 Firestore path changed as per your request
+  const settingsRef = collection(db, "adsetting", "banner");
 
   onSnapshot(settingsRef, (snapshot) => {
     let activeDoc = null;
@@ -605,7 +609,7 @@ function startCountdown(endTimeStr, element) {
   async function deactivateTournament() {
     if (activeDocId) {
       try {
-        const tourRef = doc(db, "toursetting", activeDocId);
+        const tourRef = doc(db, "adsetting", "banner", activeDocId); // ✅ path updated
         await updateDoc(tourRef, { isActive: false });
       } catch (error) {
         console.error("Deactivate failed:", error);
@@ -642,7 +646,9 @@ function startCountdown(endTimeStr, element) {
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-// ✅ Render Fixers
+/* ------------------------------------------------------------------
+✅ Fixers Render (UNCHANGED)
+------------------------------------------------------------------ */
 function renderFixers() {
   const fixersContainer = document.getElementById("fixers-list");
   if (!fixersData.length) {
@@ -687,9 +693,7 @@ function renderFixers() {
 
         html += `
         <div class="match-card">
-          <div class="league-badge">
-            DLS Champion League (DSL Session-10)
-          </div>
+          <div class="league-badge">DLS Champion League (DSL Session-10)</div>
           <div class="team-stack">
             <img src="${team1Img}" class="team-logo" alt="${match.team1}">
             <div class="team-name">${match.team1}</div>
@@ -766,4 +770,4 @@ logoutBtn.addEventListener("click", async () => {
 
 
 </body>
-          </html>
+</html>
